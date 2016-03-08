@@ -105,5 +105,4 @@ class Print
 	size_t printNumber(unsigned long n, uint8_t base, uint8_t sign);
 };
 
-
 #endif

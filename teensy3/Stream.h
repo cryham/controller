@@ -21,7 +21,7 @@
 #define Stream_h
 
 #include <inttypes.h>
-#include "Print.h"
+#include "WPrint.h"
 
 class Stream : public Print
 {

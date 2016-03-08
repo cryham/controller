@@ -27,7 +27,7 @@
 //#include <avr/pgmspace.h>
 //#include "wiring.h"
 
-#include "Print.h"
+#include "WPrint.h"
 
 
 
@@ -176,5 +176,4 @@ size_t Print::printFloat(double number, uint8_t digits)
 	}
 	return count;
 }
-
 
