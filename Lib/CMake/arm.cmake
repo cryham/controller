@@ -148,7 +148,11 @@ endif ()
 #|     c99   = ISO C99 standard (not yet fully implemented)
 #|     gnu99 = c99 plus GCC extensions
 #|     gnu11 = c11 plus GCC extensions
+#|     c++11 gnu11 gnu++0x
+#---------------------------
 set( CSTANDARD "-std=gnu11" )
+set( CXXSTANDARD "-std=gnu++0x" )
+# -felide-constructors -fno-rtti
 
 
 #| Warning Options
@@ -165,15 +169,15 @@ if( BOOTLOADER )
 elseif ( "${COMPILER}" MATCHES "clang" )
 	set( TUNING "-target arm-none-eabi -mthumb -nostdlib -fdata-sections -ffunction-sections -fshort-wchar -fno-builtin" )
 else()
-	set( TUNING "-mthumb -nostdlib -fdata-sections -ffunction-sections -fshort-wchar -fno-builtin -nostartfiles" )
+	#set( TUNING "-mthumb -nostdlib -fdata-sections -ffunction-sections -fshort-wchar -fno-builtin -nostartfiles" )
+	set( TUNING "-mcpu=cortex-m4 -lc -fno-exceptions -mthumb -fshort-wchar" )
+	#---------------------------
 endif()
-
 
 #| Optimization level, can be [0, 1, 2, 3, s].
 #|     0 = turn off optimization. s = optimize for size.
 #|     (Note: 3 is not always the best optimization level.)
 set( OPT "s" )
-
 
 #| Dependency Files
 #| Compiler flags to generate dependency files.
@@ -181,8 +185,10 @@ set( GENDEPFLAGS "-MMD" )
 
 
 #| Compiler Flags
-add_definitions( "-mcpu=${CPU} -DF_CPU=${F_CPU} -D_${CHIP}_=1 -O${OPT} ${TUNING} ${WARN} ${CSTANDARD} ${GENDEPFLAGS}" )
-
+#---------------------------
+add_definitions( "-mcpu=${CPU} -fshort-wchar -DF_CPU=${F_CPU} -D_${CHIP}_=1 -D__MK20DX256__=1 -O${OPT} ${TUNING} ${WARN} ${GENDEPFLAGS}" )
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CSTANDARD}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXXSTANDARD}")
 
 #| Linker Flags
 if( BOOTLOADER )
@@ -190,7 +196,8 @@ if( BOOTLOADER )
 	set( LINKER_FLAGS "${TUNING} -Wl,--gc-sections -fwhole-program -T${CMAKE_CURRENT_SOURCE_DIR}/../Lib/${CHIP}.bootloader.ld -nostartfiles -Wl,-Map=link.map" )
 else()
 	# Normal linker flags
-	set( LINKER_FLAGS "${TUNING} -Wl,-Map=link.map,--cref -Wl,--gc-sections -Wl,--no-wchar-size-warning -T${CMAKE_CURRENT_SOURCE_DIR}/Lib/${CHIP}.ld" )
+	#---------------------------
+	set( LINKER_FLAGS "--specs=rdimon.specs -Wl,--no-wchar-size-warning -Wl,--start-group -lgcc -lc -lm -lrdimon -Wl,--end-group -Os -Wl,--gc-sections -mcpu=cortex-m4 -mthumb -fshort-wchar -T${CMAKE_CURRENT_SOURCE_DIR}/Lib/${CHIP}.ld" )
 endif()
 
 

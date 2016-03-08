@@ -270,6 +270,7 @@ if ( CTAGS_EXECUTABLE )
 	# NOTE: Doesn't support dots in the folder names...
 	foreach ( filename ${SRCS} )
 		string ( REGEX REPLACE "/[a-zA-Z0-9_-]+.c$" "" pathglob ${filename} )
+		#MESSAGE( STATUS " " ${filename} )
 		file ( GLOB filenames "${pathglob}/*.c" )
 		set ( CTAG_PATHS ${CTAG_PATHS} ${filenames} )
 		file ( GLOB filenames "${pathglob}/*.h" )
