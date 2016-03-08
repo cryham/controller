@@ -1,5 +1,5 @@
 #ifndef __PGMSPACE_H_
-#define __PGMSPACE_H_ 1
+#define __PGMSPACE_H_
 
 #include <inttypes.h>
 
