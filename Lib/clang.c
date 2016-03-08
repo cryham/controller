@@ -1,4 +1,4 @@
-/* Copyright (C) 2013-2015 by Jacob Alexander
+/* Copyright (C) 2016 by Jacob Alexander
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,44 +19,43 @@
  * THE SOFTWARE.
  */
 
-#pragma once
+
+// This file adds various functions that clang doesn't link properly
+// AFAIK, clang doesn't have an elegant solution for this, so this is what we gotta do...
 
 // ----- Includes -----
 
 // Compiler Includes
-#include <stdint.h>
-
-// Local Includes
+#include <string.h>
 
 
+void __aeabi_memcpy( void *dest, const void *src, size_t n )
+{
+	(void)memcpy(dest, src, n);
+}
 
-// ----- Defines -----
+void __aeabi_memcpy4( void *dest, const void *src, size_t n )
+{
+	memcpy(dest, src, n);
+}
 
-#define KEYBOARD_KEYS 0xFF // TODO Determine max number of keys
-#define KEYBOARD_BUFFER 24 // Max number of key signals to buffer
-                           // This limits the NKRO-ability, so at 24, the keyboard is 24KRO
-                           // The buffer is really only needed for converter modules
-                           // An alternative macro module could be written for matrix modules and still work well
+void __aeabi_memclr( void *dest, size_t n )
+{
+	memset(dest, 0, n);
+}
 
+void __aeabi_memclr4( void *dest, size_t n )
+{
+	memset(dest, 0, n);
+}
 
+void __aeabi_memmove( void *dest, const void *src, size_t n )
+{
+	(void)memmove(dest, src, n);
+}
 
-// ----- Variables -----
-
-extern volatile     uint8_t KeyIndex_Buffer[KEYBOARD_BUFFER];
-extern volatile     uint8_t KeyIndex_BufferUsed;
-
-
-
-// ----- Functions -----
-
-// Functions used by main.c
-void Scan_setup();
-uint8_t Scan_loop();
-
-
-// Functions available to macro.c
-uint8_t Scan_sendData( uint8_t dataPayload );
-
-void Scan_finishedWithMacro( uint8_t sentKeys );
-void Scan_finishedWithOutput( uint8_t sentKeys );
+void __aeabi_memset( void *s, size_t n, int c )
+{
+	(void)memset(s, c, n);
+}
 
