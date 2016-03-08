@@ -42,4 +42,7 @@
 //#define KINETISK_UART1
 //#define KINETISK_UART2
 
+extern void (* _VectorsRam[NVIC_NUM_INTERRUPTS+16])(void);
+extern void (* const _VectorsFlash[NVIC_NUM_INTERRUPTS+16])(void); 
+
 #endif
