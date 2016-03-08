@@ -22,6 +22,9 @@
 // ----- Includes -----
 
 // Compiler Includes
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <Lib/MainLib.h>
 
 // Project Includes
@@ -32,6 +35,10 @@
 #include <cli.h>
 #include <led.h>
 #include <print.h>
+
+#ifdef __cplusplus
+}
+#endif
 
 
 
