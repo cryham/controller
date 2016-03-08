@@ -40,6 +40,7 @@
 #include "usb_dev.h"
 #include "usb_mem.h"
 
+extern volatile uint32_t systick_millis_count;
 
 
 // ----- Defines -----
