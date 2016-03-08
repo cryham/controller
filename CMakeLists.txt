@@ -125,11 +125,17 @@ set( PartialMaps "hhkbpro2"
 
 
 
-###
+### * * * * 
 # Source Defines (in addition to the selected Modules)
 #
-set( MAIN_SRCS
-	main.c
+
+file(GLOB MAIN_SRCS
+    teensy3/*.h
+    teensy3/*.c
+    teensy3/*.cpp
+    *.h
+    *.c
+    *.cpp
 )
 
 
