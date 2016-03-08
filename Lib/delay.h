@@ -36,7 +36,7 @@
 #include <stdint.h>
 
 
-
+/*
 // ----- Macros -----
 
 // Convenience Macros, for delay compatibility with AVR-GCC
@@ -76,11 +76,11 @@ static inline void delayMicroseconds(uint32_t usec)
 		: "+r" (n) :
 	);
 }
-
+*/
 
 void yield(void) __attribute__ ((weak));
 
-uint32_t micros(void);
+//uint32_t micros(void);
 
-void delay(uint32_t ms);
+//void delay(uint32_t ms);
 

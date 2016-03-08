@@ -39,7 +39,7 @@
 // ----- Variables -----
 
 // the systick interrupt is supposed to increment this at 1 kHz rate
-volatile uint32_t systick_millis_count = 0;
+//volatile uint32_t systick_millis_count = 0;
 
 
 
@@ -47,6 +47,7 @@ volatile uint32_t systick_millis_count = 0;
 
 void yield(void) {};
 
+/*
 uint32_t micros(void)
 {
 	uint32_t count, current, istatus;
@@ -75,3 +76,4 @@ void delay(uint32_t ms)
 	}
 }
 
+*/
