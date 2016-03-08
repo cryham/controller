@@ -31,6 +31,7 @@
 #include <print.h>
 #include <macro.h>
 #include <Lib/delay.h>
+#include <core_pins.h>
 
 // Local Includes
 #include "matrix_scan.h"
