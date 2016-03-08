@@ -478,6 +478,7 @@ static inline void jump_to_app( uintptr_t addr )
 }
 #endif
 
+#if 0
 void *memset( void *addr, int val, unsigned int len )
 {
 	char *buf = addr;
@@ -506,7 +507,7 @@ void *memcpy( void *dst, const void *src, unsigned int len )
 		*dstbuf = *srcbuf;
 	return (dst);
 }
-
+#endif
 
 
 // ----- Chip Entry Point -----
@@ -608,8 +609,8 @@ void ResetHandler()
 #endif
 
 	// default all interrupts to medium priority level
-	for (i=0; i < NVIC_NUM_INTERRUPTS + 16; i++) _VectorsRam[i] = _VectorsFlash[i];
-	for (i=0; i < NVIC_NUM_INTERRUPTS; i++) NVIC_SET_PRIORITY(i, 128);
+	for (unsigned i=0; i < NVIC_NUM_INTERRUPTS + 16; i++) _VectorsRam[i] = _VectorsFlash[i];
+	for (unsigned i=0; i < NVIC_NUM_INTERRUPTS; i++) NVIC_SET_PRIORITY(i, 128);
 	SCB_VTOR = (uint32_t)_VectorsRam;	// use vector table in RAM
 
 	// start in FEI mode

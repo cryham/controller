@@ -2021,11 +2021,11 @@ extern const uint8_t sys_reset_to_loader_magic[22];
 
 
 // ----- Functions -----
-
+#if 0
 void *memset( void *addr, int val, unsigned int len );
 void *memcpy( void *dst, const void *src, unsigned int len );
 int memcmp( const void *a, const void *b, unsigned int len );
-
+#endif
 extern int nvic_execution_priority(void);
 
 
