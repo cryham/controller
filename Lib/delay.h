@@ -43,6 +43,9 @@
 #define _delay_ms(val) delay( val )
 #define _delay_us(val) delayMicroseconds( val )
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 // ----- Functions -----
@@ -90,3 +93,7 @@ uint32_t micros(void);
 
 void delay(uint32_t ms);
 
+
+#ifdef __cplusplus
+}
+#endif

@@ -237,11 +237,10 @@ void portd_isr()            __attribute__ ((weak, alias("unused_isr")));
 void porte_isr()            __attribute__ ((weak, alias("unused_isr")));
 void software_isr()         __attribute__ ((weak, alias("unused_isr")));
 
-void (* _VectorsRam[NVIC_NUM_INTERRUPTS+16])(void);
 
 // NVIC - Interrupt Vector Table
 __attribute__ ((section(".vectors"), used))
-void (* const _VectorsFlash[NVIC_NUM_INTERRUPTS+16])(void) =
+void (* const gVectors[])() =
 {
 	(void (*)(void))((unsigned long)&_estack),      //  0 ARM: Initial Stack Pointer
 	ResetHandler,                                   //  1 ARM: Initial Program Counter
@@ -609,9 +608,10 @@ void ResetHandler()
 #endif
 
 	// default all interrupts to medium priority level
-	for (unsigned i=0; i < NVIC_NUM_INTERRUPTS + 16; i++) _VectorsRam[i] = _VectorsFlash[i];
-	for (unsigned i=0; i < NVIC_NUM_INTERRUPTS; i++) NVIC_SET_PRIORITY(i, 128);
-	SCB_VTOR = (uint32_t)_VectorsRam;	// use vector table in RAM
+	for ( unsigned int i = 0; i < NVIC_NUM_INTERRUPTS; i++ )
+	{
+		NVIC_SET_PRIORITY( i, 128 );
+	}
 
 	// start in FEI mode
 	// enable capacitors for crystal

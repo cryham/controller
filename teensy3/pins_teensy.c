@@ -116,10 +116,10 @@ void init_pin_interrupts(void)
 	// fast interrupts will still be serviced quickly?
 }
 
-void attachInterruptVector(enum IRQ_NUMBER_t irq, void (*function)(void))
+/*void attachInterruptVector(enum IRQ_NUMBER_t irq, void (*function)(void))
 {
 	_VectorsRam[irq + 16] = function;
-}
+}*/
 
 void attachInterrupt(uint8_t pin, void (*function)(void), int mode)
 {
