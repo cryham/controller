@@ -35,7 +35,6 @@
 #include <Lib/OutputLib.h>
 #include <print.h>
 #include <kll_defs.h>
-#include <core_pins.h>
 
 // Local Includes
 #include "usb_dev.h"
