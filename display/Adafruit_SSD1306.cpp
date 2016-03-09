@@ -30,7 +30,7 @@ All text above, and the splash screen below must be included in any redistributi
 
 #include <stdlib.h>
 
-#include <Wire.h>
+//#include <Wire.h>
 #include <SPI.h>
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1306.h"
@@ -203,12 +203,12 @@ void Adafruit_SSD1306::begin(uint8_t vccstate, uint8_t i2caddr, bool reset) {
   else
   {
     // I2C Init
-    Wire.begin();
+    /*Wire.begin();
 #ifdef __SAM3X8E__
     // Force 400 KHz I2C, rawr! (Uses pins 20, 21 for SDA, SCL)
     TWI1->TWI_CWGR = 0;
     TWI1->TWI_CWGR = ((VARIANT_MCK / (2 * 400000)) - 4) * 0x101;
-#endif
+#endif*/
   }
   if ((reset) && (rst >= 0)) {
     // Setup reset pin direction (used by both SPI and I2C)
@@ -319,11 +319,11 @@ void Adafruit_SSD1306::ssd1306_command(uint8_t c) {
   else
   {
     // I2C
-    uint8_t control = 0x00;   // Co = 0, D/C = 0
+    /*uint8_t control = 0x00;   // Co = 0, D/C = 0
     Wire.beginTransmission(_i2caddr);
     Wire.write(control);
     Wire.write(c);
-    Wire.endTransmission();
+    Wire.endTransmission();*/
   }
 }
 
@@ -458,7 +458,7 @@ void Adafruit_SSD1306::display(void) {
   else
   {
     // save I2C bitrate
-#ifdef TWBR
+/*#ifdef TWBR
     uint8_t twbrbackup = TWBR;
     TWBR = 12; // upgrade to 400KHz!
 #endif
@@ -480,7 +480,7 @@ void Adafruit_SSD1306::display(void) {
     }
 #ifdef TWBR
     TWBR = twbrbackup;
-#endif
+#endif*/
   }
 }
 
