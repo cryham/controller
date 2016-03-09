@@ -23,7 +23,7 @@ set( CHIP
 #       "at90usb1286"      # Teensy++ 2.0 (avr)
 #       "mk20dx128"        # Teensy   3.0 (arm)
 #		"mk20dx128vlf5"    # McHCK       mk20dx128vlf5
-       "mk20dx256"        # Teensy   3.1,3.2 (arm)
+        "mk20dx256"        # Teensy   3.1,3.2 (arm)
 #       "mk20dx256vlh7"    # Kiibohd-dfu mk20dx256vlh7
 	CACHE STRING "Microcontroller Chip"
 )
@@ -39,7 +39,7 @@ set( CHIP
 #| Currently only arm is supported with clang
 set( COMPILER
 	"gcc"   # arm-none-eabi-gcc / avr-gcc - Default
-#       "clang" # arm-none-eabi
+#	"clang" # arm-none-eabi
 	CACHE STRING "Compiler Type"
 )
 
@@ -136,6 +136,9 @@ file(GLOB MAIN_SRCS
     *.h
     *.c
     *.cpp
+    display/*.h
+    display/*.c
+    display/*.cpp
 )
 
 
