@@ -35,6 +35,9 @@ http://arduiniana.org.
 #include <inttypes.h>
 #include <Stream.h>
 #include <HardwareSerial.h>
+#include <core_pins.h>
+#include <wiring.h>
+#include <elapsedMillis.h>
 
 /******************************************************************************
 * Definitions

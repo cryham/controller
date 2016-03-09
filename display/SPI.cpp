@@ -9,7 +9,7 @@
  */
 
 #include "SPI.h"
-#include "pins_arduino.h"
+//#include "pins_arduino.h"
 
 
 
@@ -142,7 +142,7 @@ void SPIClass::usingInterrupt(uint8_t interruptNumber)
 /*     32 bit Teensy 3.0 and 3.1			  */
 /**********************************************************/
 
-#elif defined(__arm__) && defined(TEENSYDUINO)
+#elif 1 //defined(__arm__) && defined(TEENSYDUINO)
 
 SPIClass SPI;
 

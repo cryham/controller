@@ -13,7 +13,15 @@
 #ifndef _SPI_H_INCLUDED
 #define _SPI_H_INCLUDED
 
-#include <Arduino.h>
+#include <inttypes.h>
+#include <stdlib.h> 
+#include <../Lib/mk20dx.h>
+#include <kinetis.h>
+#include <core_pins.h>
+#include <avr_emulation.h>
+#include <WPrint.h>
+#include <WProgram.h>
+//#include <Arduino.h>
 
 // SPI_HAS_TRANSACTION means SPI has beginTransaction(), endTransaction(),
 // usingInterrupt(), and SPISetting(clock, bitOrder, dataMode)
@@ -296,7 +304,7 @@ private:
 /*     32 bit Teensy 3.0 and 3.1			  */
 /**********************************************************/
 
-#elif defined(__arm__) && defined(TEENSYDUINO)
+#elif 1  //defined(__arm__) && defined(TEENSYDUINO)
 
 #define SPI_HAS_NOTUSINGINTERRUPT 1
 

@@ -38,9 +38,9 @@ http://arduiniana.org.
 // 
 // Includes
 // 
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <Arduino.h>
+//#include <avr/interrupt.h>
+//#include <avr/pgmspace.h>
+//#include <Arduino.h>
 #include <SoftwareSerial.h>
 
 
