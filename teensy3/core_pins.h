@@ -33,6 +33,7 @@
 
 #include "kinetis.h"
 #include "pins_arduino.h"
+#include "../Lib/delay.h"
 
 
 #define HIGH		1
@@ -757,6 +758,7 @@ static inline uint8_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrde
 void _reboot_Teensyduino_(void) __attribute__((noreturn));
 void _restart_Teensyduino_(void) __attribute__((noreturn));
 
+#if 0
 void yield(void);
 
 void delay(uint32_t msec);
@@ -810,6 +812,7 @@ static inline void delayMicroseconds(uint32_t usec)
 		: "+r" (n) :
 	);
 }
+#endif
 
 #ifdef __cplusplus
 }

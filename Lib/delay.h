@@ -36,7 +36,7 @@
 #include <stdint.h>
 
 
-/*
+
 // ----- Macros -----
 
 // Convenience Macros, for delay compatibility with AVR-GCC
@@ -60,10 +60,16 @@ static inline uint32_t millis(void)
 static inline void delayMicroseconds(uint32_t) __attribute__((always_inline, unused));
 static inline void delayMicroseconds(uint32_t usec)
 {
-#if F_CPU == 96000000
+#if F_CPU == 168000000
+	uint32_t n = usec * 56;
+#elif F_CPU == 144000000
+	uint32_t n = usec * 48;
+#elif F_CPU == 120000000
+	uint32_t n = usec * 40;
+#elif F_CPU == 96000000
 	uint32_t n = usec << 5;
 #elif F_CPU == 72000000
-	uint32_t n = usec << 5; // XXX Not accurate, assembly snippet needs to be updated
+	uint32_t n = usec * 24;
 #elif F_CPU == 48000000
 	uint32_t n = usec << 4;
 #elif F_CPU == 24000000
@@ -76,11 +82,11 @@ static inline void delayMicroseconds(uint32_t usec)
 		: "+r" (n) :
 	);
 }
-*/
+
 
 void yield(void) __attribute__ ((weak));
 
-//uint32_t micros(void);
+uint32_t micros(void);
 
-//void delay(uint32_t ms);
+void delay(uint32_t ms);
 

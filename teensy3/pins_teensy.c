@@ -683,7 +683,7 @@ uint8_t shiftIn_msbFirst(uint8_t dataPin, uint8_t clockPin)
 }
 
 
-
+#if 0
 // the systick interrupt is supposed to increment this at 1 kHz rate
 volatile uint32_t systick_millis_count = 0;
 
@@ -721,6 +721,7 @@ void delay(uint32_t ms)
 		}
 	}
 }
+#endif
 
 // TODO: verify these result in correct timeouts...
 #if F_CPU == 168000000
