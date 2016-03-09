@@ -317,11 +317,11 @@ void (* const gVectors[])() =
 	dma_ch8_isr,                                    // 24 DMA channel 8 transfer complete
 	dma_ch9_isr,                                    // 25 DMA channel 9 transfer complete
 	dma_ch10_isr,                                   // 26 DMA channel 10 transfer complete
-	dma_ch11_isr,                                   // 27 DMA channel 10 transfer complete
-	dma_ch12_isr,                                   // 28 DMA channel 10 transfer complete
-	dma_ch13_isr,                                   // 29 DMA channel 10 transfer complete
-	dma_ch14_isr,                                   // 30 DMA channel 10 transfer complete
-	dma_ch15_isr,                                   // 31 DMA channel 10 transfer complete
+	dma_ch11_isr,                                   // 27 DMA channel 11 transfer complete
+	dma_ch12_isr,                                   // 28 DMA channel 12 transfer complete
+	dma_ch13_isr,                                   // 29 DMA channel 13 transfer complete
+	dma_ch14_isr,                                   // 30 DMA channel 14 transfer complete
+	dma_ch15_isr,                                   // 31 DMA channel 15 transfer complete
 	dma_error_isr,                                  // 32 DMA error interrupt channel
 	unused_isr,                                     // 33 --
 	flash_cmd_isr,                                  // 34 Flash Memory Command complete
@@ -632,22 +632,41 @@ void ResetHandler()
 	// wait for MCGOUT to use oscillator
 	while ( (MCG_S & MCG_S_CLKST_MASK) != MCG_S_CLKST( 2 ) );
 
-	// now we're in FBE mode
+	/*// now we're in FBE mode
 #if F_CPU == 72000000
 	// config PLL input for 16 MHz Crystal / 8 = 2 MHz
 	MCG_C5 = MCG_C5_PRDIV0( 7 );
 #else
 	// config PLL input for 16 MHz Crystal / 4 = 4 MHz
 	MCG_C5 = MCG_C5_PRDIV0( 3 );
-#endif
+#endif*/
 
-#if F_CPU == 72000000
+	#if F_CPU == 72000000
+	MCG_C5 = MCG_C5_PRDIV0(5);		 // config PLL input for 16 MHz Crystal / 6 = 2.667 Hz
+    #else
+	MCG_C5 = MCG_C5_PRDIV0(3);		 // config PLL input for 16 MHz Crystal / 4 = 4 MHz
+    #endif
+    #if F_CPU == 168000000
+	MCG_C6 = MCG_C6_PLLS | MCG_C6_VDIV0(18); // config PLL for 168 MHz output
+    #elif F_CPU == 144000000
+	MCG_C6 = MCG_C6_PLLS | MCG_C6_VDIV0(12); // config PLL for 144 MHz output
+    #elif F_CPU == 120000000
+	MCG_C6 = MCG_C6_PLLS | MCG_C6_VDIV0(6); // config PLL for 120 MHz output
+    #elif F_CPU == 72000000
+	MCG_C6 = MCG_C6_PLLS | MCG_C6_VDIV0(3); // config PLL for 72 MHz output
+    #elif F_CPU == 96000000 || F_CPU == 48000000 || F_CPU == 24000000
+	MCG_C6 = MCG_C6_PLLS | MCG_C6_VDIV0(0); // config PLL for 96 MHz output
+    #elif F_CPU > 16000000
+    #error "This clock speed isn't supported..."
+    #endif
+
+/*#if F_CPU == 72000000
 	// config PLL for 72 MHz output (36 * 2 MHz Ext PLL)
 	MCG_C6 = MCG_C6_PLLS | MCG_C6_VDIV0( 12 );
 #else
 	// config PLL for 96 MHz output
 	MCG_C6 = MCG_C6_PLLS | MCG_C6_VDIV0( 0 );
-#endif
+#endif*/
 
 	// wait for PLL to start using xtal as its input
 	while ( !(MCG_S & MCG_S_PLLST) );
@@ -656,20 +675,36 @@ void ResetHandler()
 	while ( !(MCG_S & MCG_S_LOCK0) );
 
 	// now we're in PBE mode
-#if F_CPU == 96000000
-	// config divisors: 96 MHz core, 48 MHz bus, 24 MHz flash
+#if F_CPU == 168000000
+	// config divisors: 168 MHz core, 56 MHz bus, 28 MHz flash, USB = 168 * 2 / 7
+	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(2) | SIM_CLKDIV1_OUTDIV4(5);
+	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(6) | SIM_CLKDIV2_USBFRAC;
+#elif F_CPU == 144000000
+	// config divisors: 144 MHz core, 48 MHz bus, 28.8 MHz flash, USB = 144 / 3
+	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(2) | SIM_CLKDIV1_OUTDIV4(4);
+	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(2);
+#elif F_CPU == 120000000
+	// config divisors: 120 MHz core, 60 MHz bus, 24 MHz flash, USB = 128 * 2 / 5
+	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(1) | SIM_CLKDIV1_OUTDIV4(4);
+	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(4) | SIM_CLKDIV2_USBFRAC;
+#elif F_CPU == 96000000
+	// config divisors: 96 MHz core, 48 MHz bus, 24 MHz flash, USB = 96 / 2
 	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1( 0 ) | SIM_CLKDIV1_OUTDIV2( 1 ) | SIM_CLKDIV1_OUTDIV4( 3 );
+	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(1);
 #elif F_CPU == 72000000
-	// config divisors: 72 MHz core, 36 MHz bus, 24 MHz flash
+	// config divisors: 72 MHz core, 36 MHz bus, 24 MHz flash, USB = 72 * 2 / 3
 	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1( 0 ) | SIM_CLKDIV1_OUTDIV2( 1 ) | SIM_CLKDIV1_OUTDIV4( 2 );
+	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(2) | SIM_CLKDIV2_USBFRAC;
 #elif F_CPU == 48000000
-	// config divisors: 48 MHz core, 48 MHz bus, 24 MHz flash
+	// config divisors: 48 MHz core, 48 MHz bus, 24 MHz flash, USB = 96 / 2
 	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1( 1 ) | SIM_CLKDIV1_OUTDIV2( 1 ) | SIM_CLKDIV1_OUTDIV4( 3 );
+	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(1);
 #elif F_CPU == 24000000
-	// config divisors: 24 MHz core, 24 MHz bus, 24 MHz flash
+	// config divisors: 24 MHz core, 24 MHz bus, 24 MHz flash, USB = 96 / 2
 	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1( 3 ) | SIM_CLKDIV1_OUTDIV2( 3 ) | SIM_CLKDIV1_OUTDIV4( 3 );
+	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(1);
 #else
-#error "Error, F_CPU must be 96000000, 72000000, 48000000, or 24000000"
+#error "Error, F_CPU must be 168, 144, 120, 96, 72, 48, or 24 MHz"
 #endif
 	// switch to PLL as clock source, FLL input = 16 MHz / 512
 	MCG_C1 = MCG_C1_CLKS( 0 ) | MCG_C1_FRDIV( 4 );
@@ -678,13 +713,13 @@ void ResetHandler()
 	while ( (MCG_S & MCG_S_CLKST_MASK) != MCG_S_CLKST( 3 ) );
 
 	// now we're in PEE mode
-#if F_CPU == 72000000
+/*#if F_CPU == 72000000
 	// configure USB for 48 MHz clock
 	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV( 2 ) | SIM_CLKDIV2_USBFRAC; // USB = 72 MHz PLL / 1.5
 #else
 	// configure USB for 48 MHz clock
 	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV( 1 ); // USB = 96 MHz PLL / 2
-#endif
+#endif*/
 
 	// USB uses PLL clock, trace is CPU clock, CLKOUT=OSCERCLK0
 	SIM_SOPT2 = SIM_SOPT2_USBSRC | SIM_SOPT2_PLLFLLSEL | SIM_SOPT2_TRACECLKSEL | SIM_SOPT2_CLKOUTSEL( 6 );

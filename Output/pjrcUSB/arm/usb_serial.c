@@ -55,14 +55,24 @@
 // software.  If it's too long, we stall the user's program when no software is running.
 #define TX_TIMEOUT_MSEC 70
 
-#if F_CPU == 96000000
-	#define TX_TIMEOUT (TX_TIMEOUT_MSEC * 596)
+#if F_CPU == 192000000
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 1280)
+#elif F_CPU == 180000000
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 1200)
+#elif F_CPU == 168000000
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 1100)
+#elif F_CPU == 144000000
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 932)
+#elif F_CPU == 120000000
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 764)
+#elif F_CPU == 96000000
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 596)
 #elif F_CPU == 72000000
-	#define TX_TIMEOUT (TX_TIMEOUT_MSEC * 512) // XXX Correct?
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 512)
 #elif F_CPU == 48000000
-	#define TX_TIMEOUT (TX_TIMEOUT_MSEC * 428)
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 428)
 #elif F_CPU == 24000000
-	#define TX_TIMEOUT (TX_TIMEOUT_MSEC * 262)
+  #define TX_TIMEOUT (TX_TIMEOUT_MSEC * 262)
 #endif
 
 

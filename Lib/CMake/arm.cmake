@@ -74,9 +74,13 @@ elseif ( "${CHIP}" MATCHES "mk20dx128" )
 elseif ( "${CHIP}" MATCHES "mk20dx256" )
 	set( SIZE_RAM    65536 )
 	set( SIZE_FLASH 262144 )
-#	set( F_CPU "48000000" ) # XXX Also supports 72 MHz, but may require code changes
-#	set( F_CPU "72000000" ) # default
-	set( F_CPU "96000000" ) # OC
+#	set( F_CPU "24000000" )  # low     258
+#	set( F_CPU "48000000" )  # low	   420
+#	set( F_CPU "72000000" )  # default 465 fps only, no kii
+	set( F_CPU "96000000" )  # OC      553
+#	set( F_CPU "120000000" ) # OC      579-
+#	set( F_CPU "144000000" ) # OC      620
+#	set( F_CPU "168000000" ) # fail    
 
 message( STATUS "CPU Frequency:" )
 message( "${F_CPU}" )
