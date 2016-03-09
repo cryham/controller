@@ -70,11 +70,16 @@ elseif ( "${CHIP}" MATCHES "mk20dx128" )
 	set( SIZE_FLASH 131072 )
 	set( F_CPU "48000000" )
 
-#| Teensy 3.1
+#| Teensy 3.1 3.2
 elseif ( "${CHIP}" MATCHES "mk20dx256" )
 	set( SIZE_RAM    65536 )
 	set( SIZE_FLASH 262144 )
 	set( F_CPU "48000000" ) # XXX Also supports 72 MHz, but may requires code changes
+#	set( F_CPU "72000000" )
+#	set( F_CPU "96000000" )
+
+message( STATUS "CPU Frequency:" )
+message( "${F_CPU}" )
 
 #| Unknown ARM
 else ()
