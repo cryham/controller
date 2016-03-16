@@ -26,7 +26,7 @@ if ( NOT EXISTS "${PROJECT_SOURCE_DIR}/kll/kll.py" )
 	find_package ( Git REQUIRED )
 
 	# Clone kll git repo
-	execute_process ( COMMAND ${GIT_EXECUTABLE} clone https://github.com/kiibohd/kll.git
+	execute_process ( COMMAND ${GIT_EXECUTABLE} clone https://github.com/cryham/kll.git
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	)
 elseif ( REFRESH_KLL ) # Otherwise attempt to update the repo
