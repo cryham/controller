@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Adafruit_GFX.h"
 #include "glcdfont.c"
-#include <avr/pgmspace.h>
+//#include <avr/pgmspace.h>
 
 // Many (but maybe not all) non-AVR board installs define macros
 // for compatibility with existing PROGMEM-reading AVR code.
@@ -53,7 +53,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // 32 bits elsewhere.  Try to accommodate both...
 
 #if !defined(__INT_MAX__) || (__INT_MAX__ > 0xFFFF)
- #define pgm_read_pointer(addr) ((void *)pgm_read_dword(addr))
+ #define pgm_read_pointer(addr) (addr) //((void *)pgm_read_dword(addr))
 #else
  #define pgm_read_pointer(addr) ((void *)pgm_read_word(addr))
 #endif
@@ -380,7 +380,7 @@ void Adafruit_GFX::drawBitmap(int16_t x, int16_t y,
  const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color) {
 
   int16_t i, j, byteWidth = (w + 7) / 8;
-  uint8_t byte;
+  uint8_t byte = 0;
 
   for(j=0; j<h; j++) {
     for(i=0; i<w; i++ ) {
@@ -398,7 +398,7 @@ void Adafruit_GFX::drawBitmap(int16_t x, int16_t y,
  const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bg) {
 
   int16_t i, j, byteWidth = (w + 7) / 8;
-  uint8_t byte;
+  uint8_t byte = 0;
 
   for(j=0; j<h; j++) {
     for(i=0; i<w; i++ ) {
@@ -415,7 +415,7 @@ void Adafruit_GFX::drawBitmap(int16_t x, int16_t y,
  uint8_t *bitmap, int16_t w, int16_t h, uint16_t color) {
 
   int16_t i, j, byteWidth = (w + 7) / 8;
-  uint8_t byte;
+  uint8_t byte = 0;
   
   for(j=0; j<h; j++) {
     for(i=0; i<w; i++ ) {
@@ -431,7 +431,7 @@ void Adafruit_GFX::drawBitmap(int16_t x, int16_t y,
  uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bg) {
 
   int16_t i, j, byteWidth = (w + 7) / 8;
-  uint8_t byte;
+  uint8_t byte = 0;
 
   for(j=0; j<h; j++) {
     for(i=0; i<w; i++ ) {
@@ -450,7 +450,7 @@ void Adafruit_GFX::drawXBitmap(int16_t x, int16_t y,
  const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color) {
   
   int16_t i, j, byteWidth = (w + 7) / 8;
-  uint8_t byte;
+  uint8_t byte = 0;
   
   for(j=0; j<h; j++) {
     for(i=0; i<w; i++ ) {
@@ -506,8 +506,8 @@ size_t Adafruit_GFX::write(uint8_t c){
         cursor_x += pgm_read_byte(&glyph->xAdvance) * (int16_t)textsize;
       }
     }
-    return 1;
   }
+  return 1;
 }
 
 // Draw a character
@@ -549,12 +549,12 @@ void Adafruit_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
 
     uint16_t bo = pgm_read_word(&glyph->bitmapOffset);
     uint8_t  w  = pgm_read_byte(&glyph->width),
-             h  = pgm_read_byte(&glyph->height),
-             xa = pgm_read_byte(&glyph->xAdvance);
+             h  = pgm_read_byte(&glyph->height)/*,
+             xa = pgm_read_byte(&glyph->xAdvance)*/;
     int8_t   xo = pgm_read_byte(&glyph->xOffset),
              yo = pgm_read_byte(&glyph->yOffset);
-    uint8_t  xx, yy, bits, bit = 0;
-    int16_t  xo16, yo16;
+    uint8_t  xx, yy, bits=0, bit = 0;
+    int16_t  xo16=0, yo16=0;
 
     if(size > 1) {
       xo16 = xo;
