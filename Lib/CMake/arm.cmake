@@ -179,7 +179,7 @@ elseif ( "${COMPILER}" MATCHES "clang" )
 	set( TUNING "-target arm-none-eabi -mthumb -nostdlib -fdata-sections -ffunction-sections -fshort-wchar -fno-builtin" )
 else()
 	#set( TUNING "-mthumb -nostdlib -fdata-sections -ffunction-sections -fshort-wchar -fno-builtin -nostartfiles" )
-	set( TUNING "-mcpu=cortex-m4 -lc -fno-exceptions -mthumb -fshort-wchar" )
+	set( TUNING "-mcpu=cortex-m4 -lc -fno-exceptions -mthumb -fshort-wchar -fno-builtin -nostartfiles -fdata-sections -ffunction-sections " )
 	#---------------------------
 endif()
 
@@ -195,7 +195,7 @@ set( GENDEPFLAGS "-MMD" )
 
 #| Compiler Flags
 #---------------------------
-add_definitions( "-mcpu=${CPU} -fshort-wchar -DF_CPU=${F_CPU} -D_${CHIP}_=1 -D__MK20DX256__=1 -O${OPT} ${TUNING} ${WARN} ${GENDEPFLAGS}" )
+add_definitions( "-mcpu=${CPU} -DF_CPU=${F_CPU} -D_${CHIP}_=1 -D__MK20DX256__=1 -O${OPT} ${TUNING} ${WARN} ${GENDEPFLAGS}" )
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CSTANDARD}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXXSTANDARD}")
 
