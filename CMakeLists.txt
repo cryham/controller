@@ -130,15 +130,16 @@ set( PartialMaps "ck3layer1"
 #
 
 file(GLOB MAIN_SRCS
-    teensy3/*.h
-    teensy3/*.c
-    teensy3/*.cpp
     *.h
     *.c
     *.cpp
+    teensy3/*.h
+    teensy3/*.c
+    teensy3/*.cpp
     display/*.h
-    display/*.c
     display/*.cpp
+    demos/*.h
+    demos/*.cpp
 )
 
 

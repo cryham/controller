@@ -4,17 +4,12 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#define OLED
+#ifdef OLED
 // hw spi  13 clk  9. d/c  10 cs  11 mosi (dout)
 #define OLED_CS    10
 #define OLED_DC     9
-
-#define W 128  // area
-#define H 64
-#define A 40  // all
-#define D 256   // move detail
-#define E 80   // speed
-#define R 3   // radius max
-int32_t x[A], y[A], a[A], b[A], r[A];
+#endif
 
 
 #define KII
@@ -29,8 +24,9 @@ extern "C" {
 #include <scan_loop.h>
 #include <output_com.h>
 
-#include <cli.h>
-#include <led.h>
+#include <usb_hid.h>
+//#include <cli.h>
+//#include <led.h>
 //#include <print.h>
 
 #ifdef __cplusplus
@@ -38,17 +34,38 @@ extern "C" {
 #endif
 #endif
 
+#include "demos.h"
 
 
 //------------------------------
+//#define TIM
+#ifdef TIM
+//#include "IntervalTimer.h"
 
+volatile uint32_t t1 = 0;
+
+void timerCallback0()
+{	t1++;
+	//if (t1 % 2)
+	//	digitalWrite(14, HIGH);
+	//else
+	//	digitalWrite(14, LOW);
+}
+#endif
+
+Demos demos;
+
+
+//------------------------------
 int main()
 {
-
+	//  timer
+	//pit0_setup();
+	//IntervalTimer timer0;
 
 	#ifdef KII
 	// Enable CLI
-	CLI_init();
+	//CLI_init();
 
 	// Setup Modules
 	Output_setup();
@@ -56,39 +73,51 @@ int main()
 	Scan_setup();
 	#endif
 
+	//pinMode(12, OUTPUT);
+	//pinMode(14, OUTPUT);
+	//digitalWrite(12, HIGH);
+	//digitalWrite(14, LOW);
 
+	#ifdef OLED
 	//  display
 	pinMode(OLED_DC, OUTPUT);
 	pinMode(OLED_CS, OUTPUT);
 
 	Adafruit_SSD1306 display(OLED_DC, -1, OLED_CS);
 
-	display.begin();
+	display.begin(SSD1306_SWITCHCAPVCC);
 	display.clearDisplay();
 	display.dim(1);
 
 	display.setTextSize(1);
 	display.setTextColor(WHITE);
 
-	uint16_t i;
+	int i;
 	//uint16_t u = 0, n = 3;
 	uint32_t ti = 0, oti = 0;
+	#endif
+	
+	#if 0  // ee
+	eeprom_initialize();
+	uint16_t w = eeprom_read_word((uint16_t*)0x00);
+	//eeprom_write_word((uint16_t*)0x00, 0x1234);
+	#endif
+	
+	///  menu state
+	uint8_t fps = 1, menu = 0, anyo = 0;
+	int8_t demo = 0;
 
-	for (i=0; i<A; i++)
-	{
-		r[i] = random(R);
-		x[i] = random(W)*D;  y[i] = random(H)*D;
-		a[i] = random(E+1)-E/2;  b[i] = random(E+1)-E/2;
-	}
+	demos.Init();
 
+	int ii = 0;
 	while ( 1 )
 	{
+	
 		#ifdef KII
 		// Process CLI
-		CLI_process();
+		//CLI_process();
 
 		// Acquire Key Indices
-		// Loop continuously until scan_loop returns 0
 		cli();
 		while ( Scan_loop() );
 		sei();
@@ -100,71 +129,116 @@ int main()
 		Output_send();
 		#endif
 
-		
-		//  clear
-		display.clearDisplay();
-		
-		#if 1
-		//  balls .
-		for (i=0; i < A; i++)
+		ii++;
+		if (ii == 50)
 		{
-			if (x[i] < 0 || x[i] >= W*D-1)  a[i] = -a[i];
-			if (y[i] < 0 || y[i] >= H*D-1)  b[i] = -b[i];
-			x[i] += a[i];  y[i] += b[i];
+			#ifdef OLED
+			display.begin(SSD1306_SWITCHCAPVCC);
+			display.clearDisplay();
+			display.dim(1);
 
-			if (r[i]==0)
-				display.drawPixel(x[i]/D, y[i]/D, WHITE);
-			else
-				display.drawCircle(x[i]/D, y[i]/D, r[i], WHITE);
+			display.setTextSize(1);
+			display.setTextColor(WHITE);
+			#endif
+
+			#ifdef TIM
+			//timer0.begin(timerCallback0, 20000);  // 100 Hz
+			//pit0_setup();
+			#endif
 		}
-		#endif
 		
-		#if 0
-		//  lines n-gon x
-		#define uu 200
-		float a=0, b=0, d = 2*PI/n;
-		float c = -PI/2*u/uu, s = 0.65 + 0.75*u/uu;
-		float xx = W/2, yy = H/2, sy = s * yy;
-		for (b=0; b < 2*PI; b+=d)
-		{
-			float xb = xx + sy*cos(b+c), yb = yy - sy*sin(b+c);
-			for (a=0; a < b && a < 2*PI; a+=d)
-			{
-				float xa = xx + sy*cos(a+c), ya = yy - sy*sin(a+c);
-				if (a != b)
-					display.drawLine(xb, yb, xa, ya, 1);
-		}	}
-		++u;  if (u > uu)
-		{	u = 0;  ++n;  if (n > 14)  n = 3;  }
-		display.setCursor(0, H-1-7);
-		display.print(n);  // fps
-		#endif
+	#ifdef OLED
+	//--------------------------------
+	uint8_t any = fps || menu || demo ? 1 : 0;
 
-
-		#if 1
-		//  text fps
-		display.setCursor(0,0);
-		oti = ti;
-		ti = micros();
-		//display.print("us:  ");
-		//display.println(ti-oti);  // us
-		//display.print("fps: ");
-		display.println(int16_t(1000000.0/(ti-oti)));  // fps
-		#endif
-
-		#if 0
-		//  text all chars
-		display.setCursor(0,8);
-		for (i=0; i < 168; i++) {
-			if (i == '\n') continue;
-			display.write(128+i);
-			if ((i > 0) && (i % 20 == 0))
-			  display.println();
-		}    
-		#endif
-
-		//  show
+	//  clear on display off
+	if (!any && anyo)
+	{
+		display.clearDisplay();
 		display.display();
+	}		
+	anyo = any;
+	
+	if (any)
+	{
+		if (ii > 50)
+		{
+		//  demos  ....
+		switch (demo)
+		{
+			case 0: display.clearDisplay();  break;
+			case 1: display.clearDisplay();  demos.Balls(display);  break;
+			case 2: demos.Rain(display);  break;
+			case 3: display.clearDisplay();  demos.Ngons(display);  break;
+			case 4: display.clearDisplay();  demos.Chars(display,0);  break;
+			case 5: display.clearDisplay();  demos.Chars(display,1);  break;
+			case 6: display.clearDisplay();  demos.Fonts(display);  break;
+			case 7: demos.Plasma0(display.getBuffer());  break;
+			case 8: demos.Plasma1(display.getBuffer());  break;
+			case 9: demos.Plasma2(display.getBuffer());  break;
+			case 10: demos.Plasma3(display.getBuffer());  break;
+			case 11: demos.Plasma4(display.getBuffer());  break;
+		}
+
+
+		if (fps)  // fps
+		{
+			oti = ti;  ti = micros();
+			display.setFont(0);
+			display.setCursor(0,0);
+			display.println(int16_t(1000000.0/(ti-oti)));
+			//display.setCursor(0,H-9);
+			//display.setFont(&FreeSans9pt7b);//+
+
+			///display.println(w);  // ee
+			//display.println(ii);
+			#ifdef TIM
+			display.println(t1);  // tim1
+			#endif
+		}
+		
+		if (menu)  // settings..
+		{
+			display.setFont(0);
+			display.setCursor(64,0);
+			display.println("Menu");
+			// cd_..
+		}
+
+		//  show  ----
+		display.display();
+		}
+	}
+
+		
+		//  key press
+		//--------------------------------
+		#ifdef KII
+		if (kk[4] && !kko[4])  // ^
+		{
+			menu = 1-menu;
+			
+			/*uint8_t key;
+			key = KEY_P;	Output_usbCodeSend_capability(1, 0, &key);	Output_send();
+			key = 0x00;		Output_usbCodeSend_capability(1, 0, &key);	Output_send();
+			key = KEY_A;	Output_usbCodeSend_capability(1, 0, &key);	Output_send();
+			key = 0x00;		Output_usbCodeSend_capability(1, 0, &key);	Output_send();
+			/**/
+		}
+
+		if (kk[6] && !kko[6])  // >
+		{	demo++;  if (demo > 12)  demo = 0;  }
+		if (kk[5] && !kko[5])  // <
+		{	demo--;  if (demo < 0)  demo = 12;  }
+		
+		if (kk[7] && !kko[7])  // v
+		{	fps = 1-fps;  }
+
+		//  old states
+		for (i=0; i<8; ++i)
+			kko[i] = kk[i];
+		#endif
+
+	#endif
 	}
 }
-

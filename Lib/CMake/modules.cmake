@@ -257,7 +257,8 @@ set ( SRCS
 )
 
 #| Directories to include by default
-include_directories ( teensy3 display ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
+include_directories ( teensy3 display demos
+	${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 
