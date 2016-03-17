@@ -98,24 +98,41 @@ inline void Scan_finishedWithOutput( uint8_t sentKeys )
 }
 
 
+/// ----- Key states -----
 
-// ----- Capabilities -----
+uint8_t kko[16] = {0,};
+uint8_t kk[16] = {0,};
 
-// Custom capability examples
-// Refer to kll.h in Macros/PartialMap for state and stateType information
+
+/// ----- Capabilities -----
+
 void CustomAction_action1_capability( uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
-	// XXX This is required for debug cli to give you a list of capabilities
 	if ( stateType == 0xFF && state == 0xFF )
 	{
 		print("CustomAction_action1_capability()");
 		return;
 	}
 
+	// Retrieve 8-bit argument
+	uint8_t key = args[0];
+
+	// "Press" or "Hold"
+	if ( state == 0x01 || state == 0x02 )
+		kk[key] = 1;
+	// "Off" or "Release"
+	else
+	if ( state == 0x00 || state == 0x03 )
+		kk[key] = 0;
+
 	// Prints Action1 info message to the debug cli
-	info_print("Action1");
+	//info_print("Action1");
 }
+
+
+// Custom capability examples
+// Refer to kll.h in Macros/PartialMap for state and stateType information
 
 uint8_t CustomAction_blockHold_storage = 0;
 void CustomAction_blockHold_capability( uint8_t state, uint8_t stateType, uint8_t *args )
