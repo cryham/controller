@@ -1,9 +1,7 @@
 Name = CK3;
 Version = 0.3;
 Author = "Crystal Hammer 2016";
-KLL = 0.3d;
-
-# Modified Date
+KLL = 0.3c;
 Date = 2016-03-01;
 
 # this is nearly the default map
@@ -130,3 +128,14 @@ S0x42 : U"PEnter";
 
 S0x0A : U"P0";
 S0x0B : U"P.";
+
+# mini ---------
+S0x70 : U"Up";
+S0x81 : U"Left";
+S0x71 : U"Right";
+S0x72 : U"Down";
+
+S0x6D : U"A";
+S0x6C : U"B";
+S0x6E : U"Function1";
+S0x85 : U"Function2";
