@@ -13,17 +13,16 @@
 
 #| Set the Compilers (must be set first)
 include( CMakeForceCompiler )
-message( STATUS "Compiler Selected:" )
 if ( "${COMPILER}" MATCHES "gcc" )
 	cmake_force_c_compiler  ( arm-none-eabi-gcc ARMCCompiler )
 	cmake_force_cxx_compiler( arm-none-eabi-g++ ARMCxxCompiler )
 	set( _CMAKE_TOOLCHAIN_PREFIX arm-none-eabi- )
-	message( "gcc" )
+	message( STATUS "Compiler: gcc" )
 elseif ( "${COMPILER}" MATCHES "clang" )
 	cmake_force_c_compiler  ( clang   ARMCCompiler )
 	cmake_force_cxx_compiler( clang++ ARMCxxCompiler )
 	set( _CMAKE_TOOLCHAIN_PREFIX llvm- )
-	message( "clang" )
+	message( STATUS "Compiler: clang" )
 else ()
 	message( AUTHOR_WARNING "COMPILER: ${COMPILER} - Unknown compiler selection" )
 endif ()
@@ -41,8 +40,7 @@ endif ()
 #| "mk20dx128"        # Teensy   3.0
 #| "mk20dx256"        # Teensy   3.1
 
-message( STATUS "Chip Selected:" )
-message( "${CHIP}" )
+message( STATUS "Chip: ${CHIP}" )
 set( MCU "${CHIP}" ) # For loading script compatibility
 
 
@@ -80,10 +78,9 @@ elseif ( "${CHIP}" MATCHES "mk20dx256" )
 	set( F_CPU "96000000" )  # OC      553
 #	set( F_CPU "120000000" ) # OC      579-
 #	set( F_CPU "144000000" ) # OC      620
-#	set( F_CPU "168000000" ) # fail    
+#	set( F_CPU "168000000" ) # fail
 
-message( STATUS "CPU Frequency:" )
-message( "${F_CPU}" )
+message( STATUS "CPU Frequency: ${F_CPU}" )
 
 #| Unknown ARM
 else ()
@@ -95,8 +92,7 @@ endif ()
 #| Automatically chosed based on the chip name.
 if ( "${CHIP}" MATCHES "^mk20dx.*$" )
 	set( CHIP_FAMILY "mk20dx" )
-	message( STATUS "Chip Family:" )
-	message( "${CHIP_FAMILY}" )
+	message( STATUS "Chip Family: ${CHIP_FAMILY}" )
 else ()
 	message( FATAL_ERROR "Unknown chip family: ${CHIP}" )
 endif ()
@@ -109,8 +105,7 @@ endif ()
 #| "cortex-m4"        # Teensy   3.0, 3.1, McHCK
 set( CPU "cortex-m4" )
 
-message( STATUS "CPU Selected:" )
-message( "${CPU}" )
+message( STATUS "CPU: ${CPU}" )
 
 
 #| Extra Compiler Sources
@@ -127,12 +122,10 @@ if ( "${COMPILER}" MATCHES "clang" )
 	)
 endif ()
 
-message( STATUS "Compiler Source Files:" )
-message( "${COMPILER_SRCS}" )
+message( STATUS "Compiler Source Files: ${COMPILER_SRCS}" )
 
 
 #| USB Defines, this is how the loader programs detect which type of chip base is used
-message( STATUS "Bootloader Type:" )
 if ( "${CHIP}" MATCHES "mk20dx128vlf5" OR "${CHIP}" MATCHES "mk20dx256vlh7" )
 	set( VENDOR_ID       "0x1C11" )
 	set( PRODUCT_ID      "0xB04D" )
@@ -140,14 +133,14 @@ if ( "${CHIP}" MATCHES "mk20dx128vlf5" OR "${CHIP}" MATCHES "mk20dx256vlh7" )
 	set( BOOT_PRODUCT_ID "0xB007" )
 	set( BOOT_DFU_ALTNAME "Kiibohd DFU" )
 	set( DFU 1 )
-	message( "dfu" )
+	message( STATUS "Bootloader: dfu" )
 elseif ( "${CHIP}" MATCHES "mk20dx128" OR "${CHIP}" MATCHES "mk20dx256" )
 	set( VENDOR_ID       "0x1C11" )
 	set( PRODUCT_ID      "0xB04D" )
 	set( BOOT_VENDOR_ID  "0x16c0" ) # TODO Double check, this is likely incorrect
 	set( BOOT_PRODUCT_ID "0x0487" )
 	set( TEENSY 1 )
-	message( "Teensy" )
+	message( STATUS "Bootloader: Teensy" )
 endif ()
 
 
