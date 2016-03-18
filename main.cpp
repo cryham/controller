@@ -6,32 +6,24 @@
 
 #define OLED
 #ifdef OLED
-// hw spi  13 clk  9. d/c  10 cs  11 mosi (dout)
-#define OLED_CS    10
-#define OLED_DC     9
+	// hw spi  13 clk  9. d/c  10 cs  11 mosi (dout)
+	#define OLED_CS    10
+	#define OLED_DC     9
 #endif
 
 
 #define KII
 #ifdef KII
-
-#ifdef __cplusplus
 extern "C" {
-#endif
-#include <Lib/MainLib.h>
-
-#include <macro.h>
-#include <scan_loop.h>
-#include <output_com.h>
-
-#include <usb_hid.h>
-//#include <cli.h>
-//#include <led.h>
-//#include <print.h>
-
-#ifdef __cplusplus
+	#include <Lib/MainLib.h>
+	#include <macro.h>
+	#include <scan_loop.h>
+	#include <output_com.h>
+	#include <usb_hid.h>
+	//#include <cli.h>
+	//#include <led.h>
+	//#include <print.h>
 }
-#endif
 #endif
 
 #include "demos.h"
@@ -167,17 +159,19 @@ int main()
 		switch (demo)
 		{
 			case 0: display.clearDisplay();  break;
-			case 1: display.clearDisplay();  demos.Balls(display);  break;
-			case 2: demos.Rain(display);  break;
-			case 3: display.clearDisplay();  demos.Ngons(display);  break;
-			case 4: display.clearDisplay();  demos.Chars(display,0);  break;
-			case 5: display.clearDisplay();  demos.Chars(display,1);  break;
-			case 6: display.clearDisplay();  demos.Fonts(display);  break;
-			case 7: demos.Plasma0(display.getBuffer());  break;
-			case 8: demos.Plasma1(display.getBuffer());  break;
-			case 9: demos.Plasma2(display.getBuffer());  break;
-			case 10: demos.Plasma3(display.getBuffer());  break;
-			case 11: demos.Plasma4(display.getBuffer());  break;
+			case 1: display.clearDisplay();  demos.CK_logo(display);  break;
+			case 2: display.clearDisplay();  demos.Space(display);  break;
+			case 3: display.clearDisplay();  demos.Balls(display);  break;
+			case 4: demos.Rain(display);  break;
+			case 5: display.clearDisplay();  demos.Ngons(display);  break;
+			case 6: display.clearDisplay();  demos.Chars(display,0);  break;
+			case 7: display.clearDisplay();  demos.Chars(display,1);  break;
+			case 8: display.clearDisplay();  demos.Fonts(display);  break;
+			case 9: demos.Plasma1(display.getBuffer());  break;
+			case 10: demos.Plasma2(display.getBuffer());  break;
+			case 11: demos.Plasma3(display.getBuffer());  break;
+			case 12: demos.Plasma4(display.getBuffer());  break;
+			#define DLAST 12
 		}
 
 
@@ -187,9 +181,6 @@ int main()
 			display.setFont(0);
 			display.setCursor(0,0);
 			display.println(int16_t(1000000.0/(ti-oti)));
-			//display.setCursor(0,H-9);
-			//display.setFont(&FreeSans9pt7b);//+
-
 			///display.println(w);  // ee
 			//display.println(ii);
 			#ifdef TIM
@@ -227,9 +218,9 @@ int main()
 		}
 
 		if (kk[6] && !kko[6])  // >
-		{	demo++;  if (demo > 12)  demo = 0;  }
+		{	demo++;  if (demo > DLAST)  demo = 0;  }
 		if (kk[5] && !kko[5])  // <
-		{	demo--;  if (demo < 0)  demo = 12;  }
+		{	demo--;  if (demo < 0)  demo = DLAST;  }
 		
 		if (kk[7] && !kko[7])  // v
 		{	fps = 1-fps;  }
