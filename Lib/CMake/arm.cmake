@@ -72,13 +72,14 @@ elseif ( "${CHIP}" MATCHES "mk20dx128" )
 elseif ( "${CHIP}" MATCHES "mk20dx256" )
 	set( SIZE_RAM    65536 )
 	set( SIZE_FLASH 262144 )
-#	set( F_CPU "24000000" )  # low     258
-#	set( F_CPU "48000000" )  # low	   420
-#	set( F_CPU "72000000" )  # default 465 fps only, no kii
-	set( F_CPU "96000000" )  # OC      553
-#	set( F_CPU "120000000" ) # OC      579-
-#	set( F_CPU "144000000" ) # OC      620
+#	set( F_CPU "24000000" )  # low     258	358	  28
+#	set( F_CPU "48000000" )  # low	   420	540?  52
+#	set( F_CPU "72000000" )  # default 465  554	  67
+#	set( F_CPU "96000000" )  # OC      553	651?  77
+#	set( F_CPU "120000000" ) # OC      579-	655	  84
+	set( F_CPU "144000000" ) # OC      620  705	  100
 #	set( F_CPU "168000000" ) # fail
+#						fps only, no kii^   new,  Plasma2
 
 message( STATUS "CPU Frequency: ${F_CPU}" )
 
@@ -159,7 +160,8 @@ set( CXXSTANDARD "-std=gnu++0x" )
 
 #| Warning Options
 #|  -Wall...:     warning level
-set( WARN "-Wall -ggdb3" )
+# set( WARN "-Wall -ggdb3" )
+set( WARN "-g" )
 
 
 #| Tuning Options
@@ -179,7 +181,7 @@ endif()
 #| Optimization level, can be [0, 1, 2, 3, s].
 #|     0 = turn off optimization. s = optimize for size.
 #|     (Note: 3 is not always the best optimization level.)
-set( OPT "s" )
+set( OPT "3" )
 
 #| Dependency Files
 #| Compiler flags to generate dependency files.
