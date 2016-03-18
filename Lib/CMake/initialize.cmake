@@ -35,8 +35,7 @@ else ()
 endif ()
 
 #| Results of Compiler Lookup
-message( STATUS "Compiler Family:" )
-message( "${COMPILER_FAMILY}" )
+#message( STATUS "Compiler Family: ${COMPILER_FAMILY}" )
 
 #| Compiler Selection Record
 #|  This is used to check if the chip target has changed (a complete cmake reset is needed)

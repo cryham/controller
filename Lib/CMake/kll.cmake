@@ -113,9 +113,9 @@ endif ()
 
 
 #| Print list of layout sources used
-message ( STATUS "Detected Layout Files:" )
+#message ( STATUS "Detected Layout Files:" )
 foreach ( filename ${KLL_DEPENDS} )
-	message ( "${filename}" )
+	#message ( "${filename}" )
 endforeach ()
 
 

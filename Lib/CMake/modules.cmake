@@ -117,8 +117,7 @@ function ( AddModule ModuleType ModuleName )
 	foreach ( extraArg ${ARGN} )
 		# Display detected source files
 		if ( NOT DEFINED SubModule )
-			message ( STATUS "Detected ${ModuleType} Module Source Files:" )
-			message ( "${${ModuleType}_SRCS}" )
+			# message ( STATUS "${ModuleType} Sources: ${${ModuleType}_SRCS}" )
 		endif ()
 	endforeach ()
 
