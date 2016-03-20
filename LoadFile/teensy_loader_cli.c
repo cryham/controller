@@ -837,7 +837,7 @@ void die(const char *str, ...)
 }
 
 #if defined(WIN32)
-#define strcasecmp stricmp
+#define strcasecmp _stricmp
 #endif
 
 void parse_options(int argc, char **argv)
