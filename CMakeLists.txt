@@ -78,7 +78,7 @@ set( OutputModule "pjrcUSB"
 )
 
 ##| Debugging source to use, each module has it's own set of defines that it sets
-set(  DebugModule "led"
+set(  DebugModule "full"
 	CACHE STRING "Debug Module"
 )
 
@@ -120,7 +120,7 @@ set(  DefaultMap "ck3overlay"
 
 ##| ParitalMaps available on top of the BaseMap. See above for syntax on specifying multiple layers vs. layering
 ##| Can be set to ""
-set( PartialMaps "ck3layer1"
+set( PartialMaps "ck3layerUC"
 	CACHE STRING "KLL PartialMaps/Layer Definitions" )
 
 
@@ -140,6 +140,8 @@ file(GLOB MAIN_SRCS
     display/*.cpp
     demos/*.h
     demos/*.cpp
+    gui/*.h
+    gui/*.cpp
 )
 
 
