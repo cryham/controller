@@ -2,10 +2,21 @@
 #include <stdint.h>
 #include <Adafruit_SSD1306.h>
 
-
 struct Demos
 {
-	//  sin table
+	//  main  ----
+	Demos();
+	void Init(), Reset(Adafruit_SSD1306& display);
+	void Draw(Adafruit_SSD1306& display);
+
+	int iAllCount, iCurrent;
+	void Next(int dir=1);  // 1 next, 0 prev
+
+	int fps;
+	uint32_t ti, oti;  // fps: time ms, old
+
+
+	//  sin table  ----
 	#define SX 8192   // mem size
 	#define S2 4096   // SX/2
 	#define SY 16384  // y quality
@@ -13,14 +24,15 @@ struct Demos
 	#define Cos(x)  sint[(S2+(x))%SX]
 	#define Sin(x)  sint[    (x) %SX]
 
-	uint t;
+	uint t;  // frame counter
 	int16_t sint[SX];  // sin table
 
 	void SinInit(), Plasma0(uint8_t* buf);
 	void Plasma1(uint8_t* buf), Plasma2(uint8_t* buf);
 	void Plasma3(uint8_t* buf), Plasma4(uint8_t* buf);
 
-	//  balls
+
+	//  balls  --------
 	#define W 128  // area
 	#define H 64
 	#define sCnt 80   // all* stars
@@ -36,17 +48,16 @@ struct Demos
 	void BallsInit();
 	void Balls(Adafruit_SSD1306& display);
 
-	//  simple
-	int n, u;
+	//  simple  ----
+	int n, u;  // Ngons vars
 	void Ngons(Adafruit_SSD1306& display);
 	void Rain(Adafruit_SSD1306& display);
 
 	void Fonts(Adafruit_SSD1306& display);
 	void Chars(Adafruit_SSD1306& display, uint8_t set=0);
-
 	void CK_logo(Adafruit_SSD1306& display);
 
-	//  space
+	//  space  ----
 	int sinit;
 	void SpaceInit();
 	void Star(int i);  // new
@@ -54,7 +65,4 @@ struct Demos
 
 	//void Cube3D
 	//void Fountain
-
-	Demos();
-	void Init();
 };
