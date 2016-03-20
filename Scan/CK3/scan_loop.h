@@ -43,10 +43,12 @@ void Scan_currentChange( unsigned int current ); // Called by Output Module
 
 // ----- Capabilities -----
 
-extern uint8_t kk[16], kko[16];  // keys state and old state
+extern uint8_t kk[0xF0], kko[0xF0];  // keys state, old state, 0,1
 
 // Example capabilities
-void CustomAction_action1_capability( uint8_t state, uint8_t stateType, uint8_t *args );
+void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t *args );
+void CustomAction_action2_capability( uint8_t state, uint8_t stateType, uint8_t *args );
+
 void CustomAction_blockHold_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 void CustomAction_blockKey_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 

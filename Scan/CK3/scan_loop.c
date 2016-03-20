@@ -98,24 +98,16 @@ inline void Scan_finishedWithOutput( uint8_t sentKeys )
 }
 
 
-/// ----- Key states -----
+/// ==---  Key states  ---==
 
-uint8_t kko[16] = {0,};
-uint8_t kk[16] = {0,};
+uint8_t kko[0xF0] = {0,}, kk[0xF0] = {0,};  // bool
 
 
-/// ----- Capabilities -----
+/// -----  Capabilities  -----
 
-void CustomAction_action1_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t *args )
 {
-	// Display capability name
-	if ( stateType == 0xFF && state == 0xFF )
-	{
-		print("CustomAction_action1_capability()");
-		return;
-	}
-
-	// Retrieve 8-bit argument
+	// Retrieve 8-bit argument, usb hid code
 	uint8_t key = args[0];
 
 	// "Press" or "Hold"
@@ -125,9 +117,6 @@ void CustomAction_action1_capability( uint8_t state, uint8_t stateType, uint8_t 
 	else
 	if ( state == 0x00 || state == 0x03 )
 		kk[key] = 0;
-
-	// Prints Action1 info message to the debug cli
-	//info_print("Action1");
 }
 
 
