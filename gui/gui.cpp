@@ -6,11 +6,10 @@
 //#ifdef KII
 extern "C" {
 	#include <scan_loop.h>
+	#include <output_com.h>
 	#include <usb_hid.h>
 }
 //#endif
-
-#include "demos.h"
 
 //  string from usb hid code
 const char str[0xF0][6] = { ".",".",".",".", /*04*/"A","B","C","D",
@@ -32,8 +31,7 @@ const char str[0xF0][6] = { ".",".",".",".", /*04*/"A","B","C","D",
 
 //  Main  ----
 
-Gui::Gui(Demos* d)
-	:demos(d)
+Gui::Gui()
 {
 	Init();
 }
@@ -131,7 +129,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		int s = page * iPage, i,n,x, xm;
 		for (i=0; i < iPage && s < iSlots; ++i,++s)
 		{
-			d.setCursor(0, 20 + i*8);
+			d.setCursor(0, 16 + i*8);
 			const char ar[2]={16,0};  //>
 			//d.print(i==slot ? ar:" ");
 			//d.print(s);  d.print(": ");
@@ -140,6 +138,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			
 			//  write sequence
 			n=0;  x=0;  xm=1;
+			#define W 128
 			#define xmax  W-6*5
 			while (n < seql[s] && xm)
 			{
@@ -190,7 +189,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 void Gui::KeyPress()
 {
 	if (kk[KEY_A] && !kko[KEY_A])
-	{	menu = 1-menu;  }
+	{	menu = 1-menu;  return;  }
 	
 	#define KEY_EDIT  KEY_RIGHT
 	if (menu)
@@ -244,37 +243,38 @@ void Gui::KeyPress()
 			}
 		}
 	}
-	else  //  demos  -----
+	else  //  seq..  -----
 	{
-		int sq = -1;
+		#if 0
+		int q = -1;
 		if (kk[KEY_B] && !kko[KEY_B])
-			sq = 0;
+			q = 0;
 		if (kk[KEY_UP] && !kko[KEY_UP])
-			sq = 1;
+			q = 1;
 
-		if (sq>=0)
+		//  output sequence to usb
+		if (q>=0 && seql[q])
 		{
-			/*uint8_t key;
-			key = KEY_P;	Output_usbCodeSend_capability(1, 0, &key);	Output_send();
-			key = 0x00;		Output_usbCodeSend_capability(1, 0, &key);	Output_send();
-			key = KEY_A;	Output_usbCodeSend_capability(1, 0, &key);	Output_send();
-			key = 0x00;		Output_usbCodeSend_capability(1, 0, &key);	Output_send();
-			/**/
-			///  todo ..
-			// out usb
-			// move use to scan.c
+			uint8_t sh=0,ct=0,al=0;  // modifiers are toggleable
+			for (int n=0; n < seql[q]; ++n)
+			{
+				uint8_t k = seq[q][n];
+				//  modifier press  or release when 2nd time
+				if (k==KEY_CTRL)
+				{	ct = 1-ct;  if (ct==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
+				else if (k==KEY_SHIFT)
+				{	sh = 1-sh;  if (sh==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
+				else if (k==KEY_ALT)
+				{	al = 1-al;  if (al==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
+				else
+				{	// key press and release
+					Output_usbCodeSend_capability(1, 0, &k);  Output_send();  k = 0;
+					Output_usbCodeSend_capability(1, 0, &k);  Output_send();
+				}
+			}
+			//todo? move use to scan.c
 			// shift etc ed, display uppercase,
 		}
-
-		if (demos)
-		{
-		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
-			demos->Next(1);
-		if (kk[KEY_LEFT] && !kko[KEY_LEFT])
-			demos->Next(0);
-		
-		if (kk[KEY_DOWN] && !kko[KEY_DOWN])
-		{	demos->fps = 1-demos->fps;  }
-		}
+		#endif
 	}
 }

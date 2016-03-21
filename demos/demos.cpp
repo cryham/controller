@@ -4,19 +4,25 @@
 #include "FreeSans12pt7b.h"
 //#include "FreeSans18pt7b.h"
 //#include "FreeSansBold9pt7b.h"
+extern "C" {
+	#include <scan_loop.h>
+	#include <output_com.h>
+	#include <usb_hid.h>
+}
 
 //  Main
 // ....................................................................................
 Demos::Demos()
 {
-	fps = 0;  //
-	iCurrent = 0;
-	iAllCount = 12;  //par
-	ti = 0;  oti = 0;
 	Init();
 }
 void Demos::Init()
 {
+	fps = 0;  //
+	iCurrent = 0;
+	iAllCount = 12;  //par
+	ti = 0;  oti = 0;
+
 	SinInit();
 	binit = 0;  sinit = 0;
 	n = 3;  u = 0;  // Ngons
@@ -48,6 +54,17 @@ void Demos::Draw(Adafruit_SSD1306& d)
 		d.setCursor(0,0);
 		d.println(int16_t(1000000.f/(ti-oti)));
 	}
+}
+
+void Demos::KeyPress()
+{
+	if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
+		Next(1);
+	if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+		Next(0);
+	
+	if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+	{	fps = 1-fps;  }
 }
 
 void Demos::Reset(Adafruit_SSD1306& d)
@@ -133,11 +150,14 @@ void Demos::Rain(Adafruit_SSD1306& d)
 	int x,y,r;
 	//for (int i=0; i < 10; ++i)
 	{
+		x = random(W);  y = random(H);  r = random(26);
+		d.drawCircle(x,y,r,BLACK);
 		x = random(W);  y = random(H);  r = random(36);
 		d.drawCircle(x,y,r,BLACK);
 		x = random(W);  y = random(H);  r = random(10);
 		d.drawCircle(x,y,r,WHITE);
-	}	
+	}
+	delay(8);
 }
 
 
@@ -145,11 +165,10 @@ void Demos::Rain(Adafruit_SSD1306& d)
 // ....................................................................................
 void Demos::Fonts(Adafruit_SSD1306& d)
 {
-#if 1
-	d.setCursor(0,20);
+	d.setCursor(0,11);
 	d.setFont(&FreeSans12pt7b);
 	d.print("CrystaL");
-	d.setCursor(36,44);
+	d.setCursor(36,34);
 	d.setFont(&FreeSans9pt7b);
 	d.print("Keyboard");
 	d.setFont(0);
@@ -160,17 +179,6 @@ void Demos::Fonts(Adafruit_SSD1306& d)
 	const char dt[] = {
 		a[4],a[5],' ',a[0],a[1],a[2],' ',a[7],a[8],a[9],a[10],' ',m[0],m[1],':',m[3],m[4],0};
 	d.print(dt);
-#else
-	d.setCursor(0,16);
-	d.setFont(&FreeSans9pt7b);//+
-	//d.println("01234567:");
-	//d.println("ZXUVQPIK");
-	d.println("qwerxpstnug");
-	d.println("jkavwriqcmo");
-	//d.setFont(&FreeSans12pt7b);//+
-	//d.setCursor(30,32);
-	//d.println("579");
-#endif
 }
 
 //  text all chars

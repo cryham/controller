@@ -8,11 +8,12 @@ struct Demos
 	Demos();
 	void Init(), Reset(Adafruit_SSD1306& display);
 	void Draw(Adafruit_SSD1306& display);
+	void KeyPress();
 
-	int iAllCount, iCurrent;
+	int8_t iAllCount, iCurrent;
 	void Next(int dir=1);  // 1 next, 0 prev
 
-	int fps;
+	int8_t fps;
 	uint32_t ti, oti;  // fps: time ms, old
 
 

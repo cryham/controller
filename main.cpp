@@ -42,9 +42,8 @@ void timerCallback0()
 #endif
 
 Demos demos;
-
 #ifdef KII
-Gui gui(&demos);
+Gui gui;
 #endif
 
 
@@ -67,39 +66,40 @@ int main()
 	//digitalWrite(14, LOW);
 
 	//  display
+	pinMode(OLED_DC, OUTPUT);
+	pinMode(OLED_CS, OUTPUT);
 	Adafruit_SSD1306 display(OLED_DC, -1, OLED_CS);
-	demos.Reset(display);  // oled init 1st
-	
+
 	eeprom_initialize();
-	
-	uint8_t anyold = 0;
 
 	demos.Init();
-	gui.Load();
+	demos.Reset(display);  // oled init 1st
+
+	gui.Load();  // load seq data from eeprom
 
 
 	//--------------------------------  loop
+	uint8_t anyold = 0;
 	int ii = 0;
 	while (1)
 	{
 	
 		#ifdef KII
-		// Process CLI
+		//  Process CLI
 		//CLI_process();
 
-		// Acquire Key Indices
+		//  Acquire Key Indices
 		cli();
 		while ( Scan_loop() );
 		sei();
 
-		// Run Macros over Key Indices and convert to USB Keys
+		//  Run Macros over Key Indices and convert to USB Keys
 		Macro_process();
-
-		// Sends USB data only if changed
+		//  Sends USB data only if changed
 		Output_send();
 		#endif
 
-		if (ii < 52)  ++ii;
+		++ii;
 		if (ii == 50)
 		{
 			demos.Reset(display);  // oled init 2nd
@@ -111,8 +111,8 @@ int main()
 		}
 		
 		//--------------------------------  display
-		uint8_t any =
-			demos.fps || gui.menu || demos.iCurrent > 0 ? 1 : 0;
+		uint8_t any = 
+			demos.fps || gui.menu || demos.iCurrent > 0 ? 1 : 0;/**/
 
 		//  clear on display off
 		if (!any && anyold && ii > 50)
@@ -127,7 +127,7 @@ int main()
 		{
 			if (ii > 50)
 			{
-				demos.Draw(display);  // demos
+				demos.Draw(display);
 
 				#ifdef TIM
 				display.setFont(0);
@@ -144,7 +144,11 @@ int main()
 			display.display();  // show
 		}
 		
+		//if (ii % 300 == 200)  demos.Next();
 		#ifdef KII
+		if (!gui.menu)
+			demos.KeyPress();
+
 		gui.KeyPress();
 		#endif
 		

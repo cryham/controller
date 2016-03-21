@@ -2,12 +2,9 @@
 #include <stdint.h>
 #include <Adafruit_SSD1306.h>
 
-struct Demos;
-
 struct Gui
 {
-	Gui(Demos* d);
-	Demos* demos;  // needed by keys
+	Gui();
 
 	//  main
 	void Init();
