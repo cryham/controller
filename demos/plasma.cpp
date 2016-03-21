@@ -135,7 +135,7 @@ void Demos::Plasma2(uint8_t* buf)
 void Demos::Plasma3(uint8_t* buf)
 {
 	uint y0 = 0;
-	uint tt[16]={t*8,t*7,t*13,t*12, t*17,t*8,t*7,t*13, t*5,t*11,t*9,t*7, t*10,t*10,t*4,t*5};
+	uint tt[16]={t*9,t*16,t*5,t*4, t*14,t*3,t*7,t*16, t*5,t*13,t*4,t*8, t*2,t*6,t*10,t*11};
 	uint yy[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 
 	for (uint y=0; y<SSD1306_LCDHEIGHT; ++y)
@@ -150,18 +150,18 @@ void Demos::Plasma3(uint8_t* buf)
 			x0 = 1-x0;  int c;
 			c = 4*Sin( yy[0] +xx[0]+tt[0]) * Cos( xx[1]        +tt[1]);
 			c-= 4*Sin( yy[1]       +tt[2]) * Cos( xx[2] +yy[2] +tt[3]);
-			c+= 5*Cos( yy[3]       +tt[4]) * Sin( xx[3]        +tt[5]);
-			c-= 5*Cos( yy[4] +xx[4]+tt[6]) * Sin( xx[5] +yy[5] +tt[7]);
-			c+= 4*Sin( yy[6]       +tt[8]) * Cos( xx[6] +yy[7] +tt[9]);
+			c+= 5*Cos( yy[3] +xx[4]+tt[4]) * Sin( xx[3]        +tt[5]);
+			c-= 5*Cos( yy[4]       +tt[6]) * Sin( xx[5] +yy[5] +tt[7]);
+			c+= 4*Sin( yy[6]       +tt[8]) * Cos( xx[6]        +tt[9]);
 			c-= 4*Sin( yy[8] +xx[7]+tt[10])* Cos( xx[8]        +tt[11]);
-			c+= 5*Cos( yy[9] +xx[9]+tt[12])* Sin( xx[10]+yy[10]+tt[13]);
-			c-= 5*Cos( yy[11]      +tt[14])* Sin( xx[11]       +tt[15]);
+			c+= 5*Cos( yy[9] +xx[9]+tt[12])* Sin( xx[10]+yy[7]+tt[13]);
+			c-= 5*Cos( yy[11]      +tt[14])* Sin( xx[11]+yy[10]+tt[15]);
 			c = abs(c);
-			xx[0]+=15; xx[1]+=62; xx[2]+=71; xx[3]+=85; xx[4]+=12; xx[5]+=57;
-			xx[6]+=92; xx[7]+=63; xx[8]+=81; xx[9]+=77; xx[10]+=115; xx[11]+=107;
+			xx[0]+=211; xx[1]+=75; xx[2]+=100; xx[3]+=97; xx[4]+=154; xx[5]+=143;
+			xx[6]+=131; xx[7]+=53; xx[8]+=144; xx[9]+=88; xx[10]+=132; xx[11]+=17;
 		
 			//  dither 4
-			c /= SY*SY;  c = 5-c;
+			c /= SY*SY;  c = 4-c;
 			if (c>=4 ||
 				(c==3 && y0+x0 <2) ||
 				(c==2 && y0==x0) ||
@@ -170,8 +170,8 @@ void Demos::Plasma3(uint8_t* buf)
 			else
 				buf[a] &= b0;
 		}
-		yy[0]+=66; yy[1]+=83; yy[2]+=8; yy[3]+=51; yy[4]+=77; yy[5]+=9;
-		yy[6]+=166; yy[7]+=6; yy[8]+=183; yy[9]+=151; yy[10]+=4; yy[11]+=177;
+		yy[0]+=71; yy[1]+=93; yy[2]+=128; yy[3]+=151; yy[4]+=78; yy[5]+=149;
+		yy[6]+=136; yy[7]+=56; yy[8]+=213; yy[9]+=109; yy[10]+=82; yy[11]+=132;
 	}	t+=4;
 }
 

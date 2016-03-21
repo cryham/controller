@@ -165,19 +165,16 @@ void Demos::Rain(Adafruit_SSD1306& d)
 // ....................................................................................
 void Demos::Fonts(Adafruit_SSD1306& d)
 {
-	d.setCursor(0,11);
-	d.setFont(&FreeSans12pt7b);
-	d.print("CrystaL");
-	d.setCursor(36,34);
-	d.setFont(&FreeSans9pt7b);
-	d.print("Keyboard");
-	d.setFont(0);
+	d.setCursor(0,10);
+	d.setFont(&FreeSans12pt7b);  d.print("CrystaL");
+	d.setCursor(36,32);
+	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
 	d.setCursor(96,0);
-	d.print("3.01");
+	d.setFont(0);  d.print("3.01");
 	d.setCursor(0*24,H-8);
 	const char* a={__DATE__}, *m={__TIME__};
 	const char dt[] = {
-		a[4],a[5],' ',a[0],a[1],a[2],' ',a[7],a[8],a[9],a[10],' ',m[0],m[1],':',m[3],m[4],0};
+		a[7],a[8],a[9],a[10],' ',a[0],a[1],a[2],' ',a[4],a[5],' ',m[0],m[1],':',m[3],m[4],0};
 	d.print(dt);
 }
 
