@@ -75,7 +75,9 @@ int main()
 	demos.Init();
 	demos.Reset(display);  // oled init 1st
 
+	#ifdef KII
 	gui.Load();  // load seq data from eeprom
+	#endif
 
 
 	//--------------------------------  loop
@@ -112,7 +114,10 @@ int main()
 		
 		//--------------------------------  display
 		uint8_t any = 
-			demos.fps || gui.menu || demos.iCurrent > 0 ? 1 : 0;/**/
+			#ifdef KII
+			gui.menu || 
+			#endif
+			demos.fps || demos.iCurrent > 0 ? 1 : 0;/**/
 
 		//  clear on display off
 		if (!any && anyold && ii > 50)
@@ -150,10 +155,10 @@ int main()
 			demos.KeyPress();
 
 		gui.KeyPress();
-		#endif
 		
 		//  old key states  ---
 		for (int i=0; i<0xF0; ++i)
 			kko[i] = kk[i];
+		#endif
 	}
 }
