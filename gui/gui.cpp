@@ -38,24 +38,15 @@ Gui::Gui()
 }
 void Gui::Init()
 {
-	menu = 0;
-	slot = 0;  page = 0;
-	edit = 0;  edpos = 0;
+	mlevel = 0;  ym = 0;
+	for (int i=0; i < MAll; ++i)
+		ym2[i]=0;
+	menu = 0;  edit = 0;
+	slot = 0;  page = 0;  edpos = 0;
 
 	iInfo = 0;  memSize = 0;
-	//eeprom_initialize();
-
-	//for (int i=0; i<iSlots; ++i)
-	//	seql[i] = 0;
-	//  test
-	seql[0]=2;
-	seq[0][0]=KEY_1;  seq[0][1]=KEY_2;
-	seql[1]=3;
-	seq[1][0]=KEY_A;  seq[1][1]=KEY_B;  seq[1][2]=KEY_C;
-	seql[2]=1;
-	seq[2][0]=KEY_X;
+	Clear();
 }
-
 void Gui::Clear()
 {
 	memSize = 0;
@@ -65,7 +56,7 @@ void Gui::Clear()
 }
 
 //  load, save seq in eeprom
-// ........................................
+//........................................
 #define EOfs 0
 #define ESize 2048
 
@@ -86,7 +77,7 @@ void Gui::Load()  //  Load
 	
 	//  data
 	a = EOfs + iSlots;
-	for (i=0; i < iSlots; ++i)  //if (seql[i])
+	for (i=0; i < iSlots; ++i)
 	for (n=0; n < seql[i] && a < ESize; ++n)
 	{
 		seq[i][n] = eeprom_read_byte((uint8_t*)a);  ++a;
@@ -112,16 +103,46 @@ void Gui::Save()  //  Save
 	memSize = a;  infType = 2;
 }
 
+//.............
+const uint8_t Gui::YM2[MAll] = { iPage, 9, 4, 4 };  ///par
+
+
 //  Draw, settings
-// ....................................................................................
+//....................................................................................
 void Gui::Draw(Adafruit_SSD1306& d)
 {
 	if (!menu)  return;
+	const char ar[2]={16,0};  //>
 
-	d.setFont(&FreeSans9pt7b);
-	d.setCursor(0, 0);
+	if (mlevel==0 || mlevel==1 && ym == MSeq || iInfo > 0)
+	{
+		d.clearDisplay();
+		d.setFont(&FreeSans9pt7b);
+		d.setCursor(0,0);
+	}
 	//d.drawPixel(0,0,1);  d.drawPixel(64,0,1);  d.drawPixel(127,0,1);
 	//d.drawPixel(0,63,1); d.drawPixel(127,63,1);
+
+	if (mlevel==0)
+	{
+		d.print("Menu");  d.setFont(0);
+
+		d.setCursor(0,16);
+		for (int i=0; i < MAll; ++i)
+		{
+			d.print(i==ym ? ar:" ");
+			switch (i)
+			{
+				case MSeq:    d.println("Seqences");  break;
+				case MDemos:  d.println("Demos");  break;
+				case MText:   d.println("Text");  break;
+				case MPlasma: d.println("Plasma");  break;
+			}
+		}
+		return;
+	}
+	
+	if (mlevel==1 && ym == MSeq)
 	if (!edit)
 	{
 		d.print("View");  d.setFont(0);
@@ -131,11 +152,8 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		for (i=0; i < iPage && s < iSlots; ++i,++s)
 		{
 			d.setCursor(0, 16 + i*8);
-			const char ar[2]={16,0};  //>
-			//d.print(i==slot ? ar:" ");
-			//d.print(s);  d.print(": ");
-			d.print(s);
-			d.print(i==slot ? ar:" ");
+			//d.print(i==slot ? ar:" ");   d.print(s);  d.print(": ");
+			d.print(s);  d.print(i==slot ? ar:" ");
 			
 			//  write sequence
 			n=0;  x=0;  xm=1;
@@ -150,16 +168,16 @@ void Gui::Draw(Adafruit_SSD1306& d)
 				{	d.print(st);  ++n;  }
 			}
 		}
-		//  page, center
+		//  page, center   / 
 		d.setCursor(58, 4);
-		d.print(page+1);  d.print("/");
-		d.print(iSlots/iPage);
+		d.print(page+1);  d.print("/");  d.print(iSlots/iPage);
 	}
 	else
 	{	d.print("Edit");  d.setFont(0);
-		d.setCursor(80,4);
 		int q = slot + page*iPage;
-		d.print("Slot:");  d.print(q);
+		//d.setCursor(80,4);
+		//d.print("Slot:");  d.print(q);
+		d.setCursor(104,4);  d.print(q);
 
 		//  write sequence
 		d.setCursor(0,16);
@@ -169,8 +187,15 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.print(str[seq[q][n]]);  //d.print(" ");
 		}
 	}
-	
-	if (iInfo > 0)  //  info ee
+	d.setFont(0);
+
+	//  info layers stack  - -
+	/*d.setCursor(20,10);
+	for (int l=0; l < layersCnt; ++l)
+	{	d.print(layersOn[l]);  d.print(" ");  }
+	/**/
+
+	if (iInfo > 0)  //  info eeprom
 	{	--iInfo;
 		int x = 90;
 
@@ -185,66 +210,100 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	}	}
 }
 
+
 //  Key press
-// ....................................................................................
+//....................................................................................
 void Gui::KeyPress()
 {
-	if (kk[KEY_A] && !kko[KEY_A])
-	{	menu = 1-menu;  return;  }
+	//  Menu = Layer1, Function1
+	menu = 0;
+	for (int l=0; l < layersCnt; ++l)
+		if (layersOn[l] == 1)  menu = 1;
+
+	//if (kk[KEY_A] && !kko[KEY_A])
+	//{	menu = 1-menu;  return;  }
 	
-	#define KEY_EDIT  KEY_RIGHT
 	if (menu)
 	{
-		if (edit)
+		#define KEY_EDIT  KEY_RIGHT
+		if (ym == MSeq && mlevel > 0)
 		{
-			//  find key
-			uint8_t k = 3, edkey = 0;
-			while (edkey==0 && k < 0xF0)
+			if (edit)
 			{
-				if (kk[k] && !kko[k] && k != KEY_EDIT)
-					edkey = k;
-				else  ++k;
+				//  find key
+				uint8_t k = 3, edkey = 0;
+				while (edkey==0 && k < 0xF0)
+				{
+					if (kk[k] && !kko[k] && k != KEY_EDIT)
+						edkey = k;
+					else  ++k;
+				}
+				//  add to seq
+				if (edkey > 0 && edpos < iSeqLen)
+				{	int q = slot + page*iPage;
+					seq[q][edpos] = edkey;
+					edpos++;  seql[q]++;
+				}
+			}else{
+				/*if (kk[KEY_LEFT] && !kko[KEY_LEFT])  //  next pages
+				{
+					++page;
+					if (page >= iSlots/iPage)  page = 0;
+				}/**/
+				if (kk[KEY_B] && !kko[KEY_B])  // save
+				{
+					Save();  iInfo = 400;
+				}
+		
+				if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+				{	++slot;  if (slot >= iPage) {  slot = 0;
+					++page;  if (page >= iSlots/iPage)  page = 0;
+				}	}
+				if (kk[KEY_UP] && !kko[KEY_UP])
+				{	--slot;  if (slot < 0) {  slot = iPage-1;
+					--page;  if (page < 0)  page = iSlots/iPage-1;
+				}	}
 			}
-			//  add to seq
-			if (edkey > 0 && edpos < iSeqLen)
-			{	int q = slot + page*iPage;
-				seq[q][edpos] = edkey;
-				edpos++;  seql[q]++;
-			}
-		}
-		else
-		{
-			if (kk[KEY_LEFT] && !kko[KEY_LEFT])  //  next pages
+
+			if (kk[KEY_EDIT] && !kko[KEY_EDIT])  //  toggle edit
 			{
-				++page;
-				if (page >= iSlots/iPage)  page = 0;
+				edit = 1-edit;
+				if (edit)  // enter edit
+				{
+					int q = slot + page*iPage;
+					//  clear
+					edpos = 0;  //todo append
+					seql[q] = 0;
+					for (int n=0; n < iSeqLen; ++n)
+						seq[q][n] = 0;
+				}
 			}
-			if (kk[KEY_B] && !kko[KEY_B])  // save
-			{
-				Save();  iInfo = 400;
-			}
-	
-			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
-			{	slot++;  if (slot >= iPage)  slot = 0;  }
-			if (kk[KEY_UP] && !kko[KEY_UP])
-			{	slot--;  if (slot < 0)  slot = iPage-1;  }
 		}
 
-		if (kk[KEY_EDIT] && !kko[KEY_EDIT])  //  toggle edit
+		if (mlevel==0)  //  main
 		{
-			edit = 1-edit;
-			if (edit)  // enter edit
-			{
-				int q = slot + page*iPage;
-				//  clear
-				edpos = 0;  //todo append
-				seql[q] = 0;
-				for (int n=0; n < iSeqLen; ++n)
-					seq[q][n] = 0;
-			}
+			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+			{	ym = ym+1;  if (ym >= MAll)  ym = 0;  }
+			if (kk[KEY_UP] && !kko[KEY_UP])
+			{	ym = ym-1;  if (ym < 0)  ym = MAll-1;  }
+			
+			if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
+				mlevel = 1;
+		}else
+		if (!edit)
+		{	//  back
+			if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+				mlevel = 0;
+
+			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+			{	ym2[ym]++;  if (ym2[ym] >= YM2[ym])  ym2[ym] = 0;  }
+			if (kk[KEY_UP] && !kko[KEY_UP])
+			{	ym2[ym]--;  if (ym2[ym] < 0)  ym2[ym] = YM2[ym]-1;  }
 		}
 	}
-	else  //  seqence execute  -----
+	
+	
+	if (!menu)  //  seqence execute  -----
 	{
 		#if 1
 		int q = -1;
@@ -277,6 +336,7 @@ void Gui::KeyPress()
 				}
 			}
 			//todo? move use to scan.c
+			// add actionSeq, binding in kll
 			// shift etc ed, display uppercase,
 		}
 		#endif

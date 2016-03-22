@@ -10,8 +10,8 @@
 #define OLED_CS    10
 #define OLED_DC     9
 
-
 #define KII
+
 #ifdef KII
 extern "C" {
 	#include <Lib/MainLib.h>
@@ -33,6 +33,7 @@ extern "C" {
 //#define TIM
 #ifdef TIM
 //#include "IntervalTimer.h"
+//IntervalTimer timer0;
 
 volatile uint32_t t1 = 0;
 
@@ -50,10 +51,6 @@ Gui gui;
 //..............................................................................
 int main()
 {
-	//  timer
-	//pit0_setup();
-	//IntervalTimer timer0;
-
 	#ifdef KII
 	//CLI_init();
 	Output_setup();
@@ -61,9 +58,9 @@ int main()
 	#endif
 
 	//pinMode(12, OUTPUT);  // test led
-	//pinMode(14, OUTPUT);
+	pinMode(14, OUTPUT);
 	//digitalWrite(12, HIGH);
-	//digitalWrite(14, LOW);
+	digitalWrite(14, LOW);
 
 	//  display
 	pinMode(OLED_DC, OUTPUT);
@@ -108,7 +105,6 @@ int main()
 
 			#ifdef TIM
 			//timer0.begin(timerCallback0, 20000);  // 100 Hz
-			//pit0_setup();
 			#endif
 		}
 		
@@ -117,7 +113,7 @@ int main()
 			#ifdef KII
 			gui.menu || 
 			#endif
-			demos.fps || demos.iCurrent > 0 ? 1 : 0;/**/
+			demos.fps ? 1 : 0;/**/
 
 		//  clear on display off
 		if (!any && anyold && ii > 50)
@@ -132,8 +128,9 @@ int main()
 		{
 			if (ii > 50)
 			{
-				demos.Draw(display);
-
+				demos.Draw(display, gui.menu && gui.mlevel > 0,
+					gui.ym, gui.ym2[gui.ym]);
+				
 				#ifdef TIM
 				display.setFont(0);
 				display.setCursor(0,0);
@@ -151,7 +148,7 @@ int main()
 		
 		//if (ii % 300 == 200)  demos.Next();
 		#ifdef KII
-		if (!gui.menu)
+		if (gui.menu && gui.mlevel > 0 && gui.ym > 0)
 			demos.KeyPress();
 
 		gui.KeyPress();

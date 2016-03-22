@@ -1,4 +1,5 @@
 #include "demos.h"
+#include "gui.h"  // menu ym etc
 #define PROGMEM
 #include "FreeSans9pt7b.h"
 #include "FreeSans12pt7b.h"
@@ -9,47 +10,68 @@ extern "C" {
 	#include <output_com.h>
 	#include <usb_hid.h>
 }
-	#define W 128  // area
-	#define H 64
 
 //  Main
-// ....................................................................................
+//....................................................................................
 Demos::Demos()
 {
 	Init();
 }
 void Demos::Init()
 {
-	sCnt = 80;
-	//  40-150     40-80       2-3
-	bCnt = 80;  bSpd = 40;  bRad = 3;
-
-	fps = 1;  //par
-	iCurrent = 3;  iAllCount = 12;
+	fps = 0;  //par
 	ti = 0;  oti = 0;
 
 	SinInit();
-	einit = INone;
-	n = 3;  u = 0;  // Ngons
+	einit = INone;  iPrev = -1;
 }
 
-void Demos::Draw(Adafruit_SSD1306& d)
+void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 {
-	switch (iCurrent)
+	if (menu)
+	if (y == MDemos)
 	{
-		case 0: d.clearDisplay();  break;
-		case 1: d.clearDisplay();  CK_logo(d);  break;
-		case 2: d.clearDisplay();  Space(d);  break;
-		case 3: d.clearDisplay();  Balls(d);  break;
-		case 4:						Rain(d);  break;
-		case 5: d.clearDisplay();  Ngons(d);  break;
-		case 6: d.clearDisplay();  Chars(d,0);  break;
-		case 7: d.clearDisplay();  Chars(d,1);  break;
-		case 8: d.clearDisplay();  Fonts(d);  break;
-		case 9: Plasma1(d.getBuffer());  break;
-		case 10: Plasma2(d.getBuffer());  break;
-		case 11: Plasma3(d.getBuffer());  break;
-		case 12: Plasma4(d.getBuffer());  break;
+		if (iPrev != y2)  //  Init on change
+		switch (y2)
+		{
+			case 0:  sCnt = 80;  // Stars
+			case 1:  einit = INone;  bCnt = 40;  bSpd = 45;  bRad = 3;  break;  // Balls
+			case 2:  einit = INone;  bCnt = 80;  bSpd = 80;  bRad = 3;  break;
+			case 3:  einit = INone;  bCnt = 150; bSpd = 40;  bRad = 2;  break;
+			
+			case 7:  ngCur = ngMin;  ngt = 0;  // Ngons
+		}
+		switch (y2)
+		{
+			case 0: d.clearDisplay();	Space(d);  break;
+			case 1:
+			case 2:
+			case 3: d.clearDisplay();	Balls(d);  break;
+
+			case 4:						Rain(d);  break;
+			case 5:						Rain2(d);  break;
+			case 6: d.clearDisplay();	Fountain(d);  break;
+			
+			case 7: d.clearDisplay();	Ngons(d);  break;
+			case 8: d.clearDisplay();	Cube(d);  break;
+		}
+		iPrev = y2;
+	}
+	else if (y == MText)
+	switch (y2)
+	{
+		case 0: d.clearDisplay();  CK_logo(d);  break;
+		case 1: d.clearDisplay();  Font_ver(d);  break;
+		case 2: d.clearDisplay();  Chars(d,0);  break;
+		case 3: d.clearDisplay();  Chars(d,1);  break;
+	}
+	else if (y == MPlasma)
+	switch (y2)
+	{
+		case 0: Plasma1(d.getBuffer());  break;
+		case 1: Plasma2(d.getBuffer());  break;
+		case 2: Plasma3(d.getBuffer());  break;
+		case 3: Plasma4(d.getBuffer());  break;
 	}
 
 	if (fps)  // fps
@@ -63,13 +85,8 @@ void Demos::Draw(Adafruit_SSD1306& d)
 
 void Demos::KeyPress()
 {
-	if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
-		Next(1);
-	if (kk[KEY_LEFT] && !kko[KEY_LEFT])
-		Next(0);
-	
-	if (kk[KEY_DOWN] && !kko[KEY_DOWN])
-	{	fps = 1-fps;  }
+	if (kk[KEY_B] && !kko[KEY_B])
+		fps = 1-fps;
 }
 
 void Demos::Reset(Adafruit_SSD1306& d)
@@ -81,18 +98,104 @@ void Demos::Reset(Adafruit_SSD1306& d)
 	d.setTextColor(WHITE);
 }
 
-void Demos::Next(int dir)
+
+//  regular polygons with diagonals
+//....................................................................................
+void Demos::Ngons(Adafruit_SSD1306& d)
 {
-	if (dir > 0)  // next
-	{	iCurrent++;  if (iCurrent > iAllCount)  iCurrent = 0;  }
-	else  // prev
-	{	iCurrent--;  if (iCurrent < 0)  iCurrent = iAllCount;  }
+	#define ngtM 200
+	float a=0, b=0, e = 2*PI / ngCur;  // angles
+	float tm = float(ngt)/ngtM;
+	float c = -PI/2 * tm, s = 0.65 + 0.75 * tm;
+	float xx = W/2, yy = H/2, sy = s * yy;
+
+	for (b=0; b < 2*PI; b+=e)
+	{
+		float xb = xx + sy*cos(b+c), yb = yy - sy*sin(b+c);
+		for (a=0; a < b && a < 2*PI; a+=e)
+		{
+			float xa = xx + sy*cos(a+c), ya = yy - sy*sin(a+c);
+			if (a != b)
+				d.drawLine(xb, yb, xa, ya, 1);
+		}
+	}
+	++ngt;
+	if (ngt > ngtM) {  ngt = 0;
+		++ngCur;  if (ngCur > ngMax)  ngCur = ngMin;  }
+
+	d.setCursor(0, H-8);
+	d.print(ngCur);  // n sides
+}
+
+
+//  Rain circles
+//....................................................................................
+void Demos::Rain(Adafruit_SSD1306& d)
+{
+	int x,y,r;
+		x=random(W); y=random(H);  r= random(26);  d.drawCircle(x,y,r,BLACK);
+		x=random(W); y=random(H);  r= random(24);  d.drawCircle(x,y,r,BLACK);
+		x=random(W); y=random(H);  r= random(20);  d.drawCircle(x,y,r,BLACK);
+	if (random(100) < 30)
+	{	x=random(W); y=random(H);  r= random(6)+1;  d.drawCircle(x,y,r,WHITE);  }
+	delay(8);
+}
+
+void Demos::Rain2(Adafruit_SSD1306& d)
+{
+	int x,y,r;
+	for (int i=0; i<12; ++i)
+	{
+		if (random(400) < 10) {  x=random(W); y=random(H);  r= random(28)+20;  d.drawCircle(x,y,r,BLACK);  }
+		if (random(200) < 10) {  x=random(W); y=random(H);  r= random(20)+16;  d.drawCircle(x,y,r,BLACK);  }
+		if (random(100) < 20) {  x=random(W); y=random(H);  r= random(14)+14;  d.drawCircle(x,y,r,BLACK);  }
+		if (random(10)  < 3)  {  x=random(W); y=random(H);  r= random(10)+1;   d.drawCircle(x,y,r,BLACK);  }
+	}
+	for (int i=0; i<2; ++i)  //if (random(10) < 8)
+	{
+		if (random(600) < 30) {  x=random(W); y=random(H);  r= random(6)+3;  d.drawCircle(x,y,r,WHITE);  }
+		if (random(300) < 40) {  x=random(W); y=random(H);  r= random(5)+4;  d.drawCircle(x,y,r,WHITE);  }
+		if (random(100) < 50) {  x=random(W); y=random(H);  r= random(4)+2;  d.drawCircle(x,y,r,WHITE);  }
+								 x=random(W); y=random(H);  r= random(3)+1;  d.drawCircle(x,y,r,WHITE);
+	}	delay(8);
+}
+
+
+//  text fonts
+//....................................................................................
+void Demos::Font_ver(Adafruit_SSD1306& d)
+{
+	d.setCursor(0,10);  // logo
+	d.setFont(&FreeSans12pt7b);  d.print("CrystaL");
+	d.setCursor(36,32);
+	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
+	d.setCursor(96,0);  // ver
+	d.setFont(0);  d.print("3.05");
+	d.setCursor(0*24,H-8);
+	const char* a={__DATE__}, *m={__TIME__};
+	const char dt[] = {
+		//  build date, time  format yyyy-mmm-dd hh:mm
+		a[7],a[8],a[9],a[10],' ',a[0],a[1],a[2],' ',a[4],a[5],' ',m[0],m[1],':',m[3],m[4],0};
+	d.print(dt);
+}
+
+//  text all chars   128x64 = 20x8
+void Demos::Chars(Adafruit_SSD1306& d, uint8_t set)
+{
+	d.setCursor(0,8);
+	uint8_t cc = set*128;
+
+	for (int i=0; i < 128; i++)
+	{	if (i == '\n') continue;
+		d.write(cc + i);
+		if (i > 0 && (i % 20 == 0))
+		  d.println();
+	}
 }
 
 
 //  Balls
-// ....................................................................................
-
+//....................................................................................
 void Demos::BallsInit()
 {
 	for (int i=0; i<bCnt; i++)
@@ -121,153 +224,9 @@ void Demos::Balls(Adafruit_SSD1306& d)
 	}
 }
 
-//  lines n-gon x
-void Demos::Ngons(Adafruit_SSD1306& d)
-{
-	#define uu 200
-	float a=0, b=0, e = 2*PI/n;
-	float c = -PI/2*u/uu, s = 0.65 + 0.75*u/uu;
-	float xx = W/2, yy = H/2, sy = s * yy;
-
-	for (b=0; b < 2*PI; b+=e)
-	{
-		float xb = xx + sy*cos(b+c), yb = yy - sy*sin(b+c);
-		for (a=0; a < b && a < 2*PI; a+=e)
-		{
-			float xa = xx + sy*cos(a+c), ya = yy - sy*sin(a+c);
-			if (a != b)
-				d.drawLine(xb, yb, xa, ya, 1);
-		}
-	}
-	++u;
-	if (u > uu)
-	{	u = 0;  ++n;  if (n > 14)  n = 3;  }
-
-	d.setCursor(0, H-8);
-	d.print(n);  // n
-}
-
-//  Rain circles
-void Demos::Rain(Adafruit_SSD1306& d)
-{
-	int x,y,r;
-	//for (int i=0; i < 10; ++i)
-	{
-		x = random(W);  y = random(H);  r = random(26);
-		d.drawCircle(x,y,r,BLACK);
-		x = random(W);  y = random(H);  r = random(24);
-		d.drawCircle(x,y,r,BLACK);
-		x = random(W);  y = random(H);  r = random(20);
-		d.drawCircle(x,y,r,BLACK);
-		x = random(W);  y = random(H);  r = random(10);
-		d.drawCircle(x,y,r,WHITE);
-	}
-	delay(8);
-}
-
-
-//  text fonts
-// ....................................................................................
-void Demos::Fonts(Adafruit_SSD1306& d)
-{
-	d.setCursor(0,10);
-	d.setFont(&FreeSans12pt7b);  d.print("CrystaL");
-	d.setCursor(36,32);
-	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
-	d.setCursor(96,0);
-	d.setFont(0);  d.print("3.01");
-	d.setCursor(0*24,H-8);
-	const char* a={__DATE__}, *m={__TIME__};
-	const char dt[] = {
-		a[7],a[8],a[9],a[10],' ',a[0],a[1],a[2],' ',a[4],a[5],' ',m[0],m[1],':',m[3],m[4],0};
-	d.print(dt);
-}
-
-//  text all chars
-//  128x64 = 20x8
-void Demos::Chars(Adafruit_SSD1306& d, uint8_t set)
-{
-	d.setCursor(0,8);
-	uint8_t cc = set*128;
-
-	for (int i=0; i < 128; i++)
-	{	if (i == '\n') continue;
-		d.write(cc + i);
-		if (i > 0 && (i % 20 == 0))
-		  d.println();
-	}
-}
-
-//  CrystaL KeyboarD  logo lines
-// ....................................................................................
-//  x,y points, 0 break
-const static int word1[] = {
-/*C*/194,43, 120,133, 8,193, 112,233, 224,299, 0,
-	224,299, 141,227, 78,194, 144,139, 194,43, 0,
-/*R*/192,110, 260,156, 211,176, 164,201, 220,153, 192,110, 0,
-	164,201, 248,222, 314,258, 298,276, 251,237, 164,201, 0,
-/*Y*/303,189, 388,224 , 450,190, 398,256 , 331,328, 374,242, 303,189, 0,
-/*S*/541,92, 439,152, 533,196, 435,267, 507,226, 574,197, 517,173, 473,147, 541,92, 0,
-/*T*/544,62, 628,61, 692,33, 629,75, 592,167, 615,76, 544,62, 0,
-/*A*/623,216, 660,154, 673,82, 702,152, 746,206, 679,144, 623,216, 0,
-/*L*/766,28, 793,147, 781,233, 738,300, 818,256,
-	935,220, 815,229, 800,133, 766,28, 0, -100};
-const static int word2[] = {
-/*K*/217,345, 152,396, 62,440, 176,468, 288,507, 248,481, 117,438, 173,397, 217,345, 0,
-	76,367, 118,471, 130,541, 145,516, 76,367, 0,
-/*e*/329,359, 282,404, 207,434, 292,471, 368,517, 306,467, 256,438,
-	318,433, 257,429, 297,401, 329,359, 0,
-/*y*/357,450, 386,488, 424,507, 387,541, 334,561, 373,568, 427,521,
-	468,453, 431,497, 357,450, 0,
-/*b*/466,369, 492,399, 523,412, 486,435, 540,457, 505,476, 474,517,
-	506,459, 486,435, 494,414, 466,369, 0,
-/*o*/533,432, 557,414, 571,382, 587,409, 609,426, 591,452, 576,496, 559,455, 533,432, 0,
-	573,409, 595,426, 575,461, 552,433, 573,409, 0,
-/*a*/583,535, 608,493, 628,444, 649,477, 675,506, 630,481, 583,535, 0,
-/*r*/660,385, 694,407, 651,427, 727,471, 706,479, 682,450,
-	651,427, 670,407, 660,385, 0,
-/*D*/717,363, 796,400, 861,432, 805,479, 761,504, 726,543,
-	749,501, 795,445, 776,411, 717,363, 0, -100};
-
-const static int
-	cxw[2] = {496,402}, cyw[2] = {130,160},  // centers
-	axw[2] = {222,262}, ayw[2] = {362,282};  // amplitudes
-	
-void Demos::CK_logo(Adafruit_SSD1306& d)
-{
-	#define K 1024  // wave																		// scale ofs
-	#define CX(x) {  x = w-cx;  x = ( (x*(K +ax*Cos(8*w      +tt[0])/SY*Sin(7*w      +tt[1])/SY) /K) +cx)/8 +6;  }
-	#define CY(y) {  y = w-cy;  y = ( (y*(K +ay*Cos(9*w+ x*73+tt[2])/SY*Sin(6*w+ x*52+tt[3])/SY) /K) +cy)/9 -1;  }
-
-	const uint tt[4] = {t*7,t*5,t*8,t*5};
-	for (int w2=0; w2<2; ++w2)
-	{
-		const int cx = cxw[w2], cy = cyw[w2];
-		const int ax = axw[w2], ay = ayw[w2];
-		int a=0,w, i=0,rst=1,
-			x1=0,y1=0,x=0,y=0;
-		do
-		{	w = w2 ? word2[a++] : word1[a++];
-			if (w<=0) {  rst=1;  i=0;  }
-			else
-			if (rst)  switch(i)
-			{	case 0:  CX(x)  ++i;  break;
-				case 1:  CY(y)  rst=0; i=0;  break;  }
-			else  switch(i)
-			{	case 0:  x1=x;  CX(x)  ++i;  break;
-				case 1:  y1=y;  CY(y)  i=2;  break;  }
-
-			if (i==2)
-			{	i=0;  d.drawLine(x1,y1, x,y, WHITE);  }
-		}
-		while (w >= 0);
-	}
-	++t;
-}
-
 
 //  Space
-// ....................................................................................
+//....................................................................................
 void Demos::SpaceInit()
 {
 	for (int i=0; i<sCnt; i++)
@@ -296,7 +255,7 @@ void Demos::Space(Adafruit_SSD1306& d)
 	for (int i=0; i < sCnt; i++)
 	{
 		int z = star[i].z + 1*sDet;
-		int x = star[i].x/z / sDet +W/2;
+		int x = star[i].x/z / sDet +W/2;  // pos 3d to 2d
 		int y = star[i].y/z / sDet +H/2;
 		d.drawPixel(x,y, WHITE);
 			
@@ -309,4 +268,59 @@ void Demos::Space(Adafruit_SSD1306& d)
 		}
 	}
 	delay(8);  // ms - limit to 100 fps
+}
+
+
+//  Fountain
+//....................................................................................
+void Demos::FountainInit()
+{
+	for (int i=0; i < dMax; i++)
+		drop[i].t = -1;
+	einit = IDrops;
+}
+
+void Demos::Fountain(Adafruit_SSD1306& d)
+{
+	if (einit != IDrops)
+		FountainInit();
+	
+	int nn = 0;  int io = 0;
+	for (int i=0; i < dMax; ++i)
+	{	Drop& o = drop[i];
+
+		if (o.t >= 0)  // alive
+		{	--o.t;  ++io;
+
+			o.x += o.vx;  // vel
+			o.y += o.vy;
+			o.vy += 4;  // gravity
+
+			int x = o.x / bDet;  // pos
+			int y = o.y / bDet;
+
+			if (x < 0 || x > W || //y < 0 ||
+				y > H)  // outside
+			{	o.t = -1;  }
+			else
+				d.drawPixel(x,y, WHITE);
+		}
+		else  // spawn new
+		if (nn < 1)  // max 9
+		{	++nn;
+			o.t = random(160)+20;  // time to live
+			#define dVx  150
+			o.x = 62*bDet + random(4*bDet);
+			o.y = 63*bDet - random(4*bDet);
+			//  vel up, with wave
+			int rx = 120 + 110 * Sin(t*61)/SY * Cos(t*44)/SY,
+				px =       100 * Sin(t*42)/SY * Cos(t*24)/SY,
+				py =   40 + 40 * Sin(t*53)/SY * Cos(t*39)/SY;
+			o.vx = random(rx+1)-rx/2 + px;
+			o.vy = -random(70) - 320 + py;
+		}
+	}	++t;
+	delay(6);
+	//d.setCursor(0, 0);
+	//d.print(io);  // drops used
 }
