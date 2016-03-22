@@ -13,17 +13,15 @@ struct Demos
 	int8_t iAllCount, iCurrent;
 	void Next(int dir=1);  // 1 next, 0 prev
 
-	int8_t fps;
+	int8_t fps;  // 1 on, 0 off
 	uint32_t ti, oti;  // fps: time ms, old
 
 
 	//  sin table  ----
 	#define SX 8192   // mem size
-	#define S2 4096   // SX/2
 	#define SY 16384  // y quality
-
-	#define Cos(x)  sint[(S2+(x))%SX]
-	#define Sin(x)  sint[    (x) %SX]
+	#define Cos(x)  sint[(SX/2+(x))%SX]
+	#define Sin(x)  sint[      (x) %SX]
 
 	uint t;  // frame counter
 	int16_t sint[SX];  // sin table
@@ -34,18 +32,19 @@ struct Demos
 
 
 	//  balls  --------
-	#define W 128  // area
-	#define H 64
-	#define sCnt 80   // all* stars
-	#define bCnt 40   // all* balls
-
-	#define bSpd 45   // speed*
-	#define bRad 3    // radius max
+	const static int sMax=80, bMax=150;
+	int sCnt;  // stars count
+	int bCnt, bSpd, bRad;  // balls count, speed, radius max
 	#define bDet 256  // move detail
-	int binit;
-	//  [max(sCnt,bCnt)]  used for balls and stars
-	int xb[sCnt],yb[sCnt], zb[sCnt],vb[sCnt], rb[bCnt];
 
+	enum EInit {  INone=0, IBalls, ISpace  } einit;
+	struct Star {  int x,y,z, v;  };
+	struct Ball {  int16_t x,y, vx,vy, r;  };
+	union
+	{	//  used for both
+		Star star[sMax];
+		Ball ball[bMax];
+	};
 	void BallsInit();
 	void Balls(Adafruit_SSD1306& display);
 
@@ -59,11 +58,10 @@ struct Demos
 	void CK_logo(Adafruit_SSD1306& display);
 
 	//  space  ----
-	int sinit;
 	void SpaceInit();
 	void Star(int i);  // new
 	void Space(Adafruit_SSD1306& display);
 
 	//void Cube3D
-	//void Fountain
+	//void Fountain  Spiral
 };

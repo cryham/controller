@@ -9,6 +9,8 @@ extern "C" {
 	#include <output_com.h>
 	#include <usb_hid.h>
 }
+	#define W 128  // area
+	#define H 64
 
 //  Main
 // ....................................................................................
@@ -18,13 +20,16 @@ Demos::Demos()
 }
 void Demos::Init()
 {
-	fps = 0;  //
-	iCurrent = 0;
-	iAllCount = 12;  //par
+	sCnt = 80;
+	//  40-150     40-80       2-3
+	bCnt = 80;  bSpd = 40;  bRad = 3;
+
+	fps = 1;  //par
+	iCurrent = 3;  iAllCount = 12;
 	ti = 0;  oti = 0;
 
 	SinInit();
-	binit = 0;  sinit = 0;
+	einit = INone;
 	n = 3;  u = 0;  // Ngons
 }
 
@@ -91,30 +96,28 @@ void Demos::Next(int dir)
 void Demos::BallsInit()
 {
 	for (int i=0; i<bCnt; i++)
-	{
-		rb[i] = random(bRad);
-		xb[i] = random(W)*bDet;  yb[i] = random(H)*bDet;
-		vb[i] = random(bSpd+1)-bSpd/2;  zb[i] = random(bSpd+1)-bSpd/2;
+	{	Ball& b = ball[i];     b.r = random(bRad);
+		b.x = random(W)*bDet;  b.vx = random(bSpd+1)-bSpd/2;
+		b.y = random(H)*bDet;  b.vy = random(bSpd+1)-bSpd/2;
 	}
-	binit = 1;  sinit = 0;
+	einit = IBalls;
 }
-
 
 void Demos::Balls(Adafruit_SSD1306& d)
 {
-	if (!binit)
+	if (einit != IBalls)
 		BallsInit();
 	
 	for (int i=0; i < bCnt; i++)
-	{
-		if (xb[i] < 0 || xb[i] >= W*bDet-1)  vb[i] = -vb[i];
-		if (yb[i] < 0 || yb[i] >= H*bDet-1)  zb[i] = -zb[i];
-		xb[i] += vb[i];  yb[i] += zb[i];
+	{	Ball& b = ball[i];
+		if (b.x < 0 || b.x >= W*bDet-1)  b.vx = -b.vx;
+		if (b.y < 0 || b.y >= H*bDet-1)  b.vy = -b.vy;
+		b.x += b.vx;  b.y += b.vy;
 
-		if (rb[i]==0)
-			d.drawPixel(xb[i]/bDet, yb[i]/bDet, WHITE);
+		if (b.r==0)
+			d.drawPixel(b.x/bDet, b.y/bDet, WHITE);
 		else
-			d.drawCircle(xb[i]/bDet, yb[i]/bDet, rb[i], WHITE);
+			d.drawCircle(b.x/bDet, b.y/bDet, b.r, WHITE);
 	}
 }
 
@@ -152,7 +155,9 @@ void Demos::Rain(Adafruit_SSD1306& d)
 	{
 		x = random(W);  y = random(H);  r = random(26);
 		d.drawCircle(x,y,r,BLACK);
-		x = random(W);  y = random(H);  r = random(36);
+		x = random(W);  y = random(H);  r = random(24);
+		d.drawCircle(x,y,r,BLACK);
+		x = random(W);  y = random(H);  r = random(20);
 		d.drawCircle(x,y,r,BLACK);
 		x = random(W);  y = random(H);  r = random(10);
 		d.drawCircle(x,y,r,WHITE);
@@ -267,39 +272,40 @@ void Demos::SpaceInit()
 {
 	for (int i=0; i<sCnt; i++)
 		Star(i);
-	sinit = 1;  binit = 0;
+	einit = ISpace;
 }
-#define sRng 3000  // range
+#define sRng 3000  // init range
 #define sDet 4  // detail
+
 const static int
-	sSpdMin = 2*sDet, sSpdMax=4*sDet,  // speed min,max
+	sSpdMin = 2*sDet, sSpdMax=4*sDet,   // speed min,max
 	sNear = sDet*200, sFar = sDet*750;  // range: cut off, new appear
 
 void Demos::Star(int i)
 {
-	xb[i] = (random(W*sRng) -W*sRng/2) * sDet;
-	yb[i] = (random(H*sRng) -H*sRng/2) * sDet;
-	zb[i] = random(sFar) + sNear;   // depth
-	vb[i] = random(sSpdMax) + sSpdMin;  // speed
+	star[i].x = (random(W*sRng) -W*sRng/2) * sDet;
+	star[i].y = (random(H*sRng) -H*sRng/2) * sDet;
+	star[i].z = random(sFar) + sNear;   // depth
+	star[i].v = random(sSpdMax) + sSpdMin;  // speed
 }
 void Demos::Space(Adafruit_SSD1306& d)
 {
-	if (!sinit)
+	if (einit != ISpace)
 		SpaceInit();
 	
 	for (int i=0; i < sCnt; i++)
 	{
-		int z = zb[i] + 1*sDet;
-		int x = xb[i]/z / sDet +W/2;
-		int y = yb[i]/z / sDet +H/2;
+		int z = star[i].z + 1*sDet;
+		int x = star[i].x/z / sDet +W/2;
+		int y = star[i].y/z / sDet +H/2;
 		d.drawPixel(x,y, WHITE);
 			
-		zb[i] -= vb[i];
+		star[i].z -= star[i].v;
 		if (x < 0 || x > W ||
 			y < 0 || y > H ||  // outside
-			zb[i] < sNear)  // too close
+			star[i].z < sNear)  // too close
 		{
-			Star(i);  zb[i] = sNear+sFar;
+			Star(i);  star[i].z = sNear+sFar;
 		}
 	}
 	delay(8);  // ms - limit to 100 fps
