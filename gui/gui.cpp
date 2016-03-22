@@ -6,6 +6,7 @@
 //#ifdef KII
 extern "C" {
 	#include <scan_loop.h>
+	#include <macro.h>
 	#include <output_com.h>
 	#include <usb_hid.h>
 }
@@ -118,7 +119,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	if (!menu)  return;
 
 	d.setFont(&FreeSans9pt7b);
-	d.setCursor(0, 0);  //12
+	d.setCursor(0, 0);
 	//d.drawPixel(0,0,1);  d.drawPixel(64,0,1);  d.drawPixel(127,0,1);
 	//d.drawPixel(0,63,1); d.drawPixel(127,63,1);
 	if (!edit)
@@ -243,10 +244,13 @@ void Gui::KeyPress()
 			}
 		}
 	}
-	else  //  seq..  -----
+	else  //  seqence execute  -----
 	{
-		#if 0
+		#if 1
 		int q = -1;
+		for (int i=0; i < 10; ++i)
+			if (kk[KEY_1+i] && !kko[KEY_1+i])
+				q = i;
 		if (kk[KEY_B] && !kko[KEY_B])
 			q = 0;
 		if (kk[KEY_UP] && !kko[KEY_UP])
@@ -255,16 +259,16 @@ void Gui::KeyPress()
 		//  output sequence to usb
 		if (q>=0 && seql[q])
 		{
-			uint8_t sh=0,ct=0,al=0;  // modifiers are toggleable
+			int8_t sh=0,ct=0,al=0;  // modifiers are toggleable
 			for (int n=0; n < seql[q]; ++n)
 			{
 				uint8_t k = seq[q][n];
 				//  modifier press  or release when 2nd time
-				if (k==KEY_CTRL)
+				if (k==KEY_CTRL || k==KEY_RCTRL)
 				{	ct = 1-ct;  if (ct==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
-				else if (k==KEY_SHIFT)
+				else if (k==KEY_SHIFT || k==KEY_RSHIFT)
 				{	sh = 1-sh;  if (sh==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
-				else if (k==KEY_ALT)
+				else if (k==KEY_ALT || k==KEY_RALT)
 				{	al = 1-al;  if (al==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
 				else
 				{	// key press and release
