@@ -133,7 +133,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.print(i==ym ? ar:" ");
 			switch (i)
 			{
-				case MSeq:    d.println("Seqences");  break;
+				case MSeq:    d.println("Sequences");  break;
 				case MDemos:  d.println("Demos");  break;
 				case MText:   d.println("Text");  break;
 				case MPlasma: d.println("Plasma");  break;

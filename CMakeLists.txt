@@ -78,7 +78,7 @@ set( OutputModule "pjrcUSB"
 )
 
 ##| Debugging source to use, each module has it's own set of defines that it sets
-set(  DebugModule "full"
+set(  DebugModule "none"
 	CACHE STRING "Debug Module"
 )
 
@@ -120,7 +120,7 @@ set(  DefaultMap "ck3overlay"
 
 ##| ParitalMaps available on top of the BaseMap. See above for syntax on specifying multiple layers vs. layering
 ##| Can be set to ""
-set( PartialMaps "ck3layerUC"
+set( PartialMaps "ck3layerUC" "ck3layer2"
 	CACHE STRING "KLL PartialMaps/Layer Definitions" )
 
 
