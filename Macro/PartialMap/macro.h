@@ -32,3 +32,4 @@ void Macro_interconnectAdd( void *trigger ); // triggers is of type TriggerGuide
 void Macro_process();
 void Macro_setup();
 
+extern uint8_t layersCnt, layersOn[16];

@@ -167,6 +167,8 @@ uint8_t macroInterconnectCacheSize = 0;
 
 // ----- Capabilities -----
 
+uint8_t layersCnt=0, layersOn[16]={0,};
+
 // Sets the given layer with the specified layerState
 void Macro_layerState( uint8_t state, uint8_t stateType, uint16_t layer, uint8_t layerState )
 {
@@ -221,6 +223,13 @@ void Macro_layerState( uint8_t state, uint8_t stateType, uint16_t layer, uint8_t
 
 		// Reduce LayerIndexStack size
 		macroLayerIndexStackSize--;
+	}
+	
+	///  get layers on, copy for info
+	layersCnt = macroLayerIndexStackSize;
+	for (int i = 0; i < macroLayerIndexStackSize; ++i)
+	{
+		layersOn[i] = macroLayerIndexStack[i];
 	}
 
 	// Layer Debug Mode
