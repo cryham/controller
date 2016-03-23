@@ -2,7 +2,7 @@
 #include "gui.h"  // menu ym etc
 #define PROGMEM
 #include "FreeSans9pt7b.h"
-#include "FreeSans12pt7b.h"
+//#include "FreeSans12pt7b.h"
 //#include "FreeSans18pt7b.h"
 //#include "FreeSansBold9pt7b.h"
 extern "C" {
@@ -85,7 +85,8 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 
 void Demos::KeyPress()
 {
-	if (kk[KEY_B] && !kko[KEY_B])
+	if (kk[KEY_B] && !kko[KEY_B])  //-
+	if (kk[KEY_END] && !kko[KEY_END])
 		fps = 1-fps;
 }
 
@@ -166,7 +167,7 @@ void Demos::Rain2(Adafruit_SSD1306& d)
 void Demos::Font_ver(Adafruit_SSD1306& d)
 {
 	d.setCursor(0,10);  // logo
-	d.setFont(&FreeSans12pt7b);  d.print("CrystaL");
+	d.setFont(&FreeSans9pt7b/*FreeSans12pt7b*/);  d.print("CrystaL");
 	d.setCursor(36,32);
 	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
 	d.setCursor(96,0);  // ver

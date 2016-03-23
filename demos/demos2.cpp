@@ -85,9 +85,9 @@ void Demos::Cube(Adafruit_SSD1306& d)
 	#define s 426
 	#define zz 256*4
 	++t;
-	float rx = t*0.016, cx = cos(rx), sx = sin(rx);
-	float ry = t*0.017, cy = cos(ry), sy = sin(ry);
-	float rz = t*0.015, cz = cos(rz), sz = sin(rz);
+	float rx = t*0.010, cx = cos(rx), sx = sin(rx);
+	float ry = t*0.013, cy = cos(ry), sy = sin(ry);
+	float rz = t*0.016, cz = cos(rz), sz = sin(rz);
 	float mx[3][3] = {{1,0,0},{0,cx,-sx},{0,sx,cx}};
 	float my[3][3] = {{cy,0,sy},{0,1,0},{-sy,0,cy}};
 	float mz[3][3] = {{cz,-sz,0},{sz,cz,0},{0,0,1}};

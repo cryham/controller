@@ -135,7 +135,7 @@ void Demos::Plasma2(uint8_t* buf)
 void Demos::Plasma3(uint8_t* buf)
 {
 	uint y0 = 0;
-	uint tt[16]={t*9,t*16,t*5,t*4, t*14,t*3,t*7,t*16, t*5,t*13,t*4,t*8, t*2,t*6,t*10,t*11};
+	uint tt[16]={t*9,t*12,t*5,t*4, t*14,t*3,t*7,t*12, t*5,t*13,t*4,t*8, t*2,t*6,t*10,t*11};
 	uint yy[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 
 	for (uint y=0; y<SSD1306_LCDHEIGHT; ++y)
@@ -157,7 +157,7 @@ void Demos::Plasma3(uint8_t* buf)
 			c+= 5*Cos( yy[9] +xx[9]+tt[12])* Sin( xx[10]+yy[7]+tt[13]);
 			c-= 5*Cos( yy[11]      +tt[14])* Sin( xx[11]+yy[10]+tt[15]);
 			c = abs(c);
-			xx[0]+=211; xx[1]+=75; xx[2]+=100; xx[3]+=97; xx[4]+=154; xx[5]+=143;
+			xx[0]+=111; xx[1]+=75; xx[2]+=100; xx[3]+=97; xx[4]+=154; xx[5]+=143;
 			xx[6]+=131; xx[7]+=53; xx[8]+=144; xx[9]+=88; xx[10]+=132; xx[11]+=17;
 		
 			//  dither 4
