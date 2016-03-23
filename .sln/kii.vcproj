@@ -737,6 +737,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\demos\demos2.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\demos\plasma.cpp"
 				>
 			</File>
