@@ -43,7 +43,7 @@ void Scan_currentChange( unsigned int current ); // Called by Output Module
 
 // ----- Capabilities -----
 
-extern uint8_t kk[0xF0], kko[0xF0];  // keys state, old state, 0,1
+extern uint8_t kk[0xFF], kko[0xFF];  // keys state, old state, 0,1
 
 // Example capabilities
 void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t *args );

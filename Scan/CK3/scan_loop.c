@@ -100,7 +100,7 @@ inline void Scan_finishedWithOutput( uint8_t sentKeys )
 
 /// ==---  Key states  ---==
 
-uint8_t kko[0xF0] = {0,}, kk[0xF0] = {0,};  // bool
+uint8_t kko[0xFF] = {0,}, kk[0xFF] = {0,};  // bool
 
 
 /// -----  Capabilities  -----

@@ -1,7 +1,6 @@
 #include "gui.h"
 #define PROGMEM
 #include "FreeSans9pt7b.h"
-//#include "FreeSans12pt7b.h"
 
 //#ifdef KII
 extern "C" {
@@ -12,11 +11,11 @@ extern "C" {
 }
 //#endif
 
-//  string from usb hid code
-const char str[0xF0][6] = { ".",".",".",".", /*04*/"A","B","C","D",
+///  string from usb hid code
+const char str[0x73][6] = { ".",".",".",".", /*04*/"A","B","C","D",
 /*08*/"E","F","G","H","I","J","K","L", /*10*/"M","N","O","P","Q","R","S","T",
 /*18*/"U","V","W","X","Y","Z","1","2", /*20*/"3","4","5","6","7","8","9","0",
-/*28*/"Enter","Esc","BckSp","Tab","Space",
+/*28*/"Ent","Esc","Bck","Tab","Spc",
 /*2D*/"-","=","[","]","\\", /*32*/"NUM-",";","\"","`",",",".", "/","CapsL",
 /*3A*/"F1","F2","F3","F4", "F5", "F6",
 /*40*/"F7","F8","F9","F10","F11","F12", /*46*/"PtrSc","ScrL","Pause",
@@ -24,14 +23,19 @@ const char str[0xF0][6] = { ".",".",".",".", /*04*/"A","B","C","D",
 /*4F*/{26,0},{27,0},{25,0},{24,0},
 /*53*/"NumL","P/","P*","P-","P+","PEnt",
 /*59*/"P1","P2","P3","P4","P5","P6","P7","P8","P9","P0","P.",
-/*68*/"F13","F14","F15","F16","F17","F18","F19","F20","F21","F22","F23","F24",
-/*E0*/ "Ctr", "Shi", "Alt", "Gui",
-//*E4*/"LCtr","LShi","LAlt","LGui"
-/*E4*/"RCtr","RShi","RAlt","RGui",};
+/*68*/"F13","F14","F15","F16","F17","F18","F19","F20","F21","F22","F23","F24"};
+/*..*/
+const char mod[0x08][6] = {
+/*E0*/"Ct","Sh","Al","Gui", //L
+/*E4*/"Ct","Sh","Al","Gui", //R
+};
+#define STR(k)  (k >= 0xE0 ? mod[k-0xE0] : k <= 0x73 ? str[k] : "()")
+
+///-----------------  //par  demo counts
+const uint8_t Gui::YM2[MAll] = { iPage, 9, 4, 4 };
 
 
 //  Main  ----
-
 Gui::Gui()
 {
 	Init();
@@ -54,6 +58,7 @@ void Gui::Clear()
 	memset(seq,0,sizeof(seq));
 	infType = 0;
 }
+
 
 //  load, save seq in eeprom
 //........................................
@@ -103,16 +108,14 @@ void Gui::Save()  //  Save
 	memSize = a;  infType = 2;
 }
 
-//.............
-const uint8_t Gui::YM2[MAll] = { iPage, 9, 4, 4 };  ///par
-
 
 //  Draw, settings
 //....................................................................................
+const static char ar[2]={16,0};  //>
+
 void Gui::Draw(Adafruit_SSD1306& d)
 {
 	if (!menu)  return;
-	const char ar[2]={16,0};  //>
 
 	if (mlevel==0 || mlevel==1 && ym == MSeq || iInfo > 0)
 	{
@@ -127,7 +130,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	{
 		d.print("Menu");  d.setFont(0);
 
-		d.setCursor(0,16);
+		d.setCursor(0, 16);
 		for (int i=0; i < MAll; ++i)
 		{
 			d.print(i==ym ? ar:" ");
@@ -153,20 +156,25 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		{
 			d.setCursor(0, 16 + i*8);
 			//d.print(i==slot ? ar:" ");   d.print(s);  d.print(": ");
-			d.print(s);  d.print(i==slot ? ar:" ");
+			d.print(s+1);  d.print(i==slot ? ar:" ");
 			
-			//  write sequence
+			//  write sequence  ---
 			n=0;  x=0;  xm=1;
 			#define W 128
-			#define xmax  W-6*5
 			while (n < seql[s] && xm)
 			{
-				const char* st = str[seq[s][n]];
+				uint8_t z = seq[s][n];
+				const char* st = STR(z);
 				if (d.getCursorX() + 6*strlen(st) >= W -6*2)  // outside
-				{	d.print("..");  xm = 0;  // more sign
+				{	d.print(".");
+					d.setCursor(d.getCursorX()-3, d.getCursorY());  // cur x-=3
+					d.print(".");
+					xm = 0;  // more sign
 				}else
-				{	d.print(st);  ++n;  }
-			}
+				{	d.print(st);  //d.print(" ");
+					d.setCursor(d.getCursorX()+2, d.getCursorY());  // cur x+=2
+					++n;
+			}	}
 		}
 		//  page, center   / 
 		d.setCursor(58, 4);
@@ -175,22 +183,23 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	else
 	{	d.print("Edit");  d.setFont(0);
 		int q = slot + page*iPage;
-		//d.setCursor(80,4);
-		//d.print("Slot:");  d.print(q);
-		d.setCursor(104,4);  d.print(q);
+		d.setCursor(104, 4);  d.print(q+1);
 
-		//  write sequence
-		d.setCursor(0,16);
+		//  write sequence  ---
+		d.setCursor(0, 24);
 		int n;
 		for (n=0; n < seql[q]; ++n)
 		{
-			d.print(str[seq[q][n]]);  //d.print(" ");
+			uint8_t z = seq[q][n];
+			d.print(STR(z));
+			d.print(" ");
+			//d.print("(");  d.print(seq[q][n],16);  d.print(") ");
 		}
 	}
 	d.setFont(0);
 
 	//  info layers stack  - -
-	/*d.setCursor(20,10);
+	/*d.setCursor(20, 10);
 	for (int l=0; l < layersCnt; ++l)
 	{	d.print(layersOn[l]);  d.print(" ");  }
 	/**/
@@ -199,14 +208,13 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	{	--iInfo;
 		int x = 90;
 
-		d.setCursor(x,0);
+		d.setCursor(x, 0);
 		d.print(infType==2 ? "Saved:" :
 				infType==1 ? "Load:" : "Reset");
 		if (infType > 0)
 		{
-			d.setCursor(x+12,8);
-			d.print(memSize);
-			d.print(" B");
+			d.setCursor(x+6, 8);
+			d.print(memSize);  d.print(" B");
 	}	}
 }
 
@@ -216,16 +224,19 @@ void Gui::Draw(Adafruit_SSD1306& d)
 void Gui::KeyPress()
 {
 	//  Menu = Layer1, Function1
-	menu = 0;
+	menu = 0;  int8_t lay2 = 0;
 	for (int l=0; l < layersCnt; ++l)
-		if (layersOn[l] == 1)  menu = 1;
-
-	//if (kk[KEY_A] && !kko[KEY_A])
-	//{	menu = 1-menu;  return;  }
+		if (layersOn[l] == 1)  menu = 1; else
+		if (layersOn[l] == 2)  lay2 = 1;
 	
+	//digitalWrite(14, lay2 ? HIGH : LOW);
+	//digitalWrite(26, lay2 ? HIGH : LOW);
+
+
 	if (menu)
 	{
-		#define KEY_EDIT  KEY_RIGHT
+		//#define KEY_EDIT  KEY_RIGHT
+		#define KEY_EDIT  KEY_ENTER
 		if (ym == MSeq && mlevel > 0)
 		{
 			if (edit)
@@ -245,17 +256,13 @@ void Gui::KeyPress()
 					edpos++;  seql[q]++;
 				}
 			}else{
-				/*if (kk[KEY_LEFT] && !kko[KEY_LEFT])  //  next pages
-				{
-					++page;
-					if (page >= iSlots/iPage)  page = 0;
-				}/**/
-				if (kk[KEY_B] && !kko[KEY_B])  // save
+				if (kk[KEY_S] && !kko[KEY_S] ||
+					kk[KEY_B] && !kko[KEY_B])  //- save
 				{
 					Save();  iInfo = 400;
 				}
 		
-				if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+				if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // move
 				{	++slot;  if (slot >= iPage) {  slot = 0;
 					++page;  if (page >= iSlots/iPage)  page = 0;
 				}	}
@@ -263,6 +270,12 @@ void Gui::KeyPress()
 				{	--slot;  if (slot < 0) {  slot = iPage-1;
 					--page;  if (page < 0)  page = iSlots/iPage-1;
 				}	}
+				if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  // page
+				{	++page;  if (page >= iSlots/iPage)  page = 0;
+				}
+				if (kk[KEY_PAGE_UP] && !kko[KEY_PAGE_UP])
+				{	--page;  if (page < 0)  page = iSlots/iPage-1;
+				}
 			}
 
 			if (kk[KEY_EDIT] && !kko[KEY_EDIT])  //  toggle edit
@@ -303,42 +316,49 @@ void Gui::KeyPress()
 	}
 	
 	
-	if (!menu)  //  seqence execute  -----
+	//  seqence execute  -----
+	if (!menu && lay2)
 	{
-		#if 1
-		int q = -1;
-		for (int i=0; i < 10; ++i)
+		int q = -1, i, n;
+		for (i=0; i < 10; ++i)
 			if (kk[KEY_1+i] && !kko[KEY_1+i])
 				q = i;
-		if (kk[KEY_B] && !kko[KEY_B])
-			q = 0;
-		if (kk[KEY_UP] && !kko[KEY_UP])
-			q = 1;
+		for (i=0; i < 10; ++i)
+			if (kk[KEY_A+i] && !kko[KEY_A+i])
+				q = i+10;
 
-		//  output sequence to usb
-		if (q>=0 && seql[q])
+		if (kk[KEY_X] && !kko[KEY_X])  q = 0;
+		if (kk[KEY_C] && !kko[KEY_C])  q = 1;
+		if (kk[KEY_V] && !kko[KEY_V])  q = 2;
+		
+		//  output sequence to usb  ----
+		if (q >= 0 && q < iSlots && seql[q])
 		{
-			int8_t sh=0,ct=0,al=0;  // modifiers are toggleable
-			for (int n=0; n < seql[q]; ++n)
+			int8_t md[8];  // modifiers state, toggleable
+			for (n=0; n < 8; ++n)  md[n]=0;
+			
+			for (n=0; n < seql[q]; ++n)
 			{
-				uint8_t k = seq[q][n];
+				uint8_t k = seq[q][n], m = k-KEY_LCTRL;
 				//  modifier press  or release when 2nd time
-				if (k==KEY_CTRL || k==KEY_RCTRL)
-				{	ct = 1-ct;  if (ct==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
-				else if (k==KEY_SHIFT || k==KEY_RSHIFT)
-				{	sh = 1-sh;  if (sh==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
-				else if (k==KEY_ALT || k==KEY_RALT)
-				{	al = 1-al;  if (al==0)  k = 0;  Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
+				if (m >= 0 && m < 8)
+				{	md[m]  = 1 - md[m];  if (md[m]==0)  k = 0;
+					Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
 				else
 				{	// key press and release
 					Output_usbCodeSend_capability(1, 0, &k);  Output_send();  k = 0;
 					Output_usbCodeSend_capability(1, 0, &k);  Output_send();
 				}
+				
+				//  last
+				if (n == seql[q]-1)
+				{	// check if modifiers are left, send clear
+					//..
+				}
 			}
-			//todo? move use to scan.c
+			///todo? move use to scan.c
 			// add actionSeq, binding in kll
 			// shift etc ed, display uppercase,
 		}
-		#endif
 	}
 }

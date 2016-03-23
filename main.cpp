@@ -57,10 +57,10 @@ int main()
 	Macro_setup();  Scan_setup();
 	#endif
 
-	//pinMode(12, OUTPUT);  // test led
-	pinMode(14, OUTPUT);
-	//digitalWrite(12, HIGH);
-	digitalWrite(14, LOW);
+	//pinMode(14, OUTPUT);  //L blue led
+	//pinMode(26, OUTPUT);  //R orange
+	//digitalWrite(14, LOW);
+	//digitalWrite(26, LOW);
 
 	//  display
 	pinMode(OLED_DC, OUTPUT);
@@ -154,7 +154,7 @@ int main()
 		gui.KeyPress();
 		
 		//  old key states  ---
-		for (int i=0; i<0xF0; ++i)
+		for (int i=0; i < 0xFF; ++i)
 			kko[i] = kk[i];
 		#endif
 	}
