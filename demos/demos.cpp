@@ -39,7 +39,8 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 			case 2:  einit = INone;  bCnt = 80;  bSpd = 80;  bRad = 3;  break;
 			case 3:  einit = INone;  bCnt = 150; bSpd = 40;  bRad = 2;  break;
 			
-			case 7:  ngCur = ngMin;  ngt = 0;  // Ngons
+			case 7:  ngCur = ngMin;  ngt = 0;  break;  // Ngons
+			case 8:  hdCur = 0;  hdt = 0;  break;  // Hedrons
 		}
 		switch (y2)
 		{
@@ -53,7 +54,7 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 			case 6: d.clearDisplay();	Fountain(d);  break;
 			
 			case 7: d.clearDisplay();	Ngons(d);  break;
-			case 8: d.clearDisplay();	Cube(d);  break;
+			case 8: d.clearDisplay();	Hedrons(d);  break;
 		}
 		iPrev = y2;
 	}

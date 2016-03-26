@@ -112,6 +112,8 @@ int main()
 		uint8_t any = 
 			#ifdef KII
 			gui.menu || 
+			#else
+			1 || 
 			#endif
 			demos.fps ? 1 : 0;/**/
 
@@ -128,8 +130,12 @@ int main()
 		{
 			if (ii > 50)
 			{
+				#ifdef KII
 				demos.Draw(display, gui.menu && gui.mlevel > 0,
 					gui.ym, gui.ym2[gui.ym]);
+				#else
+				demos.Draw(display, 1, 1, 8);
+				#endif
 				
 				#ifdef TIM
 				display.setFont(0);

@@ -45,6 +45,7 @@ void Gui::Init()
 	mlevel = 0;  ym = 0;
 	for (int i=0; i < MAll; ++i)
 		ym2[i]=0;
+
 	menu = 0;  edit = 0;
 	slot = 0;  page = 0;  edpos = 0;
 

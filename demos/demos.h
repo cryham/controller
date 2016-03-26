@@ -57,7 +57,7 @@ struct Demos
 	void Ngons(D);
 	void Rain(D), Rain2(D);
 	
-	void Chars(D, uint8_t set=0);
+	void Chars(D, uint8_t set=0);  // text
 	void Font_ver(D);  // Logo
 	void CK_logo(D);
 
@@ -70,7 +70,10 @@ struct Demos
 	void FountainInit();
 	void Fountain(D);
 
-	void Cube(D);
+	//  polyhedrons 3D
+	int8_t hdCur;  int16_t hdt;
+	void Hedrons(D);
+	
 	//void Spiral..
 	#undef D
 };
