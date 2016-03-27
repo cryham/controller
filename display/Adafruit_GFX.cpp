@@ -604,6 +604,11 @@ void Adafruit_GFX::setCursor(int16_t x, int16_t y) {
   cursor_y = y;
 }
 
+void Adafruit_GFX::moveCursor(int16_t dx, int16_t dy) {
+  cursor_x += dx;
+  cursor_y += dy;
+}
+
 int16_t Adafruit_GFX::getCursorX(void) const {
   return cursor_x;
 }

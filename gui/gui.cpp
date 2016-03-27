@@ -167,13 +167,11 @@ void Gui::Draw(Adafruit_SSD1306& d)
 				uint8_t z = seq[s][n];
 				const char* st = STR(z);
 				if (d.getCursorX() + 6*strlen(st) >= W -6*2)  // outside
-				{	d.print(".");
-					d.setCursor(d.getCursorX()-3, d.getCursorY());  // cur x-=3
-					d.print(".");
-					xm = 0;  // more sign
+				{	d.print(".");  d.moveCursor(-3,0);
+					d.print(".");  xm = 0;  // more sign
 				}else
 				{	d.print(st);  //d.print(" ");
-					d.setCursor(d.getCursorX()+2, d.getCursorY());  // cur x+=2
+					d.moveCursor(2,0);
 					++n;
 			}	}
 		}
@@ -230,7 +228,7 @@ void Gui::KeyPress()
 		if (layersOn[l] == 1)  menu = 1; else
 		if (layersOn[l] == 2)  lay2 = 1;
 	
-	//digitalWrite(14, lay2 ? HIGH : LOW);
+	digitalWrite(14, lay2 ? HIGH : LOW);
 	//digitalWrite(26, lay2 ? HIGH : LOW);
 
 
