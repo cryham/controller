@@ -9,6 +9,8 @@
 void Demos::SinInit()
 {
 	t = 1210;
+	tadd[0]=2; tadd[1]=1;  tadd[2]=2; tadd[3]=5; tadd[4]=5;
+
 	for (int i=0; i < SX; ++i)
 		sint[i] = sin(2.f*PI * i/SX) * (SY-1);
 }
@@ -67,7 +69,7 @@ void Demos::Plasma0(uint8_t* buf)
 		}
 		yy+=60;
 		++y8;  if (y8==8) y8=0;
-	}	t+=2;
+	}	t+=tadd[0];
 }
 
 void Demos::Plasma1(uint8_t* buf)
@@ -112,7 +114,7 @@ void Demos::Plasma1(uint8_t* buf)
 		}
 		yy[0]+=155;  yy[1]+=131;
 		++y8;  if (y8==8) y8=0;
-	}	t+=1;
+	}	t+=tadd[1];
 }
 
 void Demos::Plasma2(uint8_t* buf)
@@ -148,7 +150,7 @@ void Demos::Plasma2(uint8_t* buf)
 		}
 		yy[0]+=66; yy[1]+=51; yy[2]+=166; yy[3]+=6; yy[4]+=151; yy[5]+=4;
 		++y8;  if (y8==8) y8=0;
-	}	t+=2;
+	}	t+=tadd[2];
 }
 
 void Demos::Plasma3(uint8_t* buf)
@@ -189,7 +191,7 @@ void Demos::Plasma3(uint8_t* buf)
 		yy[0]+=71; yy[1]+=93; yy[2]+=128; yy[3]+=151; yy[4]+=78; yy[5]+=149;
 		yy[6]+=136; yy[7]+=56; yy[8]+=213; yy[9]+=109; yy[10]+=82; yy[11]+=132;
 		++y8;  if (y8==8) y8=0;
-	}	t+=5;
+	}	t+=tadd[3];
 }
 
 void Demos::Plasma4(uint8_t* buf)
@@ -244,6 +246,6 @@ void Demos::Plasma4(uint8_t* buf)
 		yy[12]+=266; yy[13]+=283; yy[14]+=48; yy[15]+=351; yy[16]+=377; yy[17]+=39;
 		yy[18]+=16; yy[19]+=86; yy[20]+=13; yy[21]+=11; yy[22]+=74; yy[23]+=17;
 		//++y8;  if (y8==8) y8=0;
-	}	t+=5;
+	}	t+=tadd[4];
 }
 

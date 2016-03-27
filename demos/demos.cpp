@@ -1,18 +1,17 @@
 #include "demos.h"
-#include "gui.h"  // menu ym etc
+#include "gui.h"  // menu enum, ym etc
 #define PROGMEM
 #include "FreeSans9pt7b.h"
 //#include "FreeSans12pt7b.h"
 //#include "FreeSans18pt7b.h"
 //#include "FreeSansBold9pt7b.h"
 extern "C" {
-	#include <scan_loop.h>
-	#include <output_com.h>
-	#include <usb_hid.h>
+	#include <scan_loop.h>  // keys kk
+	//#include <output_com.h>
+	#include <usb_hid.h>  // key_defs
 }
 
 //  Main
-//....................................................................................
 Demos::Demos()
 {
 	Init();
@@ -24,8 +23,12 @@ void Demos::Init()
 
 	SinInit();
 	einit = INone;  iPrev = -1;
+	
+	hdCur = 0;  hdRot = 0;
 }
 
+//  Draw
+//....................................................................................
 void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 {
 	if (menu)
@@ -40,7 +43,7 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 			case 3:  einit = INone;  bCnt = 150; bSpd = 40;  bRad = 2;  break;
 			
 			case 7:  ngCur = ngMin;  ngt = 0;  break;  // Ngons
-			case 8:  hdCur = 0;  hdt = 0;  break;  // Hedrons
+			case 8:  hdt = 0;  hdtOn = 1;  break;  // Hedrons
 		}
 		switch (y2)
 		{
@@ -69,25 +72,57 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 	else if (y == MPlasma)
 	switch (y2)
 	{
-		case 0: Plasma1(d.getBuffer());  break;
-		case 1: Plasma2(d.getBuffer());  break;
-		case 2: Plasma3(d.getBuffer());  break;
 		case 3: Plasma4(d.getBuffer());  break;
+		case 2: Plasma3(d.getBuffer());  break;
+		case 1: Plasma2(d.getBuffer());  break;
+		case 0: Plasma1(d.getBuffer());  break;
 	}
 
-	if (fps)  // fps
+	if (fps)  /// fps
 	{
 		oti = ti;  ti = micros();
+		//if (!menu)  // clear backgr
+		//	d.fillRect(0,0,3*8,5);
 		d.setFont(0);
 		d.setCursor(0,0);
+		d.setTextColor(WHITE,BLACK);  // with backgr
 		d.println(int16_t(1000000.f/(ti-oti)));
+		d.setTextColor(WHITE);  // transp
 	}
 }
 
-void Demos::KeyPress()
+//  Key Press  demo params
+//....................................................................................
+void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 {
-	if (kk[KEY_B] && !kko[KEY_B])  //-
-	if (kk[KEY_END] && !kko[KEY_END])
+	int k = 0, e = 0;
+	if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  k = 1;
+	if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  k =-1;
+	if (kk[KEY_END] && !kko[KEY_END])  e = 1;
+
+	if (demo && (k || e))
+	if (y == MDemos)
+		switch (y2)
+		{
+		case 8:
+			hdtOn = 0;  // manual
+			hdCur = (hdCur + k + hdA) % hdA;
+			if (e)
+			{	++hdRot;
+				if (hdRot >= hdRotMax)  hdRot = 0;  }
+			break;
+		}
+	/*else if (y == MText)
+		switch (y2)
+		{
+		case 0:  break;
+		}*/
+	else if (y == MPlasma)
+		tadd[y2+1] += k;  // speed
+
+	
+	if (kk[KEY_B] && !kko[KEY_B] ||  /// fps
+		kk[KEY_END] && !kko[KEY_END])
 		fps = 1-fps;
 }
 
@@ -219,11 +254,12 @@ void Demos::Balls(Adafruit_SSD1306& d)
 		if (b.y < 0 || b.y >= H*bDet-1)  b.vy = -b.vy;
 		b.x += b.vx;  b.y += b.vy;
 
-		if (b.r==0)
-			d.drawPixel(b.x/bDet, b.y/bDet, WHITE);
-		else
+		if (b.r)
 			d.drawCircle(b.x/bDet, b.y/bDet, b.r, WHITE);
+		else
+			d.drawPixel(b.x/bDet, b.y/bDet, WHITE);
 	}
+	//delay(6);
 }
 
 

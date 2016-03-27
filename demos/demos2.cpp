@@ -307,7 +307,7 @@ const uint8_t e0[NE0][2] = {   // edges
 
 
 //  ALL  --------
-#define ALL  11
+#define ALL  Demos::hdA
 #define A(a)  &a[0][0]
 const float*   ppA[ALL] = {A(p2),A(p1),A(p3),A(p3),A(p4),A(p4),A(p5),A(p5),A(p5) ,A(p5) ,A(p6)};
 const uint8_t* eeA[ALL] = {A(e2),A(e1),A(e3),A(e3),A(e4),A(e4),A(e5),A(e5),A(e5b),A(e5b),A(e6)};
@@ -316,39 +316,46 @@ const int      NPa[ALL] = {  NP2,  NP1,  NP3,  NP3,  NP4,  NP4,  NP5,  NP5,  NP5
 const int      NEa[ALL] = {  NE2,  NE1,  NE3,  NE3,  NE4,  NE4,  NE5,  NE5,  NE5b,  NE5b,  NE6};
 const int      NFa[ALL] = {    0,    0,    0,  NF3,    0,  NF4,    0,  NF5,    0 ,  NF5b,    0};
 const float    SCa[ALL] = {  1.2,  1.2,  1.3,  1.3, 1.35, 1.35, 1.35, 1.35,  1.35,  1.35, 1.45};
+#undef ALL
 
 
 ///  Draw 3D
 void Demos::Hedrons(Adafruit_SSD1306& d)
 {
-	const int hdMax = 400;  // cycle time
-	++hdt;
-	if (hdt >= hdMax)
-	{	hdt = 0;  ++hdCur;  // type
-		if (hdCur >= ALL)  hdCur = 0;  }
+	if (hdtOn)
+	{	++hdt;
+		if (hdt >= hdtMax)
+		{	hdt = 0;  ++hdCur;  // next type
+			if (hdCur >= hdA)  hdCur = 0;
+	}	}
 	const int u = hdCur;
 
+	const float SC = SCa[u];  // scale
+	float rx=0.f,ry=0.f,rz=0.f, s = SC, ss=1.f;
+	switch (hdRot)  //par rot speed
+	{	case 0:  rx = t*0.0055f;  ry = t*0.0065f;  rz = t*0.0075f;  break;
+		case 1:  rx = t*0.0061f;  ry = t*0.0084f;  rz = t*0.0077f;  break;
+		case 2:  rx = t*0.0067f;  ry = t*0.0098f;  rz = t*0.0083f;
+			ss = 1.0f - 0.4f * (abs(cos(t*0.0125f)));  break;
+		case 3:  ry = t*0.0060f;  rz = t*0.0020f;  break;
+	}
+
 	const int NP = NPa[u], NE = NEa[u], NF = NFa[u];
-	const float SC = SCa[u];
 	const float* pp = ppA[u];
 	const uint8_t* ee = eeA[u], *ff = ffA[u];
 
 	const float  ///par  z pos  screen scale
 		fovy = 30.f, zz = 3.f, se = 2.f,
-		fv = 1.f/tan(fovy*0.5f);
-	
-	const float s = SC,  // scale
-		//sc = t*0.0095f, s = SC*(1.1f+0.1f*cos(sc)),
-		rx = t*0.0055f, cx = cos(rx), sx = sin(rx),  ///par speed
-		ry = t*0.0065f, cy = cos(ry), sy = sin(ry),
-		rz = t*0.0075f, cz = cos(rz), sz = sin(rz),
+		fv = 1.f/tan(fovy*0.5f),  // const
+		cx = cos(rx), sx = sin(rx), cy = cos(ry), sy = sin(ry),
+		cz = cos(rz), sz = sin(rz),
 		mx[3][3] = {{1.f,0.f,0.f},{0.f,cx,-sx},{0.f,sx,cx}},  // rot x
 		my[3][3] = {{cy,0.f,sy},{0.f,1.f,0.f},{-sy,0.f,cy}},  // y
 		mz[3][3] = {{cz,-sz,0.f},{sz,cz,0.f},{0.f,0.f,1.f}};  // z
 
 
 	//  transform all points
-	uint8_t px[NP], py[NP], c[NP];
+	int16_t px[NP], py[NP];  int8_t c[NP];
 	int i, a;
 	for (i=0,a=0; i < NP; ++i)
 	{
@@ -365,12 +372,13 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 		v[0] = mz[0][0]*x +mz[0][1]*y +mz[0][2]*z;
 		v[1] = mz[1][0]*x +mz[1][1]*y +mz[1][2]*z;
 		v[2] = mz[2][0]*x +mz[2][1]*y +mz[2][2]*z;
-		x = v[0] * s;  y = v[1] * s;  z = v[2] * s + zz;
+		x = v[0] * s;  y = v[1] * s;  z = v[2] * s + ss*zz;
 
 		px[i] = H/2 * se * (fv * x / -z) +W/2;  // pos 3d to 2d
 		py[i] = H/2 * se * (fv * y / -z) +H/2;
 
-		c[i] = z < zz ? 1 : 0;  //5.0 - z * 2.0;
+		c[i] = z < 0.9f ? -1 : (z < zz ? 1 : 0);
+		//c[i] = z < zz ? 1 : 0;
 		//d.drawPixel(px[i], py[i],WHITE);
 	}
 	
@@ -378,8 +386,8 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 	for (i=0,a=0; i < NE; ++i)
 	{
 		int e0 = ee[a++], e1 = ee[a++];
-		uint8_t cc = max(c[e0],c[e1]);
-		if (!cc)
+		int8_t cc = max(c[e0],c[e1]);
+		if (cc==0)
 			d.drawLine( px[e0],py[e0], px[e1],py[e1], WHITE);
 	}
 
@@ -388,8 +396,8 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 	for (i=0,a=0; i < NF; ++i)
 	{
 		int f0 = ff[a++], f1 = ff[a++], f2 = ff[a++];
-		uint8_t cc = min(c[f0],c[f1]);  cc = min(cc,c[f2]);
-		if (!cc)
+		int8_t cc = min(c[f0],c[f1]);  cc = min(cc,c[f2]);
+		if (cc==0)
 			d.fillTriangle( px[f0],py[f0], px[f1],py[f1], px[f2],py[f2], WHITE);
 	}
 
@@ -402,8 +410,8 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 	for (i=0,a=0; i < NE; ++i)
 	{
 		int e0 = ee[a++], e1 = ee[a++];
-		uint8_t cc = max(c[e0],c[e1]);
-		if (cc)
+		int8_t cc = max(c[e0],c[e1]);
+		if (cc>0)
 			d.drawLine( px[e0],py[e0], px[e1],py[e1], WHITE);
 	}
 	
@@ -412,8 +420,8 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 	for (i=0,a=0; i < NF; ++i)
 	{
 		int f0 = ff[a++], f1 = ff[a++], f2 = ff[a++];
-		uint8_t cc = min(c[f0],c[f1]);  cc = min(cc,c[f2]);
-		if (cc)
+		int8_t cc = min(c[f0],c[f1]);  cc = min(cc,c[f2]);
+		if (cc>0)
 			d.fillTriangle( px[f0],py[f0], px[f1],py[f1], px[f2],py[f2], WHITE);
 	}
 	++t;

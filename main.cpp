@@ -78,7 +78,8 @@ int main()
 
 
 	//--------------------------------  loop
-	uint8_t anyold = 0;
+	#define iwait 50  // 2nd reset
+	int anyold = 0;
 	int ii = 0;
 	while (1)
 	{
@@ -109,7 +110,7 @@ int main()
 		}
 		
 		//--------------------------------  display
-		uint8_t any = 
+		int any = 
 			#ifdef KII
 			gui.menu || 
 			#else
@@ -118,23 +119,24 @@ int main()
 			demos.fps ? 1 : 0;/**/
 
 		//  clear on display off
-		if (!any && anyold && ii > 50)
+		if (!any && anyold && ii > iwait)
 		{
 			display.clearDisplay();
 			display.display();
 		}
-		if (ii > 50)
+		if (ii > iwait)
 			anyold = any;
+			
+		int demo = gui.menu && gui.mlevel > 0;
 		
 		if (any)
 		{
-			if (ii > 50)
+			if (ii > iwait)
 			{
 				#ifdef KII
-				demos.Draw(display, gui.menu && gui.mlevel > 0,
-					gui.ym, gui.ym2[gui.ym]);
+				demos.Draw(display, demo,  gui.ym, gui.ym2[gui.ym]);
 				#else
-				demos.Draw(display, 1, 1, 8);
+				demos.Draw(display, 1, 1, 8);  //par
 				#endif
 				
 				#ifdef TIM
@@ -154,8 +156,8 @@ int main()
 		
 		//if (ii % 300 == 200)  demos.Next();
 		#ifdef KII
-		if (gui.menu && gui.mlevel > 0 && gui.ym > 0)
-			demos.KeyPress();
+		if (gui.menu)
+			demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
 
 		gui.KeyPress();
 		
