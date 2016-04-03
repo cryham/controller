@@ -585,6 +585,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\kll\layouts\ck3layer3.kll"
+				>
+			</File>
+			<File
+				RelativePath="..\kll\layouts\ck3layer4.kll"
+				>
+			</File>
+			<File
 				RelativePath="..\kll\layouts\ck3layerUC.kll"
 				>
 			</File>
