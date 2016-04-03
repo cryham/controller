@@ -8,7 +8,7 @@ extern "C" {
 	#include <macro.h>
 	#include <output_com.h>
 	#include <usb_hid.h>
-	//#include <Output/pjrcUSB/arm/usb_mouse.h>
+	#include <Output/pjrcUSB/arm/usb_mouse.h>
 }
 //#endif
 #define W SSD1306_LCDWIDTH
@@ -130,6 +130,57 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		d.setCursor(0,0);
 	}
 	
+	if (help)
+	{
+		d.print("Help");  d.setFont(0);
+		//d.setCursor(W-1-8*6, H-8);
+		//d.print("Page: ");  d.print(hpage);
+		d.setCursor(W-1-3*6, 0);
+		d.print(hpage+1);  d.print("/");  d.print(HAll);
+
+		d.setCursor(W-1-13*6, 8);  // page titles
+		const static char* title[HAll] = {" ", " Menu", "Sequences", " Demos"};
+		d.print(title[hpage]);
+
+		switch (hpage)
+		{
+		case 0:  // help
+			d.setCursor(0, 16+8);
+			d.println("H F1  Show/Hide");  //> 26  < 27  v 25  ^ 24
+			d.print(char(24));  d.print(char(25));  d.println("  Prev/Next Page");
+			d.moveCursor(0,8);
+			d.println("D Spc  Toggle Dim");
+			break;
+		case 1:  // menu
+			d.setCursor(0, 16+8);
+			d.print(char(24));  d.print(char(25));  d.print("  Cursor ");  d.println(char(16));
+			d.print(char(26));  d.println("  Enter");
+			d.print(char(27));  d.println("  Back");
+			d.moveCursor(0,8);
+			d.print("L F2  Layer stack");
+			break;
+		case 2:  // sequence
+			d.setCursor(0, 16+2);
+			d.print(char(24));  d.print(char(25));  d.println("  Cursor");
+			d.println("PgDn,PgUp  Page");
+			d.moveCursor(0,3);
+			d.println("Num Enter - Edit");
+			d.moveCursor(0,3);
+			d.println("S Ins   Save");
+			d.println("BckSpc  Load");
+			break;
+		case 3:  // demos
+			d.setCursor(0, 16+2);
+			d.print(char(24));  d.print(char(25));  d.println("  Prev/Next");
+			d.println("End F  Toggle Fps");
+			d.moveCursor(0,4);
+			d.println("PgDn,PgUp,Home");
+			d.println("  Optional in");
+			d.println("  Hedrons3D, Plasma");
+			break;
+		}
+		return;
+	}
 
 	if (mlevel==0)
 	{
@@ -307,6 +358,18 @@ void Gui::KeyPress()
 			}
 		}
 
+		if (!edit)
+		if (kk[KEY_H] && !kko[KEY_H] || kk[KEY_F1] && !kko[KEY_F1])
+			help = 1-help;  // H  global
+
+		if (help)
+		{
+			if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // pages
+			{	++hpage;  if (hpage >= HAll)  hpage = 0;  }
+			if (kk[KEY_UP] && !kko[KEY_UP])
+			{	--hpage;  if (hpage < 0)  hpage = HAll-1;  }
+		}
+		else
 		if (mlevel==0)  //  main
 		{
 			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
