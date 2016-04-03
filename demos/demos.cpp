@@ -18,7 +18,7 @@ Demos::Demos()
 }
 void Demos::Init()
 {
-	fps = 0;  //par
+	fps = 0;  dim = 1;  //par
 	ti = 0;  oti = 0;
 
 	SinInit();
@@ -98,7 +98,7 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 	int k = 0, e = 0;
 	if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  k = 1;
 	if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  k =-1;
-	if (kk[KEY_END] && !kko[KEY_END])  e = 1;
+	if (kk[KEY_HOME] && !kko[KEY_HOME])  e = 1;
 
 	if (demo && (k || e))
 	if (y == MDemos)
@@ -119,18 +119,28 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 		}*/
 	else if (y == MPlasma)
 		tadd[y2+1] += k;  // speed
+}
 
-	
-	if (kk[KEY_B] && !kko[KEY_B] ||  /// fps
+//  display
+void Demos::Dim(Adafruit_SSD1306& d)
+{
+	if (kk[KEY_F] && !kko[KEY_F] ||
 		kk[KEY_END] && !kko[KEY_END])
 		fps = 1-fps;
+
+	if (kk[KEY_SPACE] && !kko[KEY_SPACE] ||
+		kk[KEY_D] && !kko[KEY_D])
+	{
+		dim = 1-dim;
+		d.dim(dim);
+	}
 }
 
 void Demos::Reset(Adafruit_SSD1306& d)
 {
 	d.begin(SSD1306_SWITCHCAPVCC);
 	d.clearDisplay();
-	d.dim(1);
+	d.dim(dim);
 	d.display();
 	d.setTextColor(WHITE);
 }

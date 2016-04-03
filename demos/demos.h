@@ -10,11 +10,11 @@ struct Demos
 	#define D  Adafruit_SSD1306& display
 	//  main  ----
 	Demos();
-	void Init(), Reset(D);
+	void Init(), Reset(D), Dim(D);
 	void Draw(D, int8_t menu, int8_t ym, int8_t ym2);
 	void KeyPress(int8_t demo, int8_t ym, int8_t ym2);
 
-	int8_t iPrev;
+	int8_t iPrev, dim;
 
 	int8_t fps;  // show frames per second, 1 on, 0 off
 	uint32_t ti, oti;  // fps: time us, old
