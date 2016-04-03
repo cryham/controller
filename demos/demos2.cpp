@@ -32,9 +32,9 @@ const static int word2[] = {
 /*D*/717,363, 796,400, 861,432, 805,479, 761,504, 726,543,
 	749,501, 795,445, 776,411, 717,363, 0, -100};
 
-const static int
-	cxw[2] = {496,402}, cyw[2] = {130,160},  // centers
-	axw[2] = {222,262}, ayw[2] = {362,282};  // amplitudes
+const static int  cw[2][8] = {  // centers xw1,xw2, yw1,yw2,  amplitudes same
+	{496,402, 130,180,  222,262, 362,282},
+	{496,502,  50,320,  222,312, 482,342}};
 	
 void Demos::CK_logo(Adafruit_SSD1306& d)
 {
@@ -45,8 +45,8 @@ void Demos::CK_logo(Adafruit_SSD1306& d)
 	const uint tt[4] = {t*7,t*5,t*8,t*5};
 	for (int w2=0; w2<2; ++w2)
 	{
-		const int cx = cxw[w2], cy = cyw[w2];
-		const int ax = axw[w2], ay = ayw[w2];
+		const int cx = cw[ckCur][w2], cy = cw[ckCur][2+w2],
+				ax = cw[ckCur][4+w2], ay = cw[ckCur][6+w2];
 		int a=0,w, i=0,rst=1,
 			x1=0,y1=0,x=0,y=0;
 		do
@@ -65,7 +65,8 @@ void Demos::CK_logo(Adafruit_SSD1306& d)
 		}
 		while (w >= 0);
 	}
-	++t;
+	t += ckSpeed;
+	delay(6);
 }
 //....................................................................................
 

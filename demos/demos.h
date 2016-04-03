@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <Adafruit_SSD1306.h>
 
-#define W 128  // area
-#define H 64
+#define W SSD1306_LCDWIDTH  // area
+#define H SSD1306_LCDHEIGHT
 
 struct Demos
 {
@@ -14,10 +14,10 @@ struct Demos
 	void Draw(D, int8_t menu, int8_t ym, int8_t ym2);
 	void KeyPress(int8_t demo, int8_t ym, int8_t ym2);
 
-	int8_t iPrev, dim;
-
+	int8_t dim;  // params
 	int8_t fps;  // show frames per second, 1 on, 0 off
 	uint32_t ti, oti;  // fps: time us, old
+	int8_t iPrev;
 
 
 	//  sin table  ----
@@ -56,16 +56,25 @@ struct Demos
 	void BallsInit();
 	void Balls(D);
 
+
+	//  Rain
+	int8_t r1Int,r1Size, r2Int,r2Size;
 	void Rain(D), Rain2(D);
 	
-	void Chars(D, uint8_t set=0);  // text
-	void Font_ver(D);  // Logo
+	//  text
+	void Chars(D, uint8_t set=0);
+	void Font_ver(D);  // ver, date
+	
+	//  CK logo, 2D lines
+	const static int8_t ckMax = 2;
+	int8_t ckCur, ckSpeed;
 	void CK_logo(D);
 
-	void SpaceInit();  // Space
+
+	//  Space
+	void SpaceInit();
 	void Star(int i);  // new
 	void Space(D);
-
 
 	//  fountain, drops  ----
 	int tf;
@@ -74,8 +83,8 @@ struct Demos
 
 
 	//  Ngons 2D
-	int8_t ngCur;  int16_t ngt;
-	const static int8_t ngMin = 5, ngMax = 14;
+	int16_t ngt;  int8_t ngCur,  ngtOn, ngRot;
+	const static int8_t ngMin = 5, ngMax = 14, ngRotMax = 4;
 	void Ngons(D);
 
 	//  Polyhedrons 3D  ----

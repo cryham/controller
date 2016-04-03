@@ -18,13 +18,19 @@ Demos::Demos()
 }
 void Demos::Init()
 {
-	fps = 0;  dim = 1;  //par
+	fps = 0;
+	dim = 1;  //params
 	ti = 0;  oti = 0;
-
-	SinInit();
-	einit = INone;  iPrev = -1;
 	
+	einit = INone;  iPrev = -1;
 	hdCur = 0;  hdRot = 0;
+	ngRot = 0;
+	
+	r1Int = 0;  r1Size = 0;
+	r2Int = 0;  r2Size = 0;
+	
+	ckCur = 0;	ckSpeed = 3;
+	SinInit();
 }
 
 //  Draw
@@ -42,7 +48,7 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 			case 2:  einit = INone;  bCnt = 80;  bSpd = 80;  bRad = 3;  break;
 			case 3:  einit = INone;  bCnt = 150; bSpd = 40;  bRad = 2;  break;
 			
-			case 7:  ngCur = ngMin;  ngt = 0;  break;  // Ngons
+			case 7:  ngCur = ngMin;  ngt = 0;  ngtOn = 1;  break;  // Ngons
 			case 8:  hdt = 0;  hdtOn = 1;  break;  // Hedrons
 		}
 		switch (y2)
@@ -104,19 +110,45 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 	if (y == MDemos)
 		switch (y2)
 		{
-		case 8:
-			hdtOn = 0;  // manual
-			hdCur = (hdCur + k + hdA) % hdA;
+		case 4:  // Rain
+			r1Int += k;  if (r1Int<-6) r1Int=-6;
+			r1Size = (r1Size+1)%3;
+			break;
+		case 5:  // Rain2
+			r2Int += k;  if (r2Int<-2) r2Int=-2;
+			r2Size = (r2Size+1)%3;
+			break;
+
+		case 7:  // Ngons
+			if (k)
+			{	ngtOn = 0;  // manual
+				ngCur += k;
+				if (ngCur < ngMin)  ngCur = ngMax;
+				if (ngCur > ngMax)  ngCur = ngMin;  }
+			if (e)
+			{	++ngRot;
+				if (ngRot >= ngRotMax)  ngRot = 0;  }
+			break;
+			
+		case 8:  // Hedrons
+			if (k)
+			{	hdtOn = 0;  // manual
+				hdCur = (hdCur + k + hdA) % hdA;  }
 			if (e)
 			{	++hdRot;
 				if (hdRot >= hdRotMax)  hdRot = 0;  }
 			break;
 		}
-	/*else if (y == MText)
+	else if (y == MText)
 		switch (y2)
 		{
-		case 0:  break;
-		}*/
+		case 0:  // CK Logo
+			ckSpeed += k;
+			if (e)
+			{	++ckCur;
+				if (ckCur >= 2)  ckCur = 0;  }
+			break;
+		}
 	else if (y == MPlasma)
 		tadd[y2+1] += k;  // speed
 }
@@ -153,7 +185,15 @@ void Demos::Ngons(Adafruit_SSD1306& d)
 	#define ngtM 200
 	float a=0, b=0, e = 2*PI / ngCur;  // angles
 	float tm = float(ngt)/ngtM;
-	float c = -PI/2 * tm, s = 0.65 + 0.75 * tm;
+	float c, s;
+
+	switch (ngRot)
+	{
+	case 0: c = -e*2 * tm;  s = 0.65 + 0.75 * tm;  break;
+	case 1: c = -e * tm;  s = 1.0;  break;
+	case 2: c = 0.0;  s = 0.8 + 0.6 * tm;  break;
+	case 3: c = 0.0;  s = 1.0;  break;
+	}
 	float xx = W/2, yy = H/2, sy = s * yy;
 
 	for (b=0; b < 2*PI; b+=e)
@@ -168,10 +208,11 @@ void Demos::Ngons(Adafruit_SSD1306& d)
 	}
 	++ngt;
 	if (ngt > ngtM) {  ngt = 0;
-		++ngCur;  if (ngCur > ngMax)  ngCur = ngMin;  }
+		if (ngtOn)	{	++ngCur;  if (ngCur > ngMax)  ngCur = ngMin;  }  }
 
 	d.setCursor(0, H-8);
 	d.print(ngCur);  // n sides
+	delay(ngMax-ngCur+1);
 }
 
 
@@ -179,30 +220,32 @@ void Demos::Ngons(Adafruit_SSD1306& d)
 //....................................................................................
 void Demos::Rain(Adafruit_SSD1306& d)
 {
-	int x,y,r;
+	int x,y,r, i = r1Int * 5, s = r1Size;
 		x=random(W); y=random(H);  r= random(26);  d.drawCircle(x,y,r,BLACK);
 		x=random(W); y=random(H);  r= random(24);  d.drawCircle(x,y,r,BLACK);
 		x=random(W); y=random(H);  r= random(20);  d.drawCircle(x,y,r,BLACK);
-	if (random(100) < 30)
-	{	x=random(W); y=random(H);  r= random(6)+1;  d.drawCircle(x,y,r,WHITE);  }
+	
+	if (random(100) < 30 + i)
+	{	x=random(W); y=random(H);  r= random(6+s)+1+s;  d.drawCircle(x,y,r,WHITE);
+	}
 	delay(8);
 }
 
 void Demos::Rain2(Adafruit_SSD1306& d)
 {
-	int x,y,r;
-	for (int i=0; i<12; ++i)
+	int x,y,r, s = r2Size;
+	for (int i=0; i < 12 + r2Int; ++i)
 	{
 		if (random(400) < 10) {  x=random(W); y=random(H);  r= random(28)+20;  d.drawCircle(x,y,r,BLACK);  }
 		if (random(200) < 10) {  x=random(W); y=random(H);  r= random(20)+16;  d.drawCircle(x,y,r,BLACK);  }
 		if (random(100) < 20) {  x=random(W); y=random(H);  r= random(14)+14;  d.drawCircle(x,y,r,BLACK);  }
 		if (random(10)  < 3)  {  x=random(W); y=random(H);  r= random(10)+1;   d.drawCircle(x,y,r,BLACK);  }
 	}
-	for (int i=0; i<2; ++i)  //if (random(10) < 8)
+	for (int i=0; i < 2 + r2Int; ++i)  //if (random(10) < 8)
 	{
-		if (random(600) < 30) {  x=random(W); y=random(H);  r= random(6)+3;  d.drawCircle(x,y,r,WHITE);  }
-		if (random(300) < 40) {  x=random(W); y=random(H);  r= random(5)+4;  d.drawCircle(x,y,r,WHITE);  }
-		if (random(100) < 50) {  x=random(W); y=random(H);  r= random(4)+2;  d.drawCircle(x,y,r,WHITE);  }
+		if (random(600) < 30) {  x=random(W); y=random(H);  r= s+random(6+s)+3;  d.drawCircle(x,y,r,WHITE);  }
+		if (random(300) < 40) {  x=random(W); y=random(H);  r= s+random(5+s)+4;  d.drawCircle(x,y,r,WHITE);  }
+		if (random(100) < 50) {  x=random(W); y=random(H);  r= s+random(4)+2;  d.drawCircle(x,y,r,WHITE);  }
 								 x=random(W); y=random(H);  r= random(3)+1;  d.drawCircle(x,y,r,WHITE);
 	}	delay(8);
 }
@@ -216,8 +259,10 @@ void Demos::Font_ver(Adafruit_SSD1306& d)
 	d.setFont(&FreeSans9pt7b/*FreeSans12pt7b*/);  d.print("CrystaL");
 	d.setCursor(36,32);
 	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
+	
 	d.setCursor(96,0);  // ver
-	d.setFont(0);  d.print("3.05");
+	d.setFont(0);  d.print("3.09");
+	
 	d.setCursor(0*24,H-8);
 	const char* a={__DATE__}, *m={__TIME__};
 	const char dt[] = {
