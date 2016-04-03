@@ -228,7 +228,7 @@ void Gui::KeyPress()
 		if (layersOn[l] == 1)  menu = 1; else
 		if (layersOn[l] == 2)  lay2 = 1;
 	
-	digitalWrite(14, lay2 ? HIGH : LOW);
+	//digitalWrite(14, lay2 ? HIGH : LOW);
 	//digitalWrite(26, lay2 ? HIGH : LOW);
 
 
@@ -255,8 +255,8 @@ void Gui::KeyPress()
 					edpos++;  seql[q]++;
 				}
 			}else{
-				if (kk[KEY_S] && !kko[KEY_S] ||
-					kk[KEY_B] && !kko[KEY_B])  //- save
+				if (kk[KEY_S] && !kko[KEY_S] ||  //- save
+					kk[KEY_INSERT] && !kko[KEY_INSERT])
 				{
 					Save();  iInfo = 400;
 				}
@@ -316,21 +316,12 @@ void Gui::KeyPress()
 	
 	
 	//  seqence execute  -----
-	if (!menu && lay2)
+	//todo: shift etc ed, display uppercase..
+	
+	if (!menu && id_seq >= 0)
 	{
-		int q = -1, i, n;
-		for (i=0; i < 10; ++i)
-			if (kk[KEY_1+i] && !kko[KEY_1+i])
-				q = i;
-		for (i=0; i < 10; ++i)
-			if (kk[KEY_A+i] && !kko[KEY_A+i])
-				q = i+10;
-
-		if (kk[KEY_X] && !kko[KEY_X])  q = 0;
-		if (kk[KEY_C] && !kko[KEY_C])  q = 1;
-		if (kk[KEY_V] && !kko[KEY_V])  q = 2;
-		
 		//  output sequence to usb  ----
+		int q = id_seq, i, n;
 		if (q >= 0 && q < iSlots && seql[q])
 		{
 			int8_t md[8];  // modifiers state, toggleable
@@ -355,9 +346,7 @@ void Gui::KeyPress()
 					//..
 				}
 			}
-			///todo? move use to scan.c
-			// add actionSeq, binding in kll
-			// shift etc ed, display uppercase,
 		}
+		id_seq = -1;  // done
 	}
 }

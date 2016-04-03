@@ -101,6 +101,7 @@ inline void Scan_finishedWithOutput( uint8_t sentKeys )
 /// ==---  Key states  ---==
 
 uint8_t kko[0xFF] = {0,}, kk[0xFF] = {0,};  // bool
+int8_t id_seq = -1;
 
 
 /// -----  Capabilities  -----
@@ -110,13 +111,22 @@ void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t 
 	// Retrieve 8-bit argument, usb hid code
 	uint8_t key = args[0];
 
-	// "Press" or "Hold"
-	if ( state == 0x01 || state == 0x02 )
+	//  Press or Hold
+	if (state == 0x01 || state == 0x02 )
 		kk[key] = 1;
-	// "Off" or "Release"
+	//  Off or Release
 	else
 	if ( state == 0x00 || state == 0x03 )
 		kk[key] = 0;
+}
+
+void CustomAction_Sequence_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+{
+	// Retrieve 8-bit argument, sequence index
+	uint8_t id = args[0];
+	if (state == 0x01 &&  // Press
+		id_seq == -1)  // done
+		id_seq = id;
 }
 
 
