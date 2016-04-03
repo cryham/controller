@@ -9,7 +9,8 @@ struct Gui
 {
 	//  main
 	Gui();
-	void Init(), Draw(Adafruit_SSD1306& display);
+	void Init(), LedsInit();
+	void Draw(Adafruit_SSD1306& display);
 	void KeyPress(), ExecSeqs();
 
 	//  const
@@ -21,6 +22,7 @@ struct Gui
 	const static uint8_t YM2[MAll];  // cursor pos in each menu
 
 	//  vars
+	int8_t leds;  // use kbd LEDs, for layers info
 	int8_t help, hpage;  // shows help, on top, page
 	int8_t menu;   // set when on Layer 1, if 0 nothing drawn
 	int8_t mlevel;

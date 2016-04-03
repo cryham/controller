@@ -54,13 +54,6 @@ int main()
 	Macro_setup();  Scan_setup();
 	#endif
 
-	#if 1  // LEDs
-	pinMode(14, OUTPUT);  //L blue led
-	pinMode(26, OUTPUT);  //R orange
-	digitalWrite(14, LOW);
-	digitalWrite(26, LOW);
-	#endif
-
 	//  display
 	pinMode(OLED_DC, OUTPUT);
 	pinMode(OLED_CS, OUTPUT);
@@ -72,6 +65,7 @@ int main()
 	demos.Reset(display);  // oled init 1st
 
 	#ifdef KII
+	gui.LedsInit();  //
 	gui.Load();  // load seq data from eeprom
 	#endif
 
@@ -109,13 +103,11 @@ int main()
 		}
 		
 		//--------------------------------  display
-		int any = 
-			#ifdef KII
-			gui.menu || 
-			#else
-			1 || 
-			#endif
-			demos.fps ? 1 : 0;/**/
+		#ifdef KII
+		int any = gui.menu ? 1 : 0;
+		#else
+		int any = 1;
+		#endif
 
 		//  clear on display off
 		if (!any && anyold && ii > iwait)

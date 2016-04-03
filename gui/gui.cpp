@@ -56,7 +56,18 @@ void Gui::Init()
 	iInfo = 0;  memSize = 0;
 	Clear();
 	iLayers = 0;
+	leds = 0;
 }
+
+void Gui::LedsInit()
+{
+	leds = 1;  // LEDs init
+	pinMode(14, OUTPUT);  //L blue led
+	pinMode(26, OUTPUT);  //R orange
+	digitalWrite(14, LOW);
+	digitalWrite(26, LOW);
+}
+
 void Gui::Clear()
 {
 	memSize = 0;
@@ -292,107 +303,107 @@ void Gui::KeyPress()
 		if (layersOn[l] == 2)  lay2 = 1; else
 		if (layersOn[l] == 3)  lay3 = 1;
 	
-	#if 1  // LEDs
-	digitalWrite(14, lay2 ? HIGH : LOW);
-	digitalWrite(26, lay3 ? HIGH : LOW);
-	#endif
+	if (leds)  // LEDs update
+	{	digitalWrite(14, lay2 ? HIGH : LOW);
+		digitalWrite(26, lay3 ? HIGH : LOW);
+	}
 
-	if (menu)
+	if (!menu)
+		return;
+
+	#define KEY_EDIT  KEYPAD_ENTER
+	if (!help && ym == MSeq && mlevel > 0)
 	{
-		#define KEY_EDIT  KEYPAD_ENTER
-		if (!help && ym == MSeq && mlevel > 0)
+		if (edit)
 		{
-			if (edit)
+			//  find key
+			uint8_t k = 3, edkey = 0;
+			while (edkey==0 && k < 0xF0)
 			{
-				//  find key
-				uint8_t k = 3, edkey = 0;
-				while (edkey==0 && k < 0xF0)
-				{
-					if (kk[k] && !kko[k] && k != KEY_EDIT)
-						edkey = k;
-					else  ++k;
-				}
-				//  add to seq
-				if (edkey > 0 && edpos < iSeqLen)
-				{	int q = slot + page*iPage;
-					seq[q][edpos] = edkey;
-					edpos++;  seql[q]++;
-				}
-			}else
-			{	if (kk[KEY_S] && !kko[KEY_S] ||  // save
-					kk[KEY_INSERT] && !kko[KEY_INSERT])
-				{	Save();  iInfo = 400;
-				}
-				if (kk[KEY_BACKSPACE] && !kko[KEY_BACKSPACE])  // load
-				{	Load();  iInfo = 400;
-				}
-				
-				if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // move
-				{	++slot;  if (slot >= iPage) {  slot = 0;
-					++page;  if (page >= iSlots/iPage)  page = 0;
-				}	}
-				if (kk[KEY_UP] && !kko[KEY_UP])
-				{	--slot;  if (slot < 0) {  slot = iPage-1;
-					--page;  if (page < 0)  page = iSlots/iPage-1;
-				}	}
-				if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  // page
-				{	++page;  if (page >= iSlots/iPage)  page = 0;
-				}
-				if (kk[KEY_PAGE_UP] && !kko[KEY_PAGE_UP])
-				{	--page;  if (page < 0)  page = iSlots/iPage-1;
-				}
+				if (kk[k] && !kko[k] && k != KEY_EDIT)
+					edkey = k;
+				else  ++k;
 			}
-
-			if (kk[KEY_EDIT] && !kko[KEY_EDIT])  //  toggle edit
-			{
-				edit = 1-edit;
-				if (edit)  // enter edit
-				{
-					int q = slot + page*iPage;
-					//  clear
-					edpos = 0;  //todo append
-					seql[q] = 0;
-					for (int n=0; n < iSeqLen; ++n)
-						seq[q][n] = 0;
-				}
+			//  add to seq
+			if (edkey > 0 && edpos < iSeqLen)
+			{	int q = slot + page*iPage;
+				seq[q][edpos] = edkey;
+				edpos++;  seql[q]++;
 			}
-		}
-
-		if (!edit)
-		if (kk[KEY_H] && !kko[KEY_H] || kk[KEY_F1] && !kko[KEY_F1])
-			help = 1-help;  // H  global
-
-		if (help)
-		{
-			if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // pages
-			{	++hpage;  if (hpage >= HAll)  hpage = 0;  }
-			if (kk[KEY_UP] && !kko[KEY_UP])
-			{	--hpage;  if (hpage < 0)  hpage = HAll-1;  }
-		}
-		else
-		if (mlevel==0)  //  main
-		{
-			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
-			{	++ym;  if (ym >= MAll)  ym = 0;  }
-			if (kk[KEY_UP] && !kko[KEY_UP])
-			{	--ym;  if (ym < 0)  ym = MAll-1;  }
-			
-			if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
-				mlevel = 1;  // enter>
-
-			if (kk[KEY_L] && !kko[KEY_L] || kk[KEY_F2] && !kko[KEY_F2])
-				iLayers = 1-iLayers;  // L
 		}else
-		if (!edit)  // other
-		{
-			if (kk[KEY_LEFT] && !kko[KEY_LEFT])
-				mlevel = 0;  // <back
-
-			if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // navigate
-			{	ym2[ym]++;  if (ym2[ym] >= YM2[ym])  ym2[ym] = 0;  }
+		{	if (kk[KEY_S] && !kko[KEY_S] ||  // save
+				kk[KEY_INSERT] && !kko[KEY_INSERT])
+			{	Save();  iInfo = 400;
+			}
+			if (kk[KEY_BACKSPACE] && !kko[KEY_BACKSPACE])  // load
+			{	Load();  iInfo = 400;
+			}
+			
+			if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // move
+			{	++slot;  if (slot >= iPage) {  slot = 0;
+				++page;  if (page >= iSlots/iPage)  page = 0;
+			}	}
 			if (kk[KEY_UP] && !kko[KEY_UP])
-			{	ym2[ym]--;  if (ym2[ym] < 0)  ym2[ym] = YM2[ym]-1;  }
+			{	--slot;  if (slot < 0) {  slot = iPage-1;
+				--page;  if (page < 0)  page = iSlots/iPage-1;
+			}	}
+			if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  // page
+			{	++page;  if (page >= iSlots/iPage)  page = 0;
+			}
+			if (kk[KEY_PAGE_UP] && !kko[KEY_PAGE_UP])
+			{	--page;  if (page < 0)  page = iSlots/iPage-1;
+			}
 		}
+
+		if (kk[KEY_EDIT] && !kko[KEY_EDIT])  //  toggle edit
+		{
+			edit = 1-edit;
+			if (edit)  // enter edit
+			{
+				int q = slot + page*iPage;
+				//  clear
+				edpos = 0;  //todo append
+				seql[q] = 0;
+				for (int n=0; n < iSeqLen; ++n)
+					seq[q][n] = 0;
+			}
+		}
+	}
+
+	if (!edit)
+	if (kk[KEY_H] && !kko[KEY_H] || kk[KEY_F1] && !kko[KEY_F1])
+		help = 1-help;  // H  global
+
+	if (help)
+	{
+		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // pages
+		{	++hpage;  if (hpage >= HAll)  hpage = 0;  }
+		if (kk[KEY_UP] && !kko[KEY_UP])
+		{	--hpage;  if (hpage < 0)  hpage = HAll-1;  }
+	}
+	else
+	if (mlevel==0)  //  main
+	{
+		if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+		{	++ym;  if (ym >= MAll)  ym = 0;  }
+		if (kk[KEY_UP] && !kko[KEY_UP])
+		{	--ym;  if (ym < 0)  ym = MAll-1;  }
+		
+		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
+			mlevel = 1;  // enter>
+
+		if (kk[KEY_L] && !kko[KEY_L] || kk[KEY_F2] && !kko[KEY_F2])
+			iLayers = 1-iLayers;  // L
+	}else
+	if (!edit)  // other
+	{
+		if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+			mlevel = 0;  // <back
+
+		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // navigate
+		{	ym2[ym]++;  if (ym2[ym] >= YM2[ym])  ym2[ym] = 0;  }
+		if (kk[KEY_UP] && !kko[KEY_UP])
+		{	ym2[ym]--;  if (ym2[ym] < 0)  ym2[ym] = YM2[ym]-1;  }
 	}
 }
 	
