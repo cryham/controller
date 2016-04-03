@@ -315,7 +315,7 @@ const uint8_t* ffA[ALL] = {    0,    0,    0,A(f3),    0,A(f4),    0,A(f5),    0
 const int      NPa[ALL] = {  NP2,  NP1,  NP3,  NP3,  NP4,  NP4,  NP5,  NP5,  NP5 ,  NP5 ,  NP6};
 const int      NEa[ALL] = {  NE2,  NE1,  NE3,  NE3,  NE4,  NE4,  NE5,  NE5,  NE5b,  NE5b,  NE6};
 const int      NFa[ALL] = {    0,    0,    0,  NF3,    0,  NF4,    0,  NF5,    0 ,  NF5b,    0};
-const float    SCa[ALL] = {  1.2,  1.2,  1.3,  1.3, 1.35, 1.35, 1.35, 1.35,  1.35,  1.35, 1.45};
+const float    SCa[ALL] = { 1.18, 1.18, 1.26, 1.26, 1.35, 1.35, 1.35, 1.35,  1.35,  1.35, 1.45};
 #undef ALL
 
 
@@ -378,6 +378,8 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 		py[i] = H/2 * se * (fv * y / -z) +H/2;
 
 		c[i] = z < 0.9f ? -1 : (z < zz ? 1 : 0);
+		if (px[i]<0 || px[i]>=W || py[i]<0 || py[i]>=H)
+			c[i] = -1;  // outside
 		//c[i] = z < zz ? 1 : 0;
 		//d.drawPixel(px[i], py[i],WHITE);
 	}
