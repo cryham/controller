@@ -54,10 +54,12 @@ int main()
 	Macro_setup();  Scan_setup();
 	#endif
 
-	//pinMode(14, OUTPUT);  //L blue led
-	//pinMode(26, OUTPUT);  //R orange
-	//digitalWrite(14, LOW);
-	//digitalWrite(26, LOW);
+	#if 1  // LEDs
+	pinMode(14, OUTPUT);  //L blue led
+	pinMode(26, OUTPUT);  //R orange
+	digitalWrite(14, LOW);
+	digitalWrite(26, LOW);
+	#endif
 
 	//  display
 	pinMode(OLED_DC, OUTPUT);
