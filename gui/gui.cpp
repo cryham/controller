@@ -8,8 +8,11 @@ extern "C" {
 	#include <macro.h>
 	#include <output_com.h>
 	#include <usb_hid.h>
+	//#include <Output/pjrcUSB/arm/usb_mouse.h>
 }
 //#endif
+#define W SSD1306_LCDWIDTH
+#define H SSD1306_LCDHEIGHT
 
 ///  string from usb hid code
 const char str[0x73][6] = { ".",".",".",".", /*04*/"A","B","C","D",
@@ -46,11 +49,13 @@ void Gui::Init()
 	for (int i=0; i < MAll; ++i)
 		ym2[i]=0;
 
+	help = 0;  hpage = 0;
 	menu = 0;  edit = 0;
 	slot = 0;  page = 0;  edpos = 0;
 
 	iInfo = 0;  memSize = 0;
 	Clear();
+	iLayers = 0;
 }
 void Gui::Clear()
 {
@@ -124,8 +129,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		d.setFont(&FreeSans9pt7b);
 		d.setCursor(0,0);
 	}
-	//d.drawPixel(0,0,1);  d.drawPixel(64,0,1);  d.drawPixel(127,0,1);
-	//d.drawPixel(0,63,1); d.drawPixel(127,63,1);
+	
 
 	if (mlevel==0)
 	{
@@ -143,6 +147,21 @@ void Gui::Draw(Adafruit_SSD1306& d)
 				case MPlasma: d.println("Plasma");  break;
 			}
 		}
+		d.setCursor(W-1-7*6, H-8);
+		d.print("F1 Help");
+
+		//  info layers stack  - -
+		if (iLayers)
+		{	
+			//d.setCursor(0,H-16);  // mouse speed
+			//d.println(delay_cur);
+
+			d.setCursor(0, H-8);
+			d.print("L:");  d.moveCursor(4, 0);
+			for (int l=1; l < layersCnt; ++l)  // 1st is 1 in menu
+			{
+				d.print(layersOn[l]);  d.moveCursor(3,0);
+		}	}
 		return;
 	}
 	
@@ -161,7 +180,6 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			
 			//  write sequence  ---
 			n=0;  x=0;  xm=1;
-			#define W 128
 			while (n < seql[s] && xm)
 			{
 				uint8_t z = seq[s][n];
@@ -197,12 +215,6 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	}
 	d.setFont(0);
 
-	//  info layers stack  - -
-	/*d.setCursor(20, 10);
-	for (int l=0; l < layersCnt; ++l)
-	{	d.print(layersOn[l]);  d.print(" ");  }
-	/**/
-
 	if (iInfo > 0)  //  info eeprom
 	{	--iInfo;
 		int x = 90;
@@ -223,20 +235,21 @@ void Gui::Draw(Adafruit_SSD1306& d)
 void Gui::KeyPress()
 {
 	//  Menu = Layer1, Function1
-	menu = 0;  int8_t lay2 = 0;
+	menu = 0;  int8_t lay2 = 0, lay3 = 0;
 	for (int l=0; l < layersCnt; ++l)
 		if (layersOn[l] == 1)  menu = 1; else
-		if (layersOn[l] == 2)  lay2 = 1;
+		if (layersOn[l] == 2)  lay2 = 1; else
+		if (layersOn[l] == 3)  lay3 = 1;
 	
-	//digitalWrite(14, lay2 ? HIGH : LOW);
-	//digitalWrite(26, lay2 ? HIGH : LOW);
-
+	#if 1  // LEDs
+	digitalWrite(14, lay2 ? HIGH : LOW);
+	digitalWrite(26, lay3 ? HIGH : LOW);
+	#endif
 
 	if (menu)
 	{
-		//#define KEY_EDIT  KEY_RIGHT
-		#define KEY_EDIT  KEY_ENTER
-		if (ym == MSeq && mlevel > 0)
+		#define KEY_EDIT  KEYPAD_ENTER
+		if (!help && ym == MSeq && mlevel > 0)
 		{
 			if (edit)
 			{
@@ -254,13 +267,15 @@ void Gui::KeyPress()
 					seq[q][edpos] = edkey;
 					edpos++;  seql[q]++;
 				}
-			}else{
-				if (kk[KEY_S] && !kko[KEY_S] ||  //- save
+			}else
+			{	if (kk[KEY_S] && !kko[KEY_S] ||  // save
 					kk[KEY_INSERT] && !kko[KEY_INSERT])
-				{
-					Save();  iInfo = 400;
+				{	Save();  iInfo = 400;
 				}
-		
+				if (kk[KEY_BACKSPACE] && !kko[KEY_BACKSPACE])  // load
+				{	Load();  iInfo = 400;
+				}
+				
 				if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // move
 				{	++slot;  if (slot >= iPage) {  slot = 0;
 					++page;  if (page >= iSlots/iPage)  page = 0;
@@ -295,58 +310,63 @@ void Gui::KeyPress()
 		if (mlevel==0)  //  main
 		{
 			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
-			{	ym = ym+1;  if (ym >= MAll)  ym = 0;  }
+			{	++ym;  if (ym >= MAll)  ym = 0;  }
 			if (kk[KEY_UP] && !kko[KEY_UP])
-			{	ym = ym-1;  if (ym < 0)  ym = MAll-1;  }
+			{	--ym;  if (ym < 0)  ym = MAll-1;  }
 			
 			if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
-				mlevel = 1;
-		}else
-		if (!edit)
-		{	//  back
-			if (kk[KEY_LEFT] && !kko[KEY_LEFT])
-				mlevel = 0;
+				mlevel = 1;  // enter>
 
-			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+			if (kk[KEY_L] && !kko[KEY_L] || kk[KEY_F2] && !kko[KEY_F2])
+				iLayers = 1-iLayers;  // L
+		}else
+		if (!edit)  // other
+		{
+			if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+				mlevel = 0;  // <back
+
+			if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // navigate
 			{	ym2[ym]++;  if (ym2[ym] >= YM2[ym])  ym2[ym] = 0;  }
 			if (kk[KEY_UP] && !kko[KEY_UP])
 			{	ym2[ym]--;  if (ym2[ym] < 0)  ym2[ym] = YM2[ym]-1;  }
 		}
 	}
+}
 	
 	
-	//  seqence execute  -----
-	//todo: shift etc ed, display uppercase..
-	
-	if (!menu && id_seq >= 0)
+//  seqence execute  -----
+void Gui::ExecSeqs()
+{	
+	if (menu || id_seq < 0)
+		return;
+
+	//  output sequence to usb  ----
+	int q = id_seq, i, n;
+	if (q >= 0 && q < iSlots && seql[q])
 	{
-		//  output sequence to usb  ----
-		int q = id_seq, i, n;
-		if (q >= 0 && q < iSlots && seql[q])
+		int8_t md[8];  // modifiers state, toggleable
+		for (n=0; n < 8; ++n)  md[n]=0;
+		
+		for (n=0; n < seql[q]; ++n)
 		{
-			int8_t md[8];  // modifiers state, toggleable
-			for (n=0; n < 8; ++n)  md[n]=0;
+			uint8_t k = seq[q][n], m = k-KEY_LCTRL;
+			//  modifier press  or release when 2nd time
+			if (m >= 0 && m < 8)
+			{	md[m]  = 1 - md[m];  if (md[m]==0)  k = 0;
+				Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
+			else
+			{	// key press and release
+				Output_usbCodeSend_capability(1, 0, &k);  Output_send();  k = 0;
+				Output_usbCodeSend_capability(1, 0, &k);  Output_send();
+			}
 			
-			for (n=0; n < seql[q]; ++n)
-			{
-				uint8_t k = seq[q][n], m = k-KEY_LCTRL;
-				//  modifier press  or release when 2nd time
-				if (m >= 0 && m < 8)
-				{	md[m]  = 1 - md[m];  if (md[m]==0)  k = 0;
-					Output_usbCodeSend_capability(1, 0, &k);  Output_send();  }
-				else
-				{	// key press and release
-					Output_usbCodeSend_capability(1, 0, &k);  Output_send();  k = 0;
-					Output_usbCodeSend_capability(1, 0, &k);  Output_send();
-				}
-				
-				//  last
-				if (n == seql[q]-1)
-				{	// check if modifiers are left, send clear
-					//..
-				}
+			//  last
+			if (n == seql[q]-1)
+			{	// check if modifiers are left, send clear
+				//..
 			}
 		}
-		id_seq = -1;  // done
 	}
+	id_seq = -1;  // done
+	//todo: shift etc ed, display uppercase..
 }

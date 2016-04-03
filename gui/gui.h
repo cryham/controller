@@ -10,16 +10,18 @@ struct Gui
 	//  main
 	Gui();
 	void Init(), Draw(Adafruit_SSD1306& display);
-	void KeyPress();
+	void KeyPress(), ExecSeqs();
 
 	//  const
 	const static uint8_t 
-		iSlots = 18,   // ver, changes eeprom
-		iSeqLen = 40,  // max bytes for 1 sequence (const in ram, var in eeprom)
-		iPage = 6;   // page size, view at once
-	const static uint8_t YM2[MAll];
+		iSlots = 18,  // MSeq:  ver, changes eeprom
+		iSeqLen = 40, //   max bytes for 1 sequence (const in ram, var in eeprom)
+		iPage = 6,    //   page size, view at once
+		HAll = 4;     // Help: pages
+	const static uint8_t YM2[MAll];  // cursor pos in each menu
 
 	//  vars
+	int8_t help, hpage;  // shows help, on top, page
 	int8_t menu;   // set when on Layer 1, if 0 nothing drawn
 	int8_t mlevel;
 	int8_t ym;     // EMenu, main1 page y
@@ -29,6 +31,7 @@ struct Gui
 	int8_t slot, page, edpos;  // edit vars
 	
 	int16_t iInfo, infType, memSize;  // info text vars
+	int8_t iLayers;  // L: show layers stack
 
 	//  seq
 	uint8_t seql[iSlots];  // lengths of each seq, 0 empty

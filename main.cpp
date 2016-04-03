@@ -19,9 +19,6 @@ extern "C" {
 	#include <scan_loop.h>
 	#include <output_com.h>
 	#include <usb_hid.h>
-	//#include <cli.h>
-	//#include <led.h>
-	//#include <print.h>
 }
 #endif
 
@@ -127,7 +124,7 @@ int main()
 		if (ii > iwait)
 			anyold = any;
 			
-		int demo = gui.menu && gui.mlevel > 0;
+		int demo = gui.menu && gui.mlevel > 0 && !gui.help;
 		
 		if (any)
 		{
@@ -157,9 +154,12 @@ int main()
 		//if (ii % 300 == 200)  demos.Next();
 		#ifdef KII
 		if (gui.menu)
+		{
 			demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
-
+			demos.Dim(display);
+		}
 		gui.KeyPress();
+		gui.ExecSeqs();
 		
 		//  old key states  ---
 		for (int i=0; i < 0xFF; ++i)
