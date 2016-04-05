@@ -10,19 +10,20 @@ struct Demos
 	#define D  Adafruit_SSD1306& display
 	//  main  ----
 	Demos();
-	void Init(), Reset(D), Dim(D);
+	void Init(int sin=1), Reset(D), KeyGlob(D);
 	void Draw(D, int8_t menu, int8_t ym, int8_t ym2);
 	void KeyPress(int8_t demo, int8_t ym, int8_t ym2);
 
-	int8_t dim;  // params
+	int8_t dim;  // dim display toggle
 	int8_t fps;  // show frames per second, 1 on, 0 off
 	uint32_t ti, oti;  // fps: time us, old
-	int8_t iPrev;
+	int8_t iPrev;   // prev demo, for init
+	int16_t iInfo, iInfoOff;  // params info text
 
 
 	//  sin table  ----
-	#define SX 8192   // mem size 16kB
-	#define SY 16384  // y quality
+	#define SX  8192   // mem size 16kB
+	#define SY  16384  // y quality
 	#define Cos(x)  sint[(SX/2+(x))%SX]
 	#define Sin(x)  sint[      (x) %SX]
 
@@ -38,10 +39,12 @@ struct Demos
 
 
 	//  Balls  --------
-	const static int sMax = 80, bMax = 150, dMax = 150;  //2550
-	int sCnt;  // stars: count
-	int bCnt, bSpd, bRad;  // balls: count, speed, radius max
-	#define bDet 256  // move detail
+	//const static int sMax = 80, bMax = 150, dMax = 150;
+	const static int sMax = 240, bMax = 300, dMax = 950;  //2550
+	int sCnt, sVel;  // stars: count, velocity
+	int bCnt, bSpd, bSpRnd, bRad;  // balls: count, speed, radius max
+	const static int bSpRMax = 8;
+	#define bDet  256  // move detail
 
 	enum EInit {  INone=0, IBalls, ISpace, IDrops  } einit;
 	struct Star {  int x,y,z, v;  };
@@ -58,8 +61,8 @@ struct Demos
 
 
 	//  Rain
-	int8_t r1Int,r1Size, r2Int,r2Size;
-	void Rain(D), Rain2(D);
+	int8_t rCur, r1Int,r1Size, r2Int,r2Size;
+	void Rain(D);
 	
 	//  text
 	void Chars(D, uint8_t set=0);
@@ -76,8 +79,8 @@ struct Demos
 	void Star(int i);  // new
 	void Space(D);
 
-	//  fountain, drops  ----
-	int tf;
+	//  Fountain, drops  ----
+	int fInt, fWave;
 	void FountainInit();
 	void Fountain(D);
 
