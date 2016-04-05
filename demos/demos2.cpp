@@ -65,6 +65,14 @@ void Demos::CK_logo(Adafruit_SSD1306& d)
 		}
 		while (w >= 0);
 	}
+
+	if (iInfo > 0)
+	{
+		d.setCursor(0,8);
+		d.print("Cur ");  d.println(ckCur);
+		d.print("Spd ");  d.println(ckSpeed);
+	}
+
 	t += ckSpeed;
 	delay(6);
 }
@@ -426,6 +434,14 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 		int8_t cc = min(c[f0],c[f1]);  cc = min(cc,c[f2]);
 		if (cc>0)
 			d.fillTriangle( px[f0],py[f0], px[f1],py[f1], px[f2],py[f2], WHITE);
+	}
+
+	if (iInfo > 0)
+	{
+		d.setCursor(0,8);
+		d.print("Cur ");  d.println(hdCur);
+		d.print("Rot ");  d.println(hdRot);
+		if (hdtOn)  d.println("On");
 	}
 	++t;
 	delay(8);

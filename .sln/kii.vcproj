@@ -745,6 +745,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\demos\demos1.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\demos\demos2.cpp"
 				>
 			</File>
@@ -762,6 +766,10 @@
 			</File>
 			<File
 				RelativePath="..\gui\gui.h"
+				>
+			</File>
+			<File
+				RelativePath="..\gui\gui_draw.cpp"
 				>
 			</File>
 		</Filter>
