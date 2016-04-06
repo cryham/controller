@@ -6,7 +6,7 @@
 #define H SSD1306_LCDHEIGHT
 
 enum EMenu {  // main menu entries, level1
-	MSeq=0, MDemos, MText, MPlasma, MAll  };
+	MSeq=0, MDemos, MText, MPlasma, MGames, MAll  };
 
 
 struct Gui
@@ -22,7 +22,7 @@ struct Gui
 		iSlots = 18,  // MSeq:  ver, changes eeprom
 		iSeqLen = 40, //   max bytes for 1 sequence (const in ram, var in eeprom)
 		iPage = 6,    //   page size, view at once
-		HAll = 6;     // Help: pages
+		HAll = 8;     // Help: pages
 	const static uint8_t YM2[MAll];  // demo counts
 
 	//  vars
@@ -31,6 +31,8 @@ struct Gui
 	int8_t status;  // L: show layers stack, status info page
 	inline int DrawDemo()
 	{	return menu && mlevel > 0 && !help && !status;  }
+	inline int IsGame()
+	{	return DrawDemo() && ym == MGames;  }
 	
 	int8_t menu;   // set when on Layer 1, if 0 nothing drawn
 	int8_t mlevel;

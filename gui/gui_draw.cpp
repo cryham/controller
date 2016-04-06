@@ -50,7 +50,8 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		d.print(hpage+1);  d.print("/");  d.print(HAll);
 
 		d.setCursor(W-1-13*6, 8);  // page titles
-		const static char* title[HAll] = {" ", " Toggle", " Menu", "Sequences", " Demos", " Demos cd"};
+		const static char* title[HAll] = {" ", " Toggle", " Menu",
+			"Sequences", " Demos", " Demos cd", " Sixtis", " Sixtis cd"};
 		d.print(title[hpage]);
 
 		switch (hpage)
@@ -110,6 +111,26 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.println("  Ctrl  Others");
 			d.println("  Shift  Fine");
 			break;
+
+		case 6:  // sixtis
+			d.setCursor(0, 16+4);
+			d.print(char(27));  d.print(char(26));  d.println("  Move");
+			d.print(char(25));  d.println("  Fall");
+			d.moveCursor(0,4);
+			d.print(char(24));  d.println("  Rotate cw");
+			d.print("Num 5 /  Rotate ccw");
+			d.moveCursor(0,4);
+			d.println("Ins  Drop");
+			break;
+
+		case 7:  // sixtis cd
+			d.setCursor(0, 16+4);
+			d.println("Num- Esc  Exit");
+			d.println("Num+ Spc  Pause");
+			d.moveCursor(0,4);
+			d.println("Enter  New Game");
+			d.println("Q,A  Presets-+");
+			break;
 		}
 		status = 0;  //
 		return;
@@ -161,6 +182,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 				case MDemos:  d.println("Demos");  break;
 				case MText:   d.println("Text");  break;
 				case MPlasma: d.println("Plasma");  break;
+				case MGames:  d.println("Sixtis");  break;
 			}
 		}
 		d.setCursor(W-1-7*6, H-8);

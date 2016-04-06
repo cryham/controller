@@ -24,7 +24,7 @@ void Gui::Init()
 	mlevel = 0;  ym = 0;
 	for (int i=0; i < MAll; ++i)
 		ym2[i]=0;
-
+	
 	leds = 0;
 	help = 0;  hpage = 0;  status = 0;
 	menu = 0;  edit = 0;

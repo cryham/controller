@@ -16,12 +16,13 @@ extern "C" {
 
 #include "demos.h"
 #include "gui.h"
-
+#include "games.h"
 
 Demos demos;
 #ifdef KII
 Gui gui;
 #endif
+Games game;
 
 
 //..............................................................................
@@ -47,6 +48,7 @@ int main()
 	gui.Load();  // load seq data from eeprom
 	gui.tInfo = 0;
 	#endif
+	game.Init();
 
 
 	//--------------------------------  loop
@@ -93,21 +95,30 @@ int main()
 		if (ii > iwait)
 			any_old = any;
 			
-		int demo = gui.DrawDemo();
+		#ifdef KII
+		int demo = gui.DrawDemo(), play = gui.IsGame();
+		#else
+		int demo = 0, play = 1;
+		#endif
 		
 		if (any)
 		{
 			if (ii > iwait)
 			{
+				if (play)
+				{	game.Draw(display);
+					game.KeyPress(gui.mlevel);
+				}
+				else
 				#ifdef KII
 				demos.Draw(display, demo,  gui.ym, gui.ym2[gui.ym]);
 				#else
-				demos.Draw(display, 1, 1, 8);  //par
+				demos.Draw(display, 1, 1, 0);  //par
 				#endif
 			}
 			
 			#ifdef KII
-			if (gui.menu)
+			if (gui.menu && !play)
 				gui.Draw(display);  // gui
 			#endif
 
@@ -115,14 +126,15 @@ int main()
 		}
 		
 		#ifdef KII
-		if (gui.menu)
-		{
-			demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
-			demos.KeyGlob(display);
+		if (!play)
+		{	if (gui.menu)
+			{
+				demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
+				demos.KeyGlob(display);
+			}
+			gui.KeyPress();
+			gui.ExecSeqs();
 		}
-		gui.KeyPress();
-		gui.ExecSeqs();
-		
 		//  old key states  ----
 		for (int i=0; i < 0xFF; ++i)
 			kko[i] = kk[i];
