@@ -48,20 +48,8 @@ void Demos::Plasma0(uint8_t* buf)
 			c = abs(c);
 			xx+=60;
 		
-			//  dither6
-			#if 0
-			c /= SY*(SY/6);  c = 35-c;
-			c = c/6;
-			if (c==6 ||
-				(c==5 && (y+3)/3 && (x+3)/3) ||
-				(c==4 && y0+x0<2) ||
-				(c==3 && y0==x0 ) ||
-				(c==2 && y0+x0>1) ||
-				(c==1 && y%3==0 && x%3==0))
-			#else
 			c /= SY*(SY/12);
 			if (dith(x8,y8,c))
-			#endif
 				buf[a] |= b1;
 			else
 				buf[a] &= b0;
@@ -94,19 +82,8 @@ void Demos::Plasma1(uint8_t* buf)
 			c = abs(c);
 			xx[0]+=172;  xx[1]+=112;
 		
-			#if 0
-			c /= SY*(SY/6);  c = 35-c;
-			c = c/6;
-			if (c==6 ||
-				(c==5 && (y+3)/3 && (x+3)/3) ||
-				(c==4 && y0+x0<2) ||
-				(c==3 && y0==x0 ) ||
-				(c==2 && y0+x0>1) ||
-				(c==1 && y%3==0 && x%3==0))
-			#else
 			c /= SY*(SY/12);
 			if (dith(x8,y8,c))
-			#endif
 				buf[a] |= b1;
 			else
 				buf[a] &= b0;
@@ -140,7 +117,6 @@ void Demos::Plasma2(uint8_t* buf)
 			c = abs(c);
 			xx[0]+=15; xx[1]+=62; xx[2]+=85; xx[3]+=92; xx[4]+=77; xx[5]+=115;
 		
-			//  dither 6
 			c /= SY*(SY/12);
 			if (dith(x8,y8,c))
 				buf[a] |= b1;

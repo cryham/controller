@@ -41,9 +41,10 @@ void Demos::Ngons(Adafruit_SSD1306& d)
 	{
 		d.setCursor(0,8);
 		d.print("An ");  d.println(ngRot);
+
+		d.setCursor(0, H-8);
+		d.print(ngCur);  // n sides
 	}
-	d.setCursor(0, H-8);
-	d.print(ngCur);  // n sides
 
 	delay(ngMax - ngCur + 1);
 }
@@ -99,13 +100,13 @@ void Demos::Font_ver(Adafruit_SSD1306& d)
 	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
 	
 	d.setCursor(96,0);  // ver
-	d.setFont(0);  d.print("3.10");
+	d.setFont(0);  d.print("3.12");
 	
 	d.setCursor(0*24,H-8);
 	const char* a={__DATE__}, *m={__TIME__};
 	const char dt[] = {
 		//  build date, time  format yyyy-mmm-dd hh:mm
-		a[7],a[8],a[9],a[10],' ',a[0],a[1],a[2],' ',a[4],a[5],' ',m[0],m[1],':',m[3],m[4],0};
+		a[7],a[8],a[9],a[10],' ',a[0],a[1],a[2],' ',a[4],a[5],' ',' ',m[0],m[1],':',m[3],m[4],0};
 	d.print(dt);
 }
 
@@ -168,7 +169,7 @@ void Demos::Balls(Adafruit_SSD1306& d)
 		d.print("Rnd ");  d.println(bSpRnd);
 		d.print("Rad ");  d.println(bRad);
 	}
-	//delay(6);
+	delay(6);
 }
 
 

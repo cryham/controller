@@ -17,21 +17,21 @@ void Demos::Init(int sin)
 	ti = 0;  oti = 0;
 	
 	iPrev = -1;
-	iInfo = 0;  iInfoOff = 0;
+	iInfo = 0;  iInfoOff = 1;
 	
 	r1Int = 0;  r1Size = 0;  // rain
 	r2Int = 0;  r2Size = 0;  rCur = 0;
 	
 	ckCur = 0;	ckSpeed = 3;  // ck logo
 
-	fInt = 1;  fWave = 1;  // fountain
+	fInt = 5;  fWave = 1;  // fountain
 	
 	ngt = 0;  ngCur = ngMin;  ngRot = 0;  // ngons
 	hdt = 0;  hdCur = 0;  hdRot = 0;  // hedrons
 
 	einit = INone;
 	sCnt = 80;  sVel = 8;  // stars
-	bCnt = 80;  bSpd = 40;  bSpRnd = 0;  bRad = 3;  // balls
+	bCnt = 80;  bSpd = 120;  bSpRnd = 1;  bRad = 3;  // balls
 
 	if (sin)
 		SinInit();
@@ -44,8 +44,9 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 	#define clD  d.clearDisplay();
 	if (menu)
 	{
-		if (iInfo < 0 && iInfoOff > 0)
-			iInfo = 20 + iInfoOff*100;  //par
+		if (iInfo < 0)
+			iInfo = iInfoOff == iOff ? 0 :
+					60 + iInfoOff*60;  //par
 		if (iInfo > 0)
 			--iInfo;
 
@@ -128,10 +129,13 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 	if (kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS] ||
 		kk[KEY_ESC] && !kko[KEY_ESC])
 	if (ct)
-		iInfoOff = (iInfoOff + 1) % 3;  // off
+		iInfoOff = (iInfoOff + 1) % (iOff+1);  // mode,off
 	else
-	{	if (iInfo)  iInfo = 0;
-		else  iInfo = -1;  return;  //  show/hide
+	{	if (iInfoOff == iOff)  iInfo = 40;
+		else
+		if (iInfo)  iInfo = 0;
+		else  iInfo = -1;
+		return;  //  show/hide
 	}
 	
 	if (demo && (k || e))
@@ -151,7 +155,7 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 				if (e){  bSpRnd += e;  bSpRnd = max(0, min(bSpRMax, bSpRnd));  einit = INone;  }
 			}else
 			{	if (k){  bCnt += k*sp;  bCnt = max(0, min(bMax, bCnt));  einit = INone;  }
-				if (e){  bSpd += e*sp;  bSpd = max(0, min(160, bSpd));  einit = INone;  }
+				if (e){  bSpd += e*sp*2;  bSpd = max(0, min(400, bSpd));  einit = INone;  }
 			}break;
 
 		case 2:  // Rain

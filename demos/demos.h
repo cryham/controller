@@ -18,7 +18,9 @@ struct Demos
 	int8_t fps;  // show frames per second, 1 on, 0 off
 	uint32_t ti, oti;  // fps: time us, old
 	int8_t iPrev;   // prev demo, for init
-	int16_t iInfo, iInfoOff;  // params info text
+	int16_t iInfo;
+	int8_t iInfoOff;  // params info text
+	const static int8_t iOff = 2;
 
 
 	//  sin table  ----
