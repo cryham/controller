@@ -120,8 +120,8 @@ volatile uint8_t  USBKeys_LEDs = 0;
 volatile uint16_t USBMouse_Buttons = 0;
 
 // Relative mouse axis movement, stores pending movement
-volatile uint16_t USBMouse_Relative_x = 0;
-volatile uint16_t USBMouse_Relative_y = 0;
+volatile int16_t USBMouse_Relative_x = 0;
+volatile int16_t USBMouse_Relative_y = 0;
 
 // Protocol setting from the host.
 // 0 - Boot Mode
@@ -544,8 +544,8 @@ void Output_usbMouse_capability( uint8_t state, uint8_t stateType, uint8_t *args
 	uint16_t mouse_button = *(uint16_t*)(&args[0]);
 
 	// X/Y Relative Axis
-	uint16_t mouse_x = *(uint16_t*)(&args[2]);
-	uint16_t mouse_y = *(uint16_t*)(&args[4]);
+	int16_t mouse_x = *(int16_t*)(&args[2]);
+	int16_t mouse_y = *(int16_t*)(&args[4]);
 
 	// Adjust for bit shift
 	uint16_t mouse_button_shift = mouse_button - 1;

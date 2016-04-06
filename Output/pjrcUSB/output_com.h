@@ -81,8 +81,8 @@ extern          uint16_t USBKeys_ConsCtrl; // 1KRO container for Consumer Contro
 extern volatile uint8_t  USBKeys_Protocol; // 0 - Boot Mode, 1 - NKRO Mode
 
 extern volatile uint16_t USBMouse_Buttons; // Bitmask for mouse buttons
-extern volatile uint16_t USBMouse_Relative_x;
-extern volatile uint16_t USBMouse_Relative_y;
+extern volatile int16_t  USBMouse_Relative_x;
+extern volatile int16_t  USBMouse_Relative_y;
 
 // Misc variables (XXX Some are only properly utilized using AVR)
 extern          uint8_t  USBKeys_Idle_Config;
