@@ -18,14 +18,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 #pragma once
-
-// ----- Includes -----
-
-// Project Includes
 #include <matrix_setup.h>
-
 
 // ----- Matrix Definition -----
 //  CK3
@@ -34,6 +28,7 @@
 
 //   This is the default map of just A4Tech KX-100 matrix
 //   scan codes for keys are defined in defaultMap.kll
+//   xx-nothing, M-media, B-browser, V-volume, Ex-extra, ==-bad, 
 /*
       1|   2    3    4    5    6    7    8    9    10  11  12   13   14   15   16   17   18  
    -
