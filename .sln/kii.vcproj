@@ -773,6 +773,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="games"
+			>
+			<File
+				RelativePath="..\games\games.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\games\games.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\main.cpp"
 			>
