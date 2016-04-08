@@ -42,8 +42,7 @@
 // Local Includes
 #include "usb_dev.h"
 #include "usb_mouse.h"
-//#include <usb_hid.h>
-//#include "scan_loop.h"
+#include "scan_loop.h"
 
 
 
@@ -184,8 +183,6 @@ void usb_mouse_send()
 	///  mouse send
 	int mx_send = mx_speed>1 || mx_move && ti - old_ti_mx > mx_delay ? 1 : 0;
 	int my_send = my_speed>1 || my_move && ti - old_ti_my > my_delay ? 1 : 0;
-	//if (!mx_move && mx_speed>1)  USBMouse_Relative_x = USBMouse_Relative_x >= 08;
-	//if (!my_move && my_speed>1)  USBMouse_Relative_y = 8;
 		
 	// Prepare USB Mouse Packet
 	int16_t *packet_data = (int16_t*)(&tx_packet->buf[0]);
@@ -213,41 +210,41 @@ void usb_mouse_send()
 const static float
 	decay = 1.0 - 0.02, hold_max = 2.0,
 	pow_fast = 0.5, pow_slow = 2,
-	spd_mul[2] = {2.0, 0.2};
+	spd_mul[2] = {2.0, 1.0};
 const static int
 	spd_max = 48,
-	delay_max[2] = {10000,40000}, delay_mul = 20000;
+	delay_max[2] = {10000,20000},
+	delay_mul[2] = {20000,40000};
 
 void usb_mouse_idle()
 {
 	//  update
 	ti = micros();  uint32_t dt = ti - old_ti;  old_ti = ti;
-	mx_move = USBMouse_Relative_x ? 1 : 0;  // || mx_delay < 7000
+	mx_move = USBMouse_Relative_x ? 1 : 0;
 	my_move = USBMouse_Relative_y ? 1 : 0;
 	
 	//  mouse send interval  par
 	float htx = min(hold_max, mx_holdtime);
 	float hty = min(hold_max, my_holdtime);
 
-	int sh = 0;  //kk[KEY_LSHIFT] || kk[KEY_RSHIFT];  //..
-	mx_delay = delay_max[sh] - pow(htx, pow_fast) * delay_mul;  mx_delay = max(0, mx_delay);
-	my_delay = delay_max[sh] - pow(hty, pow_fast) * delay_mul;  my_delay = max(0, my_delay);
+	mx_delay = delay_max[shift] - pow(htx, pow_fast) * delay_mul[shift];   mx_delay = max(0, mx_delay);
+	my_delay = delay_max[shift] - pow(hty, pow_fast) * delay_mul[shift];   my_delay = max(0, my_delay);
 
-	mx_speed = pow(htx, pow_slow) * spd_mul[sh] + 1;  mx_speed = min(spd_max, mx_speed);
-	my_speed = pow(hty, pow_slow) * spd_mul[sh] + 1;  my_speed = min(spd_max, my_speed);
+	mx_speed = pow(htx, pow_slow) * spd_mul[shift] + 1;   mx_speed = min(spd_max, mx_speed);
+	my_speed = pow(hty, pow_slow) * spd_mul[shift] + 1;   my_speed = min(spd_max, my_speed);
 
 	//  accel
-	if (mx_move)  mx_holdtime += 0.000001f * dt;
-	if (my_move)  my_holdtime += 0.000001f * dt;
+	if (mx_move && !shift)  mx_holdtime += 0.000001f * dt;
+	if (my_move && !shift)  my_holdtime += 0.000001f * dt;
 	
 	//  decel  const freq
-	if (dt > 60000)  dt = 60000;  // min fps
-	const uint32_t iv = 10000;  // interval
+	if (dt > 60000)  dt = 60000;  // min 16 fps
+	const uint32_t iv = 10000;  // interval 100 fps
 	time += dt;
 	while (time >= iv)
 	{	time -= iv;
-		if (!mx_move)  mx_holdtime *= decay;
-		if (!my_move)  my_holdtime *= decay;
+		if (!mx_move || shift)  mx_holdtime *= decay;
+		if (!my_move || shift)  my_holdtime *= decay;
 	}
 }
 

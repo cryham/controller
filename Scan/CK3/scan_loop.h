@@ -45,11 +45,14 @@ void Scan_currentChange( unsigned int current ); // Called by Output Module
 
 extern uint8_t kk[0xFF], kko[0xFF];  // keys state, old state, 0,1
 extern int8_t id_seq;  // sequence id, to execute
+extern int8_t shift;  // mouse slow
 
-// Example capabilities
+//  custom for CK3
 void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 void CustomAction_Sequence_capability( uint8_t state, uint8_t stateType, uint8_t *args );
+void CustomAction_shift_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 
+// Example capabilities
 void CustomAction_blockHold_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 void CustomAction_blockKey_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 
