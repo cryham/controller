@@ -17,7 +17,7 @@ void Games::Init()
 {
 	//  keys
 	o.sp_drop = 5;  o.sp_fall = 16;
-	o.key_rpt = 25;  o.move_in_drop = 0;
+	o.key_rpt = 27;  o.move_in_drop = 0;
 	
 	preset = 5;
 	xo= 0; yo= 0; xa= 0; ya= 0; xb= 0; yb= 0;
@@ -119,13 +119,12 @@ void Games::NewGame()
 	for (x=0; x < smax_x; ++x)
 		grid[y][x] = 0;
 
-	Clear(blk);
-	Clear(cpy);
+	Clear(blk);  Clear(cpy);  Clear(prv);
 	for (i=0; i < nx_max; ++i)
 		Clear(next[i]);
 	
-	//  fill bottom stuff  . ..
-	int y0 = o.size_y - o.btm_junk;
+	//  fill bottom junk  . ..
+	int y0 = o.size_y - o.btm_junk;  y0 = max(y0, o.bsize);
 	for (y=y0; y < o.size_y; ++y)
 	for (x=0; x < o.size_x; ++x)
 		if (random(100) < min(60, (y-y0+1) * 30))
@@ -245,13 +244,13 @@ void Games::Rotate(Block& to, const Block& from, int cw)
 	for (x = xa; x <= xb; ++x)
 	{	yy = x-xa +ya;	//  range not checked
 		xx = yb-y +xa;  //  ok after Move in GenBlock
-		to.b[yy][xx] = from.b[y][x];
+			to.b[yy][xx] = from.b[y][x];
 	}else
 	for (y = ya; y <= yb; ++y)
 	for (x = xa; x <= xb; ++x)
 	{	yy = xb-x +ya;
 		xx = y-ya +xa;
-		to.b[yy][xx] = from.b[y][x];
+			to.b[yy][xx] = from.b[y][x];
 	}
 }
 
@@ -294,7 +293,7 @@ void Games::Draw(Adafruit_SSD1306& d)
 	//d.setCursor(x,  y);  d.print("Size");  y+=8;
 	//d.setCursor(0,0);  d.print(o.size_x);  d.print(" ");  d.print(o.size_y);  y+=8;
 
-	d.setCursor(x,y);  d.print("Set ");  d.print(preset);  y+=8;
+	//d.setCursor(x,y);  d.print("Set ");  d.print(preset);  y+=8;
 
 	//  status
 	d.setCursor(0,H-1-8);
@@ -328,7 +327,7 @@ void Games::Draw(Adafruit_SSD1306& d)
 	y = pos_y+1;
 	while (!Overlaps(blk, pos_x, y))  ++y;
 	Draw(d, blk, pos_x, y-1, 0, 1);
-	
+
 	//  Next blocks :
 	int s = W / o.nx_cur / (dim_y * o.bsize), xe;
 	for (y=0; y < o.nx_cur; ++y)
@@ -356,7 +355,7 @@ void Games::KeyPress(int8_t& mlevel)
 	if (kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS] ||
 		kk[KEY_ESC] && !kko[KEY_ESC])
 		mlevel = 0;  // <back to menu
-
+	
 	if (kk[KEY_ENTER] && !kko[KEY_ENTER])  // new
 	{	NewGrid();  NewGame();  }
 
@@ -373,67 +372,68 @@ void Games::KeyPress(int8_t& mlevel)
 
 	if (paused)  return;
 
-	if (kk[KEY_D] && !kko[KEY_D])  // demo-
-		demo = 1 - demo;
-
-	#if 1
-	if (kk[KEY_1] && !kko[KEY_1])
-	{	speed_y -= 20*SpdDet;  UpdSpeed();  }
-	if (kk[KEY_2] && !kko[KEY_2])
-	{	speed_y += 20*SpdDet;  UpdSpeed();  }
-	#endif
-
-	
-if (!drop || o.move_in_drop)
-{
-	//  rotate  control
-	if (demo && random(500)==0 ||
-		kk[KEY_UP] && !kko[KEY_UP])  // rot cw
+	if (!drop || o.move_in_drop)
 	{
-		Rotate(cpy, blk, 1);  //  check possible
-		if (!Overlaps(cpy, pos_x, pos_y))
-			Copy(blk, cpy);
-	}
-	if (kk[KEYPAD_5] && !kko[KEYPAD_5] ||
-		kk[KEYPAD_SLASH] && !kko[KEYPAD_SLASH])  // rot ccw
-	{
-		Rotate(cpy, blk, 0);  //  check possible
-		if (!Overlaps(cpy, pos_x, pos_y))
-			Copy(blk, cpy);
-	}
+		//  rotate  control
+		if (demo && random(500)==0 ||
+			kk[KEY_UP] && !kko[KEY_UP])  // rot cw
+		{
+			Rotate(cpy, blk, 1);  //  check possible
+			if (!Overlaps(cpy, pos_x, pos_y))
+				Copy(blk, cpy);
+		}
+		if (kk[KEYPAD_5] && !kko[KEYPAD_5] ||
+			kk[KEYPAD_SLASH] && !kko[KEYPAD_SLASH])  // rot ccw
+		{
+			Rotate(cpy, blk, 0);  //  check possible
+			if (!Overlaps(cpy, pos_x, pos_y))
+				Copy(blk, cpy);
+		}
 
-	//  move
-	#define  rpt  o.key_rpt
-	int k = kk[KEY_LEFT];  // auto repeat
-	if (k)  kl++;  else  kl = 0;
+		//  move
+		#define  rpt  o.key_rpt
+		int k = kk[KEY_LEFT];  // auto repeat
+		if (k)  kl++;  else  kl = 0;
 
-	if (demo && random(350)==0 ||
-		kl > rpt ||  k && !kko[KEY_LEFT])  // move
-	{	kl = 0;
-		int old_x = pos_x;
-		--pos_x;  if (pos_x < 0)  pos_x = o.size_x-1;
-		if (Overlaps(blk, pos_x, pos_y))
-			pos_x = old_x;  //  if not possible restore
+		if (demo && random(350)==0 ||
+			kl > rpt ||  k && !kko[KEY_LEFT])  // move
+		{	kl = 0;
+			int old_x = pos_x;
+			--pos_x;  if (pos_x < 0)  pos_x = o.size_x-1;
+			if (Overlaps(blk, pos_x, pos_y))
+				pos_x = old_x;  //  if not possible restore
+		}
+
+		k = kk[KEY_RIGHT];  // auto
+		if (k)  kr++;  else  kr = 0;
+
+		if (demo && random(350)==0 ||
+			kr > rpt ||  k && !kko[KEY_RIGHT])
+		{	kr = 0;
+			int old_x = pos_x;
+			++pos_x;  if (pos_x > o.size_x-1)  pos_x = 0;
+			if (Overlaps(blk, pos_x, pos_y))
+				pos_x = old_x;  //  if not possible restore
+		}
 	}
-
-	k = kk[KEY_RIGHT];  // auto
-	if (k)  kr++;  else  kr = 0;
-
-	if (demo && random(350)==0 ||
-		kr > rpt ||  k && !kko[KEY_RIGHT])
-	{	kr = 0;
-		int old_x = pos_x;
-		++pos_x;  if (pos_x > o.size_x-1)  pos_x = 0;
-		if (Overlaps(blk, pos_x, pos_y))
-			pos_x = old_x;  //  if not possible restore
-	}
-}
 
 	fall = kk[KEY_DOWN];  // fall faster hold
 
 	if (kk[KEY_INSERT] && !kko[KEY_INSERT])  // drop
 		drop = 1;
-	
+
+
+	//  - other -
+	if (kk[KEY_D] && !kko[KEY_D])  // demo-
+		demo = 1 - demo;
+
+	#if 1
+	if (kk[KEY_1] && !kko[KEY_1])
+	{	speed_y -= 10*SpdDet;  UpdSpeed();  }
+	if (kk[KEY_2] && !kko[KEY_2])
+	{	speed_y += 10*SpdDet;  UpdSpeed();  }
+	#endif
+
 	Update();
 }
 
@@ -471,6 +471,7 @@ void Games::Update()
 					int x,y;
 					for (y=0; y < o.size_y; ++y)
 					{	int yy = (pos_y + y);
+						
 						if (yy < o.size_y)
 						for (x=0; x < o.size_x; ++x)
 							if (blk.b[y][x])
@@ -479,7 +480,7 @@ void Games::Update()
 					
 					//  clear full lines  __
 					y = o.size_y - 1;  int l=0;
-					while (y >= 0)
+					while (y > 0)
 					{
 						int c = 0, j;
 						for (x=0; x < o.size_x; ++x)
@@ -487,7 +488,7 @@ void Games::Update()
 
 						if (c == o.size_x)  // full, move down
 						{
-							for (j=y; j > 0; --j)
+							for (j = y; j > 0; --j)
 							for (x=0; x < o.size_x; ++x)
 								grid[j][x] = grid[j-1][x];
 							
@@ -521,52 +522,65 @@ void Games::GenBlock(Block& b)
 	int ss = o.bsize, s = ss-1,
 		s2 = s/2; //ss/2
 
-	Clear(b);
-
-	//  generate
-	int cx = ss / 2, cy = cx;  // start in center
-	//int cx = ss % 2 == 1 ? ss / 2 : max(0, ss / 2 - 1), cy = cx;
-	int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;
+	int sc = 0, same = 1;
+	while (same && sc < 3)
+	{	++sc;
 	
-	int l = 0, err = 0;
-	while (l < len && err < 100)
-	{
-		if (b.b[cy][cx] == 0)
-		{	b.b[cy][cx] = 1;  ++l;  //  inc len
-		}else  ++err;
+		Clear(b);
+
+		//  generate
+		int cx = ss / 2, cy = cx;  // start in center
+		int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;
 		
-		switch (random(o.bdiag))
-		{	//  move +
-			case 0:  if (cx < s)  ++cx;  break;
-			case 1:  if (cx > 0)  --cx;  break;
-			case 2:  if (cy < s)  ++cy;  break;
-			case 3:  if (cy > 0)  --cy;  break;
-			//  digonal x
-			case 4:  if (cx < s)  ++cx;  if (cy < s)  ++cy;  break;
-			case 5:  if (cx > 0)  --cx;  if (cy < s)  ++cy;  break;
-			case 6:  if (cx < s)  ++cx;  if (cy > 0)  ++cy;  break;
-			case 7:  if (cx > 0)  --cx;  if (cy > 0)  ++cy;  break;
+		int l = 0, err = 0;
+		while (l < len && err < 100)
+		{
+			if (b.b[cy][cx] == 0)
+			{	b.b[cy][cx] = 1;  ++l;  //  inc len
+			}else  ++err;
+			
+			switch (random(o.bdiag))
+			{	//  move +
+				case 0:  if (cx < s)  ++cx;  break;
+				case 1:  if (cx > 0)  --cx;  break;
+				case 2:  if (cy < s)  ++cy;  break;
+				case 3:  if (cy > 0)  --cy;  break;
+				//  digonal x
+				case 4:  if (cx < s)  ++cx;  if (cy < s)  ++cy;  break;
+				case 5:  if (cx > 0)  --cx;  if (cy > 0)  --cy;  break;
+				case 6:  if (cx > 0)  --cx;  if (cy < s)  ++cy;  break;
+				case 7:  if (cx < s)  ++cx;  if (cy > 0)  --cy;  break;
+			}
 		}
-	}
-	//errors = err;
+		//errors = err;
 
-	GetRange(b);
+		GetRange(b);
+			
+		//  new begin pos
+		//01   ss2 s1 s2 0
+		//012  ss3 s2 s2 1
+		//0123 ss4 s3 s2 1  par
+		xo = s2 - (xb-xa+1)/2;  xo = max(0,xo);
+		yo = s2 - (yb-ya+1)/2;  yo = max(0,yo);
 		
-	//  new begin pos
-	//01   ss2 s1 s2 0
-	//012  ss3 s2 s2 1
-	//0123 ss4 s3 s2 1  par
-	xo = s2 - (xb-xa+1)/2;  xo = max(0,xo);
-	yo = s2 - (yb-ya+1)/2;  yo = max(0,yo);
-	
-	//  Move
-	Copy(cpy,b);  Clear(b);
+		//  Move
+		Copy(cpy,b);  Clear(b);
 
-	for (y=ya; y<=yb; ++y)
-	for (x=xa; x<=xb; ++x)
-	{	int i = x-xa+xo, j = y-ya+yo;
-		if (i<0 || i>s || j<0 || j>s)
-			errors += 1;
-		b.b[j][i] = cpy.b[y][x];
+		for (y=ya; y<=yb; ++y)
+		for (x=xa; x<=xb; ++x)
+		{	int i = x-xa+xo, j = y-ya+yo;
+			if (i<0 || i>s || j<0 || j>s)
+				errors += 1;
+			b.b[j][i] = cpy.b[y][x];
+		}
+		
+		//  check if same as previously generated
+		//memcmp(
+		same = 1;
+		for (y=0; y < bmax; ++y)
+		for (x=0; x < bmax; ++x)
+			if (prv.b[y][x] != b.b[y][x])
+				same = 0;
 	}
+	Copy(prv, b);
 }

@@ -39,6 +39,7 @@ struct Games
 		uint8_t key_rpt, move_in_drop;
 	} o;
 
+
 	//  dim auto
 	int8_t dim_x, dim_y,  //  grid dim, box size pixels
 		ofs_x, ofs_y;  // field offset on screen
@@ -46,6 +47,7 @@ struct Games
 	//  move
 	int8_t pos_x, pos_y;
 	int8_t fall, drop;  // bool
+
 	
 	//  speed
 	#define SpdDet 16384
@@ -54,6 +56,7 @@ struct Games
 
 	inline void UpdSpeed()
 	{	time_spd = 10000 * SpdDet / speed_y;  }
+
 	
 	//  grid data  ::
 	const static int8_t
@@ -66,7 +69,7 @@ struct Games
 	struct Block
 	{	int8_t b[bmax][bmax];  };
 	
-	Block blk, cpy, next[nx_max];
+	Block blk, cpy, next[nx_max], prv;
 
 	
 	//  block generator
@@ -75,8 +78,8 @@ struct Games
 	void NewGrid();
 
 	//  utility
-	void Draw(Adafruit_SSD1306& d, const Block& b,		int pos_x, int pos_y, int o_y=0, int dim=0);
-	void DrawNext(Adafruit_SSD1306& d, const Block& b,	int pos_x, int pos_y);
+	void Draw(    Adafruit_SSD1306& d, const Block& b,  int pos_x, int pos_y, int o_y=0, int dim=0);
+	void DrawNext(Adafruit_SSD1306& d, const Block& b,  int pos_x, int pos_y);
 	
 	int Overlaps(const Block& b,  int pos_x, int pos_y);	// test block overlap in grid
 
@@ -86,7 +89,7 @@ struct Games
 	int xo,yo, xa,xb, ya,yb;  // range
 	void GetRange(const Block& b);
 	void Rotate(Block& to, const Block& from, int cw);
-	
+
 	//  global state
 	int paused, demo, ended;
 	
