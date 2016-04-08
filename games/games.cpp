@@ -3,6 +3,9 @@ extern "C" {
 	#include <scan_loop.h>  // keys kk
 	#include <usb_hid.h>  // key_defs
 }
+#define PROGMEM
+#include "FreeSans9pt7b.h"
+
 
 //  main
 Games::Games()
@@ -22,57 +25,63 @@ void Games::Init()
 	preset = 5;
 	xo= 0; yo= 0; xa= 0; ya= 0; xb= 0; yb= 0;
 
+	gui = 1;
+	yg=0;  oyg=0;  opg=0;
+
 	NewGrid();
-	NewGame();
+	//NewGame();
 }
 
 //  Init
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+const static char* sPresets[Games::Presets] = {
+	"Tiny 3", "Basic 3/4", "Simple 3/2", "Tetris 4", "Pentis 5/1", "Pentis 5/4", "Sixtis 6", "Septis 7"};
+	
 void Games::NewGrid()
 {
-	o.nx_cur = 3;
+	o.nx_cur = 3;  o.dots = 0;  o.frame = 2;  o.bbias = 2;
 	switch (preset)
 	//  H 64  sy dim  21 3 .. 16 4 .. 12 5 .. 10 6
 	{
 	case 0:  // tiny
-		o.size_x = 3;  o.size_y = 10;  o.btm_junk = 2;
+		o.size_x = 3;  o.size_y = 10;  o.btm_junk = 2;  o.dots = 0;  o.frame = 0;
 		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 2;  o.bdiag = 4;
-		o.speed = 50 * SpdDet;  o.accel = 20;  break;
+		o.speed = 40 * SpdDet;  o.accel = 20;  break;
 
 	case 1:  // basic
-		o.size_x = 4;  o.size_y = 10;  o.btm_junk = 1;
+		o.size_x = 4;  o.size_y = 10;  o.btm_junk = 1;	o.dots = 0;  o.frame = 0;
 		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;	o.bdiag = 8;
-		o.speed = 60 * SpdDet;  o.accel = 30;  break;
+		o.speed = 30 * SpdDet;  o.accel = 30;  break;
 
 	case 2:  // simple
-		o.size_x = 5;  o.size_y = 12;  o.btm_junk = 2;
+		o.size_x = 5;  o.size_y = 12;  o.btm_junk = 2;  o.dots = 0;  o.frame = 0;
 		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;  o.bdiag = 6;
 		o.speed = 40 * SpdDet;  o.accel = 40;  break;
 
 	case 3:  // tetris meh
-		o.size_x = 10;  o.size_y = 12;  o.btm_junk = 3;
+		o.size_x = 9;  o.size_y = 12;  o.btm_junk = 3;  o.dots = 0;  o.frame = 3;
 		o.blen_min = 4;  o.blen_max = 4;  o.bsize = 4;  o.bdiag = 4;
-		o.speed = 30 * SpdDet;  o.accel = 30;  break;
+		o.speed = 15 * SpdDet;  o.accel = 30;  break;
 
 	case 4:  // pentis
-		o.size_x = 11;  o.size_y = 14;  o.btm_junk = 2;
+		o.size_x = 11;  o.size_y = 14;  o.btm_junk = 2;  o.dots = 1;  o.frame = 2;
 		o.blen_min = 2;  o.blen_max = 5;  o.bsize = 5;  o.bdiag = 5;
-		o.speed = 20 * SpdDet;  o.accel = 20;  break;
+		o.speed = 10 * SpdDet;  o.accel = 20;  break;
 
-	case 5:  // sixtis
-		o.size_x = 12;  o.size_y = 16;  o.btm_junk = 1;
-		o.blen_min = 2;  o.blen_max = 6;  o.bsize = 5;  o.bdiag = 4;
-		o.speed = 20 * SpdDet;  o.accel = 10;  break;
+	case 5:  // pentis diag
+		o.size_x = 12;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 2;  o.frame = 2;
+		o.blen_min = 2;  o.blen_max = 6;  o.bsize = 5;  o.bdiag = 8;
+		o.speed = 8 * SpdDet;  o.accel = 10;  break;
 
-	case 6:  // septis
-		o.size_x = 13;  o.size_y = 16;  o.btm_junk = 1;
+	case 6:  // sixtis
+		o.size_x = 13;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 3;  o.frame = 3;
 		o.blen_min = 2;  o.blen_max = 8;  o.bsize = 6;  o.bdiag = 4;
-		o.speed = 10 * SpdDet;  o.accel = 2;  break;
+		o.speed = 4 * SpdDet;  o.accel = 2;  break;
 
-	case 7:  // huge
-		o.size_x = 14;  o.size_y = 21;  o.btm_junk = 0;
+	case 7:  // septis
+		o.size_x = 14;  o.size_y = 21;  o.btm_junk = 0;  o.dots = 3;  o.frame = 3;
 		o.blen_min = 1;  o.blen_max = 9;  o.bsize = 7;  o.bdiag = 4;
-		o.speed = 10 * SpdDet;  o.accel = 0;  break;
+		o.speed = 1 * SpdDet;  o.accel = 0;  break;
 	}
 									
 	//  box dim
@@ -81,6 +90,7 @@ void Games::NewGrid()
 	//  center, bottom
 	ofs_x = (W - o.size_x*dim_x) / 2;
 	ofs_y = (H - o.size_y*dim_y);
+	NewGame();
 }
 
 
@@ -152,7 +162,8 @@ void Games::Draw(Adafruit_SSD1306& d, const Block& b,
 	{
 		int yy = (pos_y + y) % o.size_y * dim_y + ofs_y + o_y;
 		int xx = (pos_x + x) % o.size_x * dim_x + ofs_x;
-		if (b.b[y][x]  && yy >= 0)
+		if (b.b[y][x] &&
+			yy >= 0 && yy < H)
 			d.fillRect(xx, yy, dim_x, dim_y, WHITE);
 	}
 	else  //  dim, prv
@@ -161,7 +172,8 @@ void Games::Draw(Adafruit_SSD1306& d, const Block& b,
 	{
 		int yy = (pos_y + y) % o.size_y * dim_y + ofs_y + o_y;
 		int xx = (pos_x + x) % o.size_x * dim_x + ofs_x;
-		if (b.b[y][x])
+		if (b.b[y][x] &&
+			yy >= 0 && yy < H)
 			for (int j=0; j < dim_y; ++j)
 			for (int i=0; i < dim_x; ++i)
 				if ((xx+i) % 2 == (yy+j) % 2)
@@ -178,7 +190,8 @@ void Games::DrawNext(Adafruit_SSD1306& d, const Block& b,
 		int xx = pos_x + x * dim_x;
 		d.drawPixel(xx + dim_x/2, yy + dim_y/2, WHITE);  //.
 
-		if (b.b[y][x]  && xx < W && yy < H)
+		if (b.b[y][x] &&
+			xx < W && yy < H)
 			d.fillRect(xx, yy, dim_x, dim_y, WHITE);
 	}
 }
@@ -244,12 +257,20 @@ void Games::Rotate(Block& to, const Block& from, int cw)
 	for (x = xa; x <= xb; ++x)
 	{	yy = x-xa +ya;	//  range not checked
 		xx = yb-y +xa;  //  ok after Move in GenBlock
+		if (yy<0 || xx<0 ||
+			xx>=o.bsize || yy>=o.bsize)
+			++errors;  //cut-
+		else
 			to.b[yy][xx] = from.b[y][x];
 	}else
 	for (y = ya; y <= yb; ++y)
 	for (x = xa; x <= xb; ++x)
 	{	yy = xb-x +ya;
 		xx = y-ya +xa;
+		if (yy<0 || xx<0 ||
+			xx>=o.bsize || yy>=o.bsize)
+			++errors;  //cut-
+		else
 			to.b[yy][xx] = from.b[y][x];
 	}
 }
@@ -328,15 +349,23 @@ void Games::Draw(Adafruit_SSD1306& d)
 	while (!Overlaps(blk, pos_x, y))  ++y;
 	Draw(d, blk, pos_x, y-1, 0, 1);
 
+	
 	//  Next blocks :
-	int s = W / o.nx_cur / (dim_y * o.bsize), xe;
+	if (!o.nx_cur)  return;
+	int by = dim_y * o.bsize;
+	int xe, ys = (H - o.nx_cur * yy) / o.nx_cur;
+	ys = max(0, ys);
+	
 	for (y=0; y < o.nx_cur; ++y)
 	{
-		yy = y * dim_y * o.bsize + y*s;  // =
-		//xx = W-1 - dim_x * o.gsize - dim_x/2;  // right|
-		xx = ofs_x + (o.size_x+1) * dim_x;
+		yy = y * by + y * ys;
+
+		xx = ofs_x + (o.size_x+3) * dim_x;   // |next to field
+		xe = W-1 - dim_x * o.bsize /*- dim_x/2*/;  // screen right|
+		if (xx > xe)  xx = xe;
 		
 		DrawNext(d, next[y], xx, yy);
+		
 		//  line ..
 		xe = xx + o.bsize * dim_x;
 		if (y > 0)
@@ -349,7 +378,7 @@ void Games::Draw(Adafruit_SSD1306& d)
 //  Keys
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 int kl = 0, kr = 0;
-void Games::KeyPress(int8_t& mlevel)
+int Games::KeyPress(int8_t& mlevel)
 {
 	//  global
 	if (kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS] ||
@@ -530,7 +559,17 @@ void Games::GenBlock(Block& b)
 
 		//  generate
 		int cx = ss / 2, cy = cx;  // start in center
-		int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;
+		//int cx = s2, cy = cx;
+		
+		#if 1
+		int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;  //~
+		#else  // biased
+		int len = o.blen_min;   y = o.blen_max - o.blen_min;
+		for (x=0; x < y; ++x)
+			if (random(100) < o.bbias*2 + 12)
+				++len;
+		len = min(len, o.blen_max);
+		#endif
 		
 		int l = 0, err = 0;
 		while (l < len && err < 100)
