@@ -214,11 +214,13 @@ void Gui::KeyPress()
 
 	if (!edit)  //  global
 	{
-		if (kk[KEY_H] && !kko[KEY_H] || kk[KEY_F1] && !kko[KEY_F1])
-			help = 1-help;  // H
+		if (kk[KEY_F1] && !kko[KEY_F1] ||
+			kk[KEY_SCROLL_LOCK] && !kko[KEY_SCROLL_LOCK])
+		{	help = 1-help;  if (help)  status = 0;  }  // H
 
-		if (kk[KEY_L] && !kko[KEY_L] || kk[KEY_F2] && !kko[KEY_F2])
-			status = 1-status;  // L
+		if (kk[KEY_F2] && !kko[KEY_F2] ||
+			kk[KEY_PAUSE] && !kko[KEY_PAUSE])
+		{	status = 1-status;  if (status)  help = 0;  }  // L
 
 		if (help || status)  // <back
 		if (kk[KEY_LEFT] && !kko[KEY_LEFT] ||
