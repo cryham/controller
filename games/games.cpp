@@ -331,21 +331,34 @@ void Games::Draw(Adafruit_SSD1306& d)
 		for (x=0; x < o.size_x; ++x)
 		{
 			xx = x * dim_x + ofs_x;
-			if (xx%2 == yy%2)
+			//  grid modes
+			if (o.dots==0 || 
+				o.dots==1 && (x%2 == y%2) ||
+				o.dots==2 && (x%3==1 && y%3==1))
 			d.drawPixel(xx+dx, yy+dy, WHITE);  // .
 			
 			if (grid[y][x])  //  blocks
 				d.fillRect(xx, yy, dim_x, dim_y, WHITE);
 		}
 	}
+	//  Frame  | |
+	if (o.frame > 0)
+	{
+		xx = ofs_x + o.size_x * dim_x;
+		for (y = ofs_y; y < H; y += o.frame)
+		{
+			d.drawPixel(ofs_x-1, y, WHITE);
+			d.drawPixel(xx, y, WHITE);
+		}
+	}
 	
 	//  Current block '
-	//Draw(d, blk, pos_x, 0);
+	//Draw(d, blk, pos_x, 0);  // grid y
 	y = dim_y * time_y / time_spd;
-	Draw(d, blk, pos_x, pos_y-1, y);
+	Draw(d, blk, pos_x, pos_y-1, y);  // fine y
 
 	//  Drop preview .
-	y = pos_y+1;
+	y = pos_y;  //+1
 	while (!Overlaps(blk, pos_x, y))  ++y;
 	Draw(d, blk, pos_x, y-1, 0, 1);
 

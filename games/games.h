@@ -24,7 +24,8 @@ struct Games
 		int8_t btm_junk;  // bottom lines filled at start
 		//  draw
 		int8_t nx_cur;   // preview, number of next blocks
-		int8_t grid;   // grid dots
+		int8_t dots;    // grid dots draw type> is less
+		int8_t frame;   // frame | | draw type > is less
 
 		//  block generate
 		int8_t blen_min, blen_max,  // legth min..max
@@ -73,9 +74,7 @@ struct Games
 
 	
 	//  block generator
-	void GenBlock(Block& b);
-	void NewBlock();
-	void NewGrid();
+	void GenBlock(Block& b), NewBlock(), NewGrid();
 
 	//  utility
 	void Draw(    Adafruit_SSD1306& d, const Block& b,  int pos_x, int pos_y, int o_y=0, int dim=0);
@@ -86,10 +85,11 @@ struct Games
 	void Clear(Block& b);
 	int Copy(Block& to, const Block& from);
 	
-	int xo,yo, xa,xb, ya,yb;  // range
+	int8_t xo,yo, xa,xb, ya,yb;  // range
 	void GetRange(const Block& b);
 	void Rotate(Block& to, const Block& from, int cw);
 
+	
 	//  global state
 	int paused, demo, ended;
 	
