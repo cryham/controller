@@ -100,7 +100,7 @@ void Demos::Font_ver(Adafruit_SSD1306& d)
 	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
 	
 	d.setCursor(96,0);  // ver
-	d.setFont(0);  d.print("3.12");
+	d.setFont(0);  d.print("3.15");
 	
 	d.setCursor(0*24,H-8);
 	const char* a={__DATE__}, *m={__TIME__};

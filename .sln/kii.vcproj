@@ -784,6 +784,14 @@
 				RelativePath="..\games\games.h"
 				>
 			</File>
+			<File
+				RelativePath="..\games\games_draw.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\games\games_keys.cpp"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath="..\main.cpp"
