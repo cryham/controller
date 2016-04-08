@@ -13,7 +13,8 @@ struct Games
 	void Init();
 	
 	void Draw(Adafruit_SSD1306& display);
-	void Update(), KeyPress(int8_t& mlevel);
+	void Update();
+	int KeyPress(int8_t& mlevel);
 	
 	uint32_t old_ti, dt_sum;
 	
@@ -30,14 +31,15 @@ struct Games
 		//  block generate
 		int8_t blen_min, blen_max,  // legth min..max
 			bsize,  // max size x=y
-			bdiag;  // directions: 4 norm, 8 full diagonal
+			bdiag,  // directions: 4 norm, 8 full diagonal
+			bbias;  // bias 16 more (max) or 0 less (min) blocks
 
 		//  fall speed at start, accel
-		uint32_t speed, accel;
+		int32_t speed, accel;
 		
 		//  input, fine
-		uint8_t sp_drop, sp_fall;
-		uint8_t key_rpt, move_in_drop;
+		int8_t sp_drop, sp_fall;
+		int8_t key_rpt, move_in_drop;
 	} o;
 
 
@@ -91,17 +93,22 @@ struct Games
 
 	
 	//  global state
-	int paused, demo, ended;
+	int8_t paused, demo, ended;
 	
-	const static int Presets = 8;
-	int preset;  // game type  //todo: all options
+	const static int8_t Presets = 8;
+	int8_t preset;  // game type
 	void NewGame();
 
 	//  stats
-	int score, lines, errors;
+	uint16_t score, lines, errors;
 
-	//  gui options
+
+	//  gui menu  ---
+	enum EGui {
+		G_NewGame=0, G_Preset, G_Resume, G_Options, G_Help, G_All };
+	enum EOpt {
+		O_Field=0, O_Speed, O_Block, O_Draw, O_Input, O_All };
+	
 	int8_t gui, yg,  // level, cursor
 		oyg, opg;  // opt
-	//..
 };

@@ -278,20 +278,93 @@ void Games::Rotate(Block& to, const Block& from, int cw)
 
 //  Draw
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+const static char* sOptPages[Games::O_All] = {
+	"Field", "Speed", "Block", "Draw", "Input"};
+
 void Games::Draw(Adafruit_SSD1306& d)
 {
 	d.clearDisplay();
-	d.setFont(0);
 	int x = 0, y = 0;
+	d.setCursor(x,y);
 
-	/*if (gui)
+	if (gui==1)
 	{
-		"Resume"
-		"New Game"
-		"Preset 3 simple"
-		"Options"
-		"Help"
-	}*/
+		d.setFont(&FreeSans9pt7b);
+		d.print("Sixtis");  d.setFont(0);
+
+		d.setCursor(W/2, 4);
+		d.println(sPresets[preset]);  // title
+		
+		d.setCursor(0, 16);
+		for (y=0; y < G_All; ++y)
+		{
+			d.print(y==yg ? "\x10":" ");
+			switch (y)
+			{	case G_Resume:   d.println("Resume");  break;
+				case G_NewGame:  d.println("New Game");  break;
+				case G_Preset:   d.print("Preset: ");
+					d.print(preset+1);  d.print("/");  d.println(Presets);
+					//d.print("   ");  d.println(ssPresets[preset]);  // title
+					break;
+				case G_Options: d.println("Options");  break;
+				case G_Help:    d.println("Help");  break;
+			}
+		}
+		return;
+	}
+	if (gui==2)
+	{
+		d.setFont(&FreeSans9pt7b);
+		d.print("Sixtis");  d.setFont(0);
+		
+		d.setCursor(W-1-3*6, 0);
+		d.print(opg+1);  d.print("/");  d.print(O_All);
+		
+		d.setCursor(W/2-6, 4);
+		d.print(sOptPages[opg]);  // title
+
+		x = 8;  y = 16+8;  int l = 0;
+		#define  line(str, par, yy)  \
+			if (l == oyg) {  d.setCursor(0,y);  d.print("\x10");  }  d.setCursor(x,y);  \
+			d.print(str);  d.print(par);  ++l;  y+=yy;  d.setCursor(x,y)
+
+		switch (opg)
+		{
+		case O_Field:
+			line("Width   ", o.size_x, 8);
+			line("Height  ", o.size_y, 8+4);
+			line("Junk lines  ", o.btm_junk, 8);
+			break;
+		case O_Speed:
+			line("Fall Speed    ", o.speed/SpdDet, 8+2);
+			line("Acceleration  ", o.accel, 8+4);
+			break;
+		case O_Block:  y-=6;
+			line("Length min  ", o.blen_min, 8);
+			line("Length max  ", o.blen_max, 8);
+			line("Size   ", o.bsize, 8+2);
+			line("Diagonal  ", o.bdiag, 8);
+			line("Bias   ", o.bbias, 8);
+			break;
+		
+		case O_Draw:
+			line("Preview blocks  ", o.nx_cur, 8+2);
+			line("Grid dots   ", o.dots, 8+2);
+			line("Frame draw  ", o.frame, 8+2);
+			break;
+		case O_Input:
+			line("Key repeat  ", o.key_rpt, 8+2);
+			line("Move in drop  ", o.move_in_drop, 8+2);
+			line("Fall speed  ", o.sp_fall, 8);
+			line("Drop speed  ", o.sp_drop, 8+2);
+			break;
+		}
+		// cursor out
+		if (oyg < 0)  oyg = l-1;
+		if (oyg >= l)  oyg = 0;
+		return;
+	}
+	d.setFont(0);
 
 	#if 0  //  debug --
 	//x = W-1 - 5*6;  y = H-1 - 4*8;
@@ -396,24 +469,106 @@ int Games::KeyPress(int8_t& mlevel)
 	//  global
 	if (kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS] ||
 		kk[KEY_ESC] && !kko[KEY_ESC])
-		mlevel = 0;  // <back to menu
+	{
+		if (gui==2)  gui=0;  // off options
+		else
+		if (gui==1)  mlevel = 0;  // <back to menu
+		else  gui = 1;
+	}
+	
+	if (gui==1)  // - menu -
+	{
+		if (kk[KEY_UP] && !kko[KEY_UP])      yg = (yg - 1 + G_All) % G_All;
+		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  yg = (yg + 1) % G_All;
+		
+		if (yg == G_Preset)
+		{
+			if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+			{	preset = (preset - 1 + Presets) % Presets;	NewGrid();  }
+			if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
+			{	preset = (preset + 1 + Presets) % Presets;  NewGrid();  }
+		}else
+		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])  // enter>
+		{
+			switch (yg)
+			{
+			case G_Resume:  gui=0;  break;
+			case G_NewGame:  NewGame();  gui=0;  break;
+			case G_Options:  gui = 2;  break;
+			case G_Help:  return 1;
+			}
+		}		
+		return 0;
+	}
+	if (gui==2)  // - options -
+	{
+		if (kk[KEY_UP  ] && !kko[KEY_UP  ])  --oyg;  //oyg = (oyg - 1 + 6) % 6;
+		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  ++oyg;  //oyg = (oyg + 1) % 6;
+		
+		int k = 0, s = kk[KEY_RCTRL] ? 4 : 1;
+		if (kk[KEY_LEFT ] && !kko[KEY_LEFT ])  k =-s;
+		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])  k = s;
+		
+		if (k)  // change params  ----
+		switch (opg)
+		{
+		case O_Field:  switch (oyg)  {
+			case 0:  o.size_x   += k;  o.size_x   = max(2, min(32, o.size_x));  break;
+			case 1:  o.size_y   += k;  o.size_y   = max(2, min(32, o.size_y));  break;  //8 21
+			case 2:  o.btm_junk += k;  o.btm_junk = max(0, min(32, o.btm_junk));  break;
+			}	break;
+		case O_Speed:  switch (oyg)  {
+			case 0:  o.speed += k*SpdDet*4;  o.speed = max(0, min(400*SpdDet, o.speed));  break;
+			case 1:  o.accel += k;  o.accel = max(0, min( 80, o.accel));  break;
+			}	break;
+		case O_Block:  switch (oyg)  {
+			case 0:  o.blen_min += k;  o.blen_min = max(1, min(32, o.blen_min));
+				if (o.blen_max < o.blen_min)  o.blen_max = o.blen_min;  break;
+			case 1:  o.blen_max += k;  o.blen_max = max(1, min(32, o.blen_max));
+				if (o.blen_min > o.blen_max)  o.blen_min = o.blen_max;  break;
+			case 2:  o.bsize += k;  o.bsize = max(2, min(bmax, o.bsize));  break;
+			case 3:  o.bdiag += k;  o.bdiag = max(2, min(8, o.bdiag));  break;
+			case 4:  o.bbias += k;  o.bbias = max(0, min(16, o.bbias));  break;
+			}	break;
+		
+		case O_Draw:  switch (oyg)  {
+			case 0:  o.nx_cur += k;  o.nx_cur = max(0, min(4, o.nx_cur));  break;
+			case 1:  o.dots   += k;  o.dots   = max(0, min(4, o.dots));  break;
+			case 2:  o.frame  += k;  o.frame  = max(0, min(4, o.frame));  break;
+			}	break;
+		case O_Input:  switch (oyg)  {
+			case 0:  o.key_rpt += k;  o.key_rpt = max(0, min(60, o.key_rpt));  break;
+			case 1:  o.move_in_drop = 1-o.move_in_drop;  break;
+			case 2:  o.sp_fall += k;  o.sp_fall = max(1, min(24, o.sp_fall));  break;
+			case 3:  o.sp_drop += k;  o.sp_drop = max(1, min(10, o.sp_drop));  break;
+			}	break;
+		}
+
+		if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  opg = (opg - 1 + O_All) % O_All;
+		if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  opg = (opg + 1) % O_All;
+		return 0;
+	}
+
+	//  ---  game  ---
 	
 	if (kk[KEY_ENTER] && !kko[KEY_ENTER])  // new
-	{	NewGrid();  NewGame();  }
+	{	/*NewGrid();*/  NewGame();  }
 
 	if (kk[KEY_Q] && !kko[KEY_Q])
 		preset = (preset - 1 + Presets) % Presets;
 	if (kk[KEY_W] && !kko[KEY_W])
 		preset = (preset + 1 + Presets) % Presets;
 
-	if (ended)  return;
+	if (ended)  return 0;
 
 	if (kk[KEYPAD_PLUS] && !kko[KEYPAD_PLUS] ||
 		kk[KEY_SPACE] && !kko[KEY_SPACE])  // pause
 		paused = 1 - paused;
 
-	if (paused)  return;
+	if (paused)  return 0;
 
+
+	//  --  move  --
 	if (!drop || o.move_in_drop)
 	{
 		//  rotate  control
@@ -435,7 +590,7 @@ int Games::KeyPress(int8_t& mlevel)
 		//  move
 		#define  rpt  o.key_rpt
 		int k = kk[KEY_LEFT];  // auto repeat
-		if (k)  kl++;  else  kl = 0;
+		if (k && rpt)  kl++;  else  kl = 0;
 
 		if (demo && random(350)==0 ||
 			kl > rpt ||  k && !kko[KEY_LEFT])  // move
@@ -447,7 +602,7 @@ int Games::KeyPress(int8_t& mlevel)
 		}
 
 		k = kk[KEY_RIGHT];  // auto
-		if (k)  kr++;  else  kr = 0;
+		if (k && rpt)  kr++;  else  kr = 0;
 
 		if (demo && random(350)==0 ||
 			kr > rpt ||  k && !kko[KEY_RIGHT])
@@ -477,6 +632,7 @@ int Games::KeyPress(int8_t& mlevel)
 	#endif
 
 	Update();
+	return 0;
 }
 
 

@@ -107,7 +107,8 @@ int main()
 			{
 				if (play)
 				{	game.Draw(display);
-					game.KeyPress(gui.mlevel);
+					if (game.KeyPress(gui.mlevel))
+					{	gui.help = 1;  gui.hpage = Gui::HAll-2;  }
 				}
 				else
 				#ifdef KII
