@@ -56,7 +56,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		{
 		case 0:  // help
 			d.setCursor(0, 16+8);
-			d.println("ScrLck F1  Help");  //> x1A  < x1B  v x19  ^ x18
+			d.println("ScrLck F1  Help");  // < x1B  > x1A  ^ x18  v x19
 			d.moveCursor(0,4);
 			d.println("\x18\x19  Prev/Next Page");
 			d.moveCursor(0,4);
@@ -125,9 +125,10 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.setCursor(0, 16+4);
 			d.println("- Esc  Exit");
 			d.println("+ Spc  Pause");
-			d.moveCursor(0,4);
 			d.println("Enter  New Game");
-			d.println("Q,A  Presets-+");
+			d.moveCursor(0,4);
+			d.println("\x1B\x1A  Dec,Inc Param");
+			d.println("PgUp,PgDn  Page");
 			break;
 		}
 		return;
@@ -144,11 +145,10 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		d.moveCursor(0,4);
 
 		//  layers stack  - -
-		//d.setCursor(0, 16+8*2);
-		d.print("Layers: ");  //d.moveCursor(4, 0);
+		d.print("Layers: ");
 		for (int l=1; l < layersCnt; ++l)  // 1st is 1 in menu
 		{
-			d.print(layersOn[l]);  d.moveCursor(6/*3*/,0);
+			d.print(layersOn[l]);  d.moveCursor(6,0);
 		}
 		
 		///  dbg  mouse speed  --

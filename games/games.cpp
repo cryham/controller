@@ -61,12 +61,12 @@ void Games::NewGrid()
 
 	case 5:  // pentis diag
 		o.size_x = 12;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 2;  o.frame = 2;
-		o.blen_min = 2;  o.blen_max = 6;  o.bsize = 5;  o.bdiag = 8;
+		o.blen_min = 1;  o.blen_max = 6;  o.bsize = 5;  o.bdiag = 7;
 		o.speed = 8 * SpdDet;  o.accel = 10;  break;
 
 	case 6:  // sixtis
 		o.size_x = 13;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 3;  o.frame = 3;
-		o.blen_min = 2;  o.blen_max = 8;  o.bsize = 6;  o.bdiag = 4;
+		o.blen_min = 1;  o.blen_max = 8;  o.bsize = 6;  o.bdiag = 4;
 		o.speed = 4 * SpdDet;  o.accel = 2;  break;
 
 	case 7:  // septis
@@ -227,7 +227,8 @@ void Games::Update()
 {
 	++time_y;
 	uint32_t ti = micros(), dt = ti - old_ti;  old_ti = ti;
-	dt_sum += dt;
+	if (dt < 100000)  // min 10 fps
+		dt_sum += dt;
 
 	const uint32_t iv = 16666;  // 60 fps const
 	while (dt_sum > iv)

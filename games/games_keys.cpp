@@ -20,6 +20,7 @@ int Games::KeyPress(int8_t& mlevel)
 		else  gui = 1;
 	}
 	
+	
 	if (gui==1)  // - menu -
 	{
 		if (kk[KEY_UP] && !kko[KEY_UP])      yg = (yg - 1 + G_All) % G_All;
@@ -31,7 +32,8 @@ int Games::KeyPress(int8_t& mlevel)
 			{	preset = (preset - 1 + Presets) % Presets;	NewGrid();  }
 			if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
 			{	preset = (preset + 1 + Presets) % Presets;  NewGrid();  }
-		}else
+			return 0;
+		}
 		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])  // enter>
 		{
 			switch (yg)
@@ -41,9 +43,12 @@ int Games::KeyPress(int8_t& mlevel)
 			case G_Options:  gui = 2;  break;
 			case G_Help:  return 1;
 			}
-		}		
+		}
+		if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+			mlevel = 0;  // <back to menu
 		return 0;
 	}
+
 	if (gui==2)  // - options -
 	{
 		if (kk[KEY_UP  ] && !kko[KEY_UP  ])  --oyg;  //oyg = (oyg - 1 + 6) % 6;
@@ -93,15 +98,11 @@ int Games::KeyPress(int8_t& mlevel)
 		return 0;
 	}
 
+
 	//  ---  game  ---
 	
 	if (kk[KEY_ENTER] && !kko[KEY_ENTER])  // new
-	{	/*NewGrid();*/  NewGame();  }
-
-	if (kk[KEY_Q] && !kko[KEY_Q])
-		preset = (preset - 1 + Presets) % Presets;
-	if (kk[KEY_W] && !kko[KEY_W])
-		preset = (preset + 1 + Presets) % Presets;
+		NewGame();
 
 	if (ended)  return 0;
 
@@ -176,5 +177,6 @@ int Games::KeyPress(int8_t& mlevel)
 	#endif
 
 	Update();
+
 	return 0;
 }
