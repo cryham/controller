@@ -37,6 +37,7 @@
 // Project Includes
 #include <Lib/OutputLib.h>
 #include <print.h>
+#include <math.h>
 
 // Local Includes
 #include "usb_dev.h"
@@ -137,6 +138,14 @@ static uint32_t usb_mouse_offset_y     = DEFAULT_YSCALE / 2 - 1;
 // XXX Missing mouse movement and wheels
 //     Proper support will require KLL generation of the USB descriptors
 //     Similar support will be required for joystick control
+
+///  mouse move speed vars
+uint32_t old_ti = 0, old_ti_mx = 0, old_ti_my = 0, ti = 0, time = 0;
+int mx_delay = 10000, my_delay = 10000,
+	mx_move = 0, my_move = 0,
+	mx_speed = 1, my_speed = 1;
+float mx_holdtime = 0.f, my_holdtime = 0.f;
+
 void usb_mouse_send()
 {
 	uint32_t wait_count = 0;
@@ -170,12 +179,17 @@ void usb_mouse_send()
 
 	transmit_previous_timeout = 0;
 
+	///  mouse send
+	int mx_send = mx_move || mx_speed>1 && ti - old_ti_mx > mx_delay ? 1 : 0;
+	int my_send = my_move || my_speed>1 && ti - old_ti_my > my_delay ? 1 : 0;
+	//if (!mx_move && mx_speed>1)  USBMouse_Relative_x = USBMouse_Relative_x >= 08;
+	//if (!my_move && my_speed>1)  USBMouse_Relative_y = 8;
+		
 	// Prepare USB Mouse Packet
-        // TODO Dynamically generate this code based on KLL requirements
 	int16_t *packet_data = (int16_t*)(&tx_packet->buf[0]);
 	packet_data[0] = USBMouse_Buttons;
-        packet_data[1] = USBMouse_Relative_x;
-        packet_data[2] = USBMouse_Relative_y;
+	packet_data[1] = mx_send ? USBMouse_Relative_x * (int16_t)(mx_speed) / 8 : 0;
+	packet_data[2] = my_send ? USBMouse_Relative_y * (int16_t)(my_speed) / 8 : 0;
 	tx_packet->len = 6;
 	usb_tx( MOUSE_ENDPOINT, tx_packet );
 
@@ -183,8 +197,56 @@ void usb_mouse_send()
 	USBMouse_Buttons = 0;
 	USBMouse_Relative_x = 0;
 	USBMouse_Relative_y = 0;
+	if (mx_send)  old_ti_mx = ti;
+	if (my_send)  old_ti_my = ti;
+
 	USBMouse_Changed = 0;
 }
+
+#ifndef min
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
+#endif
+///  accel params
+const static float
+	decay = 1.0 - 0.02, hold_max = 2.0,
+	pow_fast = 0.5, pow_slow = 2,
+	spd_mul = 2.0;
+const static int
+	spd_max = 48;
+
+void usb_mouse_idle()
+{
+	//  update
+	ti = micros();  uint32_t dt = ti - old_ti;  old_ti = ti;
+	mx_move = USBMouse_Relative_x ? 1 : 0;  // || mx_delay < 7000
+	my_move = USBMouse_Relative_y ? 1 : 0;
+	
+	//  mouse send interval  par
+	float htx = min(hold_max, mx_holdtime);
+	float hty = min(hold_max, my_holdtime);
+
+	mx_delay = 10000 - pow(htx, pow_fast) * 20000;  mx_delay = max(0, mx_delay);
+	my_delay = 10000 - pow(hty, pow_fast) * 20000;  my_delay = max(0, my_delay);
+
+	mx_speed = pow(htx, pow_slow) * spd_mul + 1;  mx_speed = min(spd_max, mx_speed);
+	my_speed = pow(hty, pow_slow) * spd_mul + 1;  my_speed = min(spd_max, my_speed);
+
+	//  accel
+	if (mx_move)  mx_holdtime += 0.000001f * dt;
+	if (my_move)  my_holdtime += 0.000001f * dt;
+	
+	//  decel  const freq
+	if (dt > 60000)  dt = 60000;  // min fps
+	const uint32_t iv = 10000;  // interval
+	time += dt;
+	while (time >= iv)
+	{	time -= iv;
+		if (!mx_move)  mx_holdtime *= decay;
+		if (!my_move)  my_holdtime *= decay;
+	}
+}
+
 
 
 // Move the mouse.  x, y and wheel are -127 to 127.  Use 0 for no movement.

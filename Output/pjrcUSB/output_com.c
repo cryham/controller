@@ -355,7 +355,7 @@ void Output_usbCodeSend_capability( uint8_t state, uint8_t stateType, uint8_t *a
 		// Set the modifier bit if this key is a modifier
 		if ( (key & 0xE0) == 0xE0 ) // AND with 0xE0 (Left Ctrl, first modifier)
 		{
-			USBKeys_Modifiers |= 1 << (key ^ 0xE0); // Left shift 1 by key XOR 0xE0
+				USBKeys_Modifiers |= 1 << (key ^ 0xE0); // Left shift 1 by key XOR 0xE0
 		}
 		// Normal USB Code
 		else
@@ -625,6 +625,7 @@ inline void Output_send()
 			USBKeys_Keys[c] = 0;
 
 	// Process mouse actions
+	usb_mouse_idle();
 	while ( USBMouse_Changed )
 		usb_mouse_send();
 

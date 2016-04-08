@@ -51,3 +51,6 @@ int usb_mouse_move( int8_t x, int8_t y, int8_t wheel );
 int usb_mouse_position( uint16_t x, uint16_t y );
 void usb_mouse_screen_size( uint16_t width, uint16_t height, uint8_t mac );
 
+extern int mx_delay, my_delay, mx_move, my_move, mx_speed, my_speed;
+extern float mx_holdtime, my_holdtime;
+void usb_mouse_idle();
