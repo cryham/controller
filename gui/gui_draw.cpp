@@ -32,8 +32,6 @@ const char mod[0x08][6] = {
 
 //  Draw, settings
 //....................................................................................
-const static char ar[2]={16,0};  //>
-
 void Gui::Draw(Adafruit_SSD1306& d)
 {
 	if (mlevel==0 || mlevel==1 && ym == MSeq || tInfo > 0 || help || status)
@@ -58,33 +56,33 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		{
 		case 0:  // help
 			d.setCursor(0, 16+8);
-			d.println("H F1  Help");  //> x1A  < x1B  v x19  ^ x18
+			d.println("ScrLck F1  Help");  //> x1A  < x1B  v x19  ^ x18
 			d.moveCursor(0,4);
-			d.println("\0x18\0x19  Prev/Next Page");
+			d.println("\x18\x19  Prev/Next Page");
 			d.moveCursor(0,4);
-			d.println("0x1B Esc  Back");
+			d.println("\x1B Esc  Back");
 			break;
 
 		case 1:  // help
 			d.setCursor(0, 16+8);
-			d.println("L F2  Status");
+			d.println("Pause F2  Status");
 			d.moveCursor(0,8);
 			d.println("D Spc  Dim display");
 			break;
 
 		case 2:  // menu
 			d.setCursor(0, 16+8);
-			d.print("\0x18\0x19  Cursor \0x10");
+			d.println("\x18\x19  Cursor \x10");
 			d.moveCursor(0,2);
-			d.println("\0x1A  Enter");
+			d.println("\x1A  Enter");
 			d.moveCursor(0,2);
-			d.println("\0x1B  Back");
+			d.println("\x1B  Back");
 			d.moveCursor(0,8);
 			break;
 
 		case 3:  // sequence
 			d.setCursor(0, 16+2);
-			d.println("\0x18\0x19  Cursor");
+			d.println("\x18\x19  Cursor");
 			d.println("PgUp,PgDn  Page");
 			d.moveCursor(0,2);
 			d.println("Num Enter - Edit");
@@ -95,7 +93,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 4:  // demos
 			d.setCursor(0, 16+2);
-			d.println("\0x18\0x19  Prev/Next");
+			d.println("\x18\x19  Prev/Next");
 			d.moveCursor(0,2);
 			d.println("+ F  Toggle Fps");
 			d.moveCursor(0,4);
@@ -114,25 +112,24 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 6:  // sixtis
 			d.setCursor(0, 16+4);
-			d.println("\0x1B\0x1A  Move");
+			d.println("\x1B\x1A  Move");
 			d.moveCursor(0,2);
-			d.println("\0x18  Rotate cw");
-			d.println("5 /  ccw");
+			d.println("\x18  Rotate cw");
+			d.println("5 /  Rot ccw");
 			d.moveCursor(0,2);
-			d.print("\0x19  Fall");
-			d.print("Ins  Drop");
+			d.println("\x19  Fall");
+			d.println("Ins  Drop");
 			break;
 
 		case 7:  // sixtis cd
 			d.setCursor(0, 16+4);
-			d.println("Num- Esc  Exit");
-			d.println("Num+ Spc  Pause");
+			d.println("- Esc  Exit");
+			d.println("+ Spc  Pause");
 			d.moveCursor(0,4);
 			d.println("Enter  New Game");
 			d.println("Q,A  Presets-+");
 			break;
 		}
-		status = 0;  //
 		return;
 	}
 	
@@ -175,7 +172,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		d.setCursor(0, 16);
 		for (int i=0; i < MAll; ++i)
 		{
-			d.print(i==ym ? ar:" ");
+			d.print(i==ym ? "\x10":" ");
 			switch (i)
 			{
 				case MSeq:    d.println("Sequences");  break;
@@ -201,8 +198,8 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		for (i=0; i < iPage && s < iSlots; ++i,++s)
 		{
 			d.setCursor(0, 16 + i*8);
-			//d.print(i==slot ? ar:" ");   d.print(s);  d.print(": ");
-			d.print(s);  d.print(i==slot ? ar:" ");
+			//d.print(i==slot ? "\x10":" ");   d.print(s);  d.print(": ");
+			d.print(s);  d.print(i==slot ? "\x10":" ");
 			
 			//  write sequence  ---
 			n=0;  x=0;  xm=1;
