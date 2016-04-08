@@ -58,11 +58,11 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		{
 		case 0:  // help
 			d.setCursor(0, 16+8);
-			d.println("H F1  Help");  //> 26  < 27  v 25  ^ 24
+			d.println("H F1  Help");  //> x1A  < x1B  v x19  ^ x18
 			d.moveCursor(0,4);
-			d.print(char(24));  d.print(char(25));  d.println("  Prev/Next Page");
+			d.println("\0x18\0x19  Prev/Next Page");
 			d.moveCursor(0,4);
-			d.print(char(27));  d.println(" Esc  Back");
+			d.println("0x1B Esc  Back");
 			break;
 
 		case 1:  // help
@@ -74,17 +74,17 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 2:  // menu
 			d.setCursor(0, 16+8);
-			d.print(char(24));  d.print(char(25));  d.print("  Cursor ");  d.println(char(16));
+			d.print("\0x18\0x19  Cursor \0x10");
 			d.moveCursor(0,2);
-			d.print(char(26));  d.println("  Enter");
+			d.println("\0x1A  Enter");
 			d.moveCursor(0,2);
-			d.print(char(27));  d.println("  Back");
+			d.println("\0x1B  Back");
 			d.moveCursor(0,8);
 			break;
 
 		case 3:  // sequence
 			d.setCursor(0, 16+2);
-			d.print(char(24));  d.print(char(25));  d.println("  Cursor");
+			d.println("\0x18\0x19  Cursor");
 			d.println("PgUp,PgDn  Page");
 			d.moveCursor(0,2);
 			d.println("Num Enter - Edit");
@@ -95,12 +95,12 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 4:  // demos
 			d.setCursor(0, 16+2);
-			d.print(char(24));  d.print(char(25));  d.println("  Prev/Next");
+			d.println("\0x18\0x19  Prev/Next");
 			d.moveCursor(0,2);
-			d.println("Num+ F  Toggle Fps");
+			d.println("+ F  Toggle Fps");
 			d.moveCursor(0,4);
-			d.println("R  Reset all params");
-			d.println("Num- Esc  Params Info");
+			d.println("R  Reset all");
+			d.println("- Esc  Params Info");
 			d.println("  Ctrl  Mode,Off");
 			break;
 
@@ -114,13 +114,13 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 6:  // sixtis
 			d.setCursor(0, 16+4);
-			d.print(char(27));  d.print(char(26));  d.println("  Move");
-			d.print(char(25));  d.println("  Fall");
-			d.moveCursor(0,4);
-			d.print(char(24));  d.println("  Rotate cw");
-			d.print("Num 5 /  Rotate ccw");
-			d.moveCursor(0,4);
-			d.println("Ins  Drop");
+			d.println("\0x1B\0x1A  Move");
+			d.moveCursor(0,2);
+			d.println("\0x18  Rotate cw");
+			d.println("5 /  ccw");
+			d.moveCursor(0,2);
+			d.print("\0x19  Fall");
+			d.print("Ins  Drop");
 			break;
 
 		case 7:  // sixtis cd
