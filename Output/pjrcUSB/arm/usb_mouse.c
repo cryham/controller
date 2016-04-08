@@ -42,6 +42,8 @@
 // Local Includes
 #include "usb_dev.h"
 #include "usb_mouse.h"
+//#include <usb_hid.h>
+//#include "scan_loop.h"
 
 
 
@@ -180,8 +182,8 @@ void usb_mouse_send()
 	transmit_previous_timeout = 0;
 
 	///  mouse send
-	int mx_send = mx_move || mx_speed>1 && ti - old_ti_mx > mx_delay ? 1 : 0;
-	int my_send = my_move || my_speed>1 && ti - old_ti_my > my_delay ? 1 : 0;
+	int mx_send = mx_speed>1 || mx_move && ti - old_ti_mx > mx_delay ? 1 : 0;
+	int my_send = my_speed>1 || my_move && ti - old_ti_my > my_delay ? 1 : 0;
 	//if (!mx_move && mx_speed>1)  USBMouse_Relative_x = USBMouse_Relative_x >= 08;
 	//if (!my_move && my_speed>1)  USBMouse_Relative_y = 8;
 		
@@ -211,9 +213,10 @@ void usb_mouse_send()
 const static float
 	decay = 1.0 - 0.02, hold_max = 2.0,
 	pow_fast = 0.5, pow_slow = 2,
-	spd_mul = 2.0;
+	spd_mul[2] = {2.0, 0.2};
 const static int
-	spd_max = 48;
+	spd_max = 48,
+	delay_max[2] = {10000,40000}, delay_mul = 20000;
 
 void usb_mouse_idle()
 {
@@ -226,11 +229,12 @@ void usb_mouse_idle()
 	float htx = min(hold_max, mx_holdtime);
 	float hty = min(hold_max, my_holdtime);
 
-	mx_delay = 10000 - pow(htx, pow_fast) * 20000;  mx_delay = max(0, mx_delay);
-	my_delay = 10000 - pow(hty, pow_fast) * 20000;  my_delay = max(0, my_delay);
+	int sh = 0;  //kk[KEY_LSHIFT] || kk[KEY_RSHIFT];  //..
+	mx_delay = delay_max[sh] - pow(htx, pow_fast) * delay_mul;  mx_delay = max(0, mx_delay);
+	my_delay = delay_max[sh] - pow(hty, pow_fast) * delay_mul;  my_delay = max(0, my_delay);
 
-	mx_speed = pow(htx, pow_slow) * spd_mul + 1;  mx_speed = min(spd_max, mx_speed);
-	my_speed = pow(hty, pow_slow) * spd_mul + 1;  my_speed = min(spd_max, my_speed);
+	mx_speed = pow(htx, pow_slow) * spd_mul[sh] + 1;  mx_speed = min(spd_max, mx_speed);
+	my_speed = pow(hty, pow_slow) * spd_mul[sh] + 1;  my_speed = min(spd_max, my_speed);
 
 	//  accel
 	if (mx_move)  mx_holdtime += 0.000001f * dt;
