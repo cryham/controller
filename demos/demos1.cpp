@@ -1,9 +1,11 @@
 #include "demos.h"
+
+#ifdef DEMOS
+
 #include "gui.h"  // menu enum, ym etc
 #define PROGMEM
-#include "FreeSans9pt7b.h"
+#include "FreeSans9pt7b.h"  // 2k flash, 1%
 //#include "FreeSans12pt7b.h"
-
 
 //  regular polygons with diagonals
 //....................................................................................
@@ -287,3 +289,5 @@ void Demos::Fountain(Adafruit_SSD1306& d)
 	t += fWave;
 	delay(6);
 }
+
+#endif

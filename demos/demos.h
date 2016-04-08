@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <Adafruit_SSD1306.h>
 
+#define DEMOS  // if not, only keyboard Gui
+
 #define W SSD1306_LCDWIDTH  // area
 #define H SSD1306_LCDHEIGHT
 
@@ -12,15 +14,17 @@ struct Demos
 	Demos();
 	void Init(int sin=1), Reset(D), KeyGlob(D);
 	void Draw(D, int8_t menu, int8_t ym, int8_t ym2);
-	void KeyPress(int8_t demo, int8_t ym, int8_t ym2);
 
 	int8_t dim;  // dim display toggle
 	int8_t fps;  // show frames per second, 1 on, 0 off
 	uint32_t ti, oti;  // fps: time us, old
+
+#ifdef DEMOS
 	int8_t iPrev;   // prev demo, for init
 	int16_t iInfo;
 	int8_t iInfoOff;  // params info text
 	const static int8_t iOff = 2;
+	void KeyPress(int8_t demo, int8_t ym, int8_t ym2);
 
 
 	//  sin table  ----
@@ -100,5 +104,6 @@ struct Demos
 	void Hedrons(D);
 	
 	//void Spiral..
+#endif
 	#undef D
 };

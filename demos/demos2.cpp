@@ -1,5 +1,6 @@
 #include "demos.h"
 
+#ifdef DEMOS
 
 //  CrystaL KeyboarD  logo lines
 //....................................................................................
@@ -446,3 +447,5 @@ void Demos::Hedrons(Adafruit_SSD1306& d)
 	++t;
 	delay(8);
 }
+
+#endif

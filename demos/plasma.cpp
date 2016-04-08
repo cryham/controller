@@ -5,6 +5,7 @@
 
 //  Plasma
 //...................................................
+#ifdef DEMOS
 
 void Demos::SinInit()
 {
@@ -225,3 +226,4 @@ void Demos::Plasma4(uint8_t* buf)
 	}	t+=tadd[4];
 }
 
+#endif

@@ -16,9 +16,10 @@ void Demos::Init(int sin)
 	dim = 1;  //params
 	ti = 0;  oti = 0;
 	
+#ifdef DEMOS
 	iPrev = -1;
 	iInfo = 0;  iInfoOff = 1;
-	
+
 	r1Int = 0;  r1Size = 0;  // rain
 	r2Int = 0;  r2Size = 0;  rCur = 0;
 	
@@ -35,12 +36,14 @@ void Demos::Init(int sin)
 
 	if (sin)
 		SinInit();
+#endif
 }
 
 //  Draw
 //....................................................................................
 void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 {
+#ifdef DEMOS
 	#define clD  d.clearDisplay();
 	if (menu)
 	{
@@ -93,6 +96,7 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 		}
 		d.setTextColor(WHITE);  // transp
 	}
+#endif
 
 	if (fps)  /// fps
 	{
@@ -105,6 +109,7 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 	}
 }
 
+#ifdef DEMOS
 //  Key Press  demo params
 //....................................................................................
 void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
@@ -205,6 +210,7 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 			tadd[y2+1] += k;  // speed
 	}
 }
+#endif
 
 //  display
 void Demos::KeyGlob(Adafruit_SSD1306& d)

@@ -14,15 +14,19 @@ extern "C" {
 }
 #endif
 
-#include "demos.h"
-#include "gui.h"
-#include "games.h"
-
+#include "demos.h"  // #define DEMOS inside
 Demos demos;
+
 #ifdef KII
+#include "gui.h"
 Gui gui;
 #endif
+
+#define GAME  // 2k ram, 18k flash
+#ifdef GAME
+#include "games.h"
 Games game;
+#endif
 
 
 //..............................................................................
@@ -48,7 +52,9 @@ int main()
 	gui.Load();  // load seq data from eeprom
 	gui.tInfo = 0;
 	#endif
+	#ifdef GAME
 	game.Init();
+	#endif
 
 
 	//--------------------------------  loop
@@ -86,7 +92,7 @@ int main()
 		int any = 1;
 		#endif
 
-		//  clear on display off
+		//  clear display when going off
 		if (!any && any_old && ii > iwait)
 		{
 			display.clearDisplay();
@@ -96,21 +102,29 @@ int main()
 			any_old = any;
 			
 		#ifdef KII
-		int demo = gui.DrawDemo(), play = gui.IsGame();
+		int demo = gui.DrawDemo(),
+			play =
+				#ifdef GAME
+				gui.IsGame();
+				#else
+				0;
+				#endif
 		#else
-		int demo = 0, play = 1;
+		int demo = 0, play = 0;
 		#endif
 		
 		if (any)
 		{
 			if (ii > iwait)
 			{
+				#ifdef GAME
 				if (play)
 				{	game.Draw(display);
 					if (game.KeyPress(gui.mlevel))
 					{	gui.help = 1;  gui.hpage = Gui::HAll-2;  }
 				}
 				else
+				#endif
 				#ifdef KII
 				demos.Draw(display, demo,  gui.ym, gui.ym2[gui.ym]);
 				#else
@@ -130,7 +144,9 @@ int main()
 		if (!play)
 		{	if (gui.menu)
 			{
+				#ifdef DEMOS
 				demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
+				#endif
 				demos.KeyGlob(display);
 			}
 			gui.KeyPress();
