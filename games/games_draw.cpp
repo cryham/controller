@@ -40,7 +40,11 @@ void Games::DrawNext(Adafruit_SSD1306& d, const Block& b,
 	{
 		int yy = pos_y + y * dim_y;
 		int xx = pos_x + x * dim_x;
-		d.drawPixel(xx + dim_x/2, yy + dim_y/2, WHITE);  //.
+		//  grid modes .
+		if (o.dots==0 || 
+			o.dots==1 && (x%2 == y%2) ||
+			o.dots==2 && (x%3==1 && y%3==1))
+			d.drawPixel(xx + dim_x/2, yy + dim_y/2, WHITE);
 
 		if (b.b[y][x] &&
 			xx < W && yy < H)
@@ -215,12 +219,12 @@ void Games::Draw(Adafruit_SSD1306& d)
 	//  Next blocks :
 	if (!o.nx_cur)  return;
 	int by = dim_y * o.bsize;
-	int xe, ys = (H - o.nx_cur * yy) / o.nx_cur;
+	int xe, ys = (H - o.nx_cur * by) / (o.nx_cur-1);
 	ys = max(0, ys);
 	
 	for (y=0; y < o.nx_cur; ++y)
 	{
-		yy = y * by + y * ys;
+		yy = y * (by + ys);
 
 		xx = ofs_x + (o.size_x+3) * dim_x;   // |next to field
 		xe = W-1 - dim_x * o.bsize /*- dim_x/2*/;  // screen right|
