@@ -22,13 +22,12 @@ void Games::Init()
 	gui = 1;
 	yg=0;  oyg=0;  opg=0;
 
-	NewGrid();
-	//NewGame();
+	NewSet();
 }
 
 //  Init
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-void Games::NewGrid()
+void Games::NewSet()
 {
 	o.nx_cur = 3;  o.dots = 0;  o.frame = 2;  o.bbias = 2;
 	switch (preset)
@@ -74,7 +73,11 @@ void Games::NewGrid()
 		o.blen_min = 1;  o.blen_max = 9;  o.bsize = 7;  o.bdiag = 4;
 		o.speed = 1 * SpdDet;  o.accel = 0;  break;
 	}
-									
+	NewGrid();
+}
+
+void Games::NewGrid()
+{
 	//  box dim
 	dim_y = H / o.size_y;  dim_x = dim_y;
 
@@ -82,28 +85,6 @@ void Games::NewGrid()
 	ofs_x = (W - o.size_x*dim_x) / 2;
 	ofs_y = (H - o.size_y*dim_y);
 	NewGame();
-}
-
-
-void Games::NewBlock()
-{
-	//  pos center
-	pos_x = o.size_x / 2 - o.bsize / 2;
-	pos_y = 0;  time_y = 0;
-	fall = 0;  drop = 0;
-
-	if (!o.nx_cur)
-	{	GenBlock(blk);  return;  }
-	
-	//  get first
-	Copy(blk, next[0]);
-	
-	//  move next blocks
-	for (int n=0; n < o.nx_cur-1; ++n)
-		Copy(next[n], next[n+1]);
-
-	//  new last
-	GenBlock(next[o.nx_cur-1]);
 }
 
 void Games::NewGame()
@@ -139,6 +120,28 @@ void Games::NewGame()
 	for (i=0; i < o.nx_cur; ++i)
 		GenBlock(next[i]);
 	NewBlock();
+}
+
+
+void Games::NewBlock()
+{
+	//  pos center
+	pos_x = o.size_x / 2 - o.bsize / 2;
+	pos_y = 0;  time_y = 0;
+	fall = 0;  drop = 0;
+
+	if (!o.nx_cur)
+	{	GenBlock(blk);  return;  }
+	
+	//  get first
+	Copy(blk, next[0]);
+	
+	//  move next blocks
+	for (int n=0; n < o.nx_cur-1; ++n)
+		Copy(next[n], next[n+1]);
+
+	//  new last
+	GenBlock(next[o.nx_cur-1]);
 }
 
 
@@ -195,13 +198,23 @@ void Games::Rotate(Block& to, const Block& from, int cw)
 {
 	Clear(to);
 	GetRange(from);
-	int x,y,xx,yy;
-	
+	int x,y,xx,yy,
+		sb = o.bsize-1,
+		sy = yb-ya, sx = xb-xa,
+		y0 = ya, x0 = xa;  // new start
+
+	// move up/left if rotate would cut off down/right
+	// 0  ---  xa 0  xb 2   sx 2  sb 2
+	// 1  +++  ya 1  yb 1   sy 0
+	// 2  ---  y0 1  1+2 >= 2  --  y0 0
+	while (y0 > 0 && y0+sx >= sb)  --y0;
+	while (x0 > 0 && x0+sy >= sb)  --x0;
+
 	if (cw)  // clockwise
 	for (y = ya; y <= yb; ++y)
 	for (x = xa; x <= xb; ++x)
-	{	yy = x-xa +ya;	//  range not checked
-		xx = yb-y +xa;  //  ok after Move in GenBlock
+	{	yy = x-xa +y0;	//  range not checked
+		xx = yb-y +x0;  //  ok after Move in GenBlock
 		if (yy<0 || xx<0 ||
 			xx>=o.bsize || yy>=o.bsize)
 			++errors;  //cut-
@@ -210,8 +223,8 @@ void Games::Rotate(Block& to, const Block& from, int cw)
 	}else
 	for (y = ya; y <= yb; ++y)
 	for (x = xa; x <= xb; ++x)
-	{	yy = xb-x +ya;
-		xx = y-ya +xa;
+	{	yy = xb-x +y0;
+		xx = y-ya +x0;
 		if (yy<0 || xx<0 ||
 			xx>=o.bsize || yy>=o.bsize)
 			++errors;  //cut-
@@ -241,7 +254,8 @@ void Games::Update()
 			//  speed
 			uint spd = drop ? o.sp_drop : fall ? o.sp_fall : time_spd;
 			//  accel
-			speed_y += o.accel;  UpdSpeed();
+			if (o.accel > 0)
+			{	speed_y += o.accel;  UpdSpeed();  }
 			
 			if (time_y > spd)
 			{	time_y = 0;
@@ -318,7 +332,7 @@ void Games::GenBlock(Block& b)
 		
 		#if 1
 		int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;  //~
-		#else  // biased
+		#else  // biased-
 		int len = o.blen_min;   y = o.blen_max - o.blen_min;
 		for (x=0; x < y; ++x)
 			if (random(100) < o.bbias*2 + 12)
@@ -354,6 +368,8 @@ void Games::GenBlock(Block& b)
 		//01   ss2 s1 s2 0
 		//012  ss3 s2 s2 1
 		//0123 ss4 s3 s2 1  par
+		//  s test right bottom
+		//  s2  center	 //1 par 0
 		xo = s2 - (xb-xa+1)/2;  xo = max(0,xo);
 		yo = s2 - (yb-ya+1)/2;  yo = max(0,yo);
 		
@@ -364,7 +380,7 @@ void Games::GenBlock(Block& b)
 		for (x=xa; x<=xb; ++x)
 		{	int i = x-xa+xo, j = y-ya+yo;
 			if (i<0 || i>s || j<0 || j>s)
-				errors += 1;
+				errors += 10;
 			b.b[j][i] = cpy.b[y][x];
 		}
 		

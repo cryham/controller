@@ -55,7 +55,7 @@ struct Games
 	//  speed
 	#define SpdDet 16384
 	int16_t time_y;
-	uint32_t speed_y, time_spd;
+	int32_t speed_y, time_spd;
 
 	inline void UpdSpeed()
 	{	time_spd = 10000 * SpdDet / speed_y;  }
@@ -63,7 +63,7 @@ struct Games
 	
 	//  grid data  ::
 	const static int8_t
-		smax_x = 24, smax_y = 24;
+		smax_x = 32, smax_y = 32;
 	int8_t grid[smax_y][smax_x];
 
 	//  blocks  .
@@ -76,7 +76,7 @@ struct Games
 
 	
 	//  block generator
-	void GenBlock(Block& b), NewBlock(), NewGrid();
+	void GenBlock(Block& b), NewBlock(), NewSet(), NewGrid();
 
 	//  utility
 	void Draw(    Adafruit_SSD1306& d, const Block& b,  int pos_x, int pos_y, int o_y=0, int dim=0);

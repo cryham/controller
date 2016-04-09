@@ -42,7 +42,7 @@ void Games::DrawNext(Adafruit_SSD1306& d, const Block& b,
 		int xx = pos_x + x * dim_x;
 		//  grid modes .
 		if (o.dots==0 || 
-			o.dots==1 && (x%2 == y%2) ||
+			o.dots==1 && (x%2 && y%2) ||
 			o.dots==2 && (x%3==1 && y%3==1))
 			d.drawPixel(xx + dim_x/2, yy + dim_y/2, WHITE);
 
@@ -123,8 +123,8 @@ void Games::Draw(Adafruit_SSD1306& d)
 			line("Length min  ", o.blen_min, 8);
 			line("Length max  ", o.blen_max, 8);
 			line("Size   ", o.bsize, 8+2);
-			line("Diagonal  ", o.bdiag, 8);
-			line("Bias   ", o.bbias, 8);
+			line("Diagonal  ", o.bdiag-4, 8);
+			//line("Bias   ", o.bbias, 8);
 			break;
 		
 		case O_Draw:
