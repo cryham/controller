@@ -40,12 +40,12 @@ void Games::NewSet()
 
 	case 1:  // basic
 		o.size_x = 4;  o.size_y = 10;  o.btm_junk = 1;	o.dots = 0;  o.frame = 0;
-		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;	o.bdiag = 8;
+		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;	o.bdiag = 6;
 		o.speed = 30 * SpdDet;  o.accel = 30;  break;
 
 	case 2:  // simple
 		o.size_x = 5;  o.size_y = 12;  o.btm_junk = 2;  o.dots = 0;  o.frame = 0;
-		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;  o.bdiag = 6;
+		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;  o.bdiag = 8;
 		o.speed = 40 * SpdDet;  o.accel = 40;  break;
 
 	case 3:  // tetris meh
