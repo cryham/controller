@@ -142,7 +142,7 @@ int main()
 		
 		#ifdef KII
 		if (!play)
-		{	if (gui.menu)
+		{	if (gui.menu && !gui.edit)
 			{
 				#ifdef DEMOS
 				demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);

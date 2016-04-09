@@ -112,12 +112,12 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 6:  // sixtis
 			d.setCursor(0, 16+4);
-			d.println("\x1B\x1A  Move");
+			d.println("\x1B\x1A   Move");
 			d.moveCursor(0,2);
-			d.println("\x18  Rotate cw");
+			d.println("\x18    Rotate cw");
 			d.println("5 /  Rot ccw");
 			d.moveCursor(0,2);
-			d.println("\x19  Fall");
+			d.println("\x19    Fall");
 			d.println("Ins  Drop");
 			break;
 

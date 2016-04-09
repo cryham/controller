@@ -153,8 +153,8 @@ void Demos::Balls(Adafruit_SSD1306& d)
 	
 	for (int i=0; i < bCnt; i++)
 	{	Ball& b = ball[i];
-		if (b.x < b.r *bDet || b.x >= (W-1-b.r) *bDet)  b.vx = -b.vx;
-		if (b.y < b.r *bDet || b.y >= (H-1-b.r) *bDet)  b.vy = -b.vy;
+		if (b.x < b.r *bDet || b.x >= (W-b.r) *bDet)  b.vx = -b.vx;
+		if (b.y < b.r *bDet || b.y >= (H-b.r) *bDet)  b.vy = -b.vy;
 		b.x += b.vx;  b.y += b.vy;
 
 		if (b.r)
