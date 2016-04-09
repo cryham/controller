@@ -95,7 +95,7 @@ struct Games
 	//  global state
 	int8_t paused, demo, ended;
 	
-	const static int8_t Presets = 8;
+	const static int8_t Presets = 9;
 	int8_t preset;  // game type
 	void NewGame();
 

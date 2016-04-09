@@ -123,10 +123,11 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 7:  // sixtis cd
 			d.setCursor(0, 16+4);
-			d.println("- Esc  Exit");
+			d.println("BckSpc Esc  Exit");
 			d.println("+ Spc  Pause");
 			d.println("Enter  New Game");
 			d.moveCursor(0,4);
+			d.println("- *  Options");
 			d.println("\x1B\x1A  Dec,Inc Param");
 			d.println("PgUp,PgDn  Page");
 			break;
@@ -141,7 +142,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		d.setCursor(0, 16+2);
 		d.print("Protocol: ");  d.print(USBKeys_Protocol);
-		d.println(USBKeys_Protocol == 1? " NKRO": " Boot");
+		d.println(USBKeys_Protocol == 1 ? " NKRO" : " Boot");
 		d.moveCursor(0,4);
 
 		//  layers stack  - -

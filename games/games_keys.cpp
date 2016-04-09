@@ -11,13 +11,20 @@ int kl = 0, kr = 0;
 int Games::KeyPress(int8_t& mlevel)
 {
 	//  global
-	if (kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS] ||
+	if (kk[KEY_BACKSPACE] && !kko[KEY_BACKSPACE] ||
 		kk[KEY_ESC] && !kko[KEY_ESC])
 	{
 		if (gui==2)  gui=0;  // off options
 		else
 		if (gui==1)  mlevel = 0;  // <back to menu
-		else  gui = 1;
+		else  gui = 1;  // gui on
+	}
+
+	if (kk[KEYPAD_ASTERISK] && !kko[KEYPAD_ASTERISK] ||
+		kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS])
+	{
+		if (gui==2)  gui = 0;  // toggle options
+		else  gui = 2;
 	}
 	
 	
@@ -29,9 +36,9 @@ int Games::KeyPress(int8_t& mlevel)
 		if (yg == G_Preset)
 		{
 			if (kk[KEY_LEFT] && !kko[KEY_LEFT])
-			{	preset = (preset - 1 + Presets) % Presets;	NewGrid();  }
+			{	preset = (preset - 1 + Presets) % Presets;	NewSet();  }
 			if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
-			{	preset = (preset + 1 + Presets) % Presets;  NewGrid();  }
+			{	preset = (preset + 1 + Presets) % Presets;  NewSet();  }
 			return 0;
 		}
 		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])  // enter>
@@ -62,8 +69,8 @@ int Games::KeyPress(int8_t& mlevel)
 		switch (opg)
 		{
 		case O_Field:  switch (oyg)  {
-			case 0:  o.size_x   += k;  o.size_x   = max(2, min(32, o.size_x));  break;
-			case 1:  o.size_y   += k;  o.size_y   = max(2, min(32, o.size_y));  break;  //8 21
+			case 0:  o.size_x   += k;  o.size_x   = max(2, min(32, o.size_x));  NewGrid();  break;
+			case 1:  o.size_y   += k;  o.size_y   = max(2, min(32, o.size_y));  NewGrid();  break;  //8 21
 			case 2:  o.btm_junk += k;  o.btm_junk = max(0, min(32, o.btm_junk));  break;
 			}	break;
 		case O_Speed:  switch (oyg)  {
@@ -71,27 +78,36 @@ int Games::KeyPress(int8_t& mlevel)
 			case 1:  o.accel += k;  o.accel = max(0, min( 80, o.accel));  break;
 			}	break;
 		case O_Block:  switch (oyg)  {
-			case 0:  o.blen_min += k;  o.blen_min = max(1, min(32, o.blen_min));
-				if (o.blen_max < o.blen_min)  o.blen_max = o.blen_min;  break;
-			case 1:  o.blen_max += k;  o.blen_max = max(1, min(32, o.blen_max));
-				if (o.blen_min > o.blen_max)  o.blen_min = o.blen_max;  break;
-			case 2:  o.bsize += k;  o.bsize = max(2, min(bmax, o.bsize));  break;
-			case 3:  o.bdiag += k;  o.bdiag = max(2, min(8, o.bdiag));  break;
-			case 4:  o.bbias += k;  o.bbias = max(0, min(16, o.bbias));  break;
+			case 0:  o.bsize += k;  o.bsize = max(2, min(bmax, o.bsize));  break;
+
+			case 1:  o.blen_min += k;  o.blen_min = max(1, min(32, o.blen_min));  break;
+			case 2:  o.blen_max += k;  o.blen_max = max(1, min(32, o.blen_max));  break;
+
+			case 3:  o.bbias += k;  o.bbias = max(-16, min(16, o.bbias));  break;
+			case 4:  o.bdiag += k;  o.bdiag = max(2, min(8, o.bdiag));  break;
 			}	break;
 		
 		case O_Draw:  switch (oyg)  {
 			case 0:  o.nx_cur += k;  o.nx_cur = max(0, min(4, o.nx_cur));  break;
-			case 1:  o.dots   += k;  o.dots   = max(0, min(4, o.dots));  break;
+			case 1:  o.dots   += k;  o.dots   = max(0, min(3, o.dots));  break;
 			case 2:  o.frame  += k;  o.frame  = max(0, min(4, o.frame));  break;
 			}	break;
 		case O_Input:  switch (oyg)  {
 			case 0:  o.key_rpt += k;  o.key_rpt = max(0, min(60, o.key_rpt));  break;
 			case 1:  o.move_in_drop = 1-o.move_in_drop;  break;
-			case 2:  o.sp_fall += k;  o.sp_fall = max(1, min(24, o.sp_fall));  break;
+			
+			case 2:  o.sp_fall += k;  o.sp_fall = max(1, min(40, o.sp_fall));  break;
 			case 3:  o.sp_drop += k;  o.sp_drop = max(1, min(10, o.sp_drop));  break;
 			}	break;
 		}
+		//  checks  . . .
+		if (o.blen_max < o.blen_min)  o.blen_max = o.blen_min;  // min <= max
+		if (o.blen_min > o.blen_max)  o.blen_min = o.blen_max;
+		if (o.bsize > o.size_x)  o.bsize = o.size_x;  // block <= field
+		if (o.bsize > o.size_y)  o.bsize = o.size_y;
+		int bb = o.bsize*o.bsize-1;
+		if (o.blen_min > bb)  o.blen_min = bb;  // block_min < bsize^2
+		if (o.blen_max > bb)  o.blen_max = bb;
 
 		if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  opg = (opg - 1 + O_All) % O_All;
 		if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  opg = (opg + 1) % O_All;
@@ -165,15 +181,16 @@ int Games::KeyPress(int8_t& mlevel)
 		drop = 1;
 
 
+	#if 0
 	//  - other -
-	if (kk[KEY_D] && !kko[KEY_D])  // demo-
+	if (kk[KEY_M] && !kko[KEY_M])  // demo-
 		demo = 1 - demo;
 
-	#if 1
 	if (kk[KEY_1] && !kko[KEY_1])
-	{	speed_y -= 10*SpdDet;  UpdSpeed();  }
+	{	if (speed_y > 5*SpdDet)  speed_y -= 5*SpdDet;
+		else  speed_y = 0;  UpdSpeed();  }
 	if (kk[KEY_2] && !kko[KEY_2])
-	{	speed_y += 10*SpdDet;  UpdSpeed();  }
+	{	speed_y += 5*SpdDet;  UpdSpeed();  }
 	#endif
 
 	Update();

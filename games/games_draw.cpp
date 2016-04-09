@@ -56,7 +56,7 @@ void Games::DrawNext(Adafruit_SSD1306& d, const Block& b,
 //  Draw
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 const static char* sPresets[Games::Presets] = {
-	"Tiny 3", "Basic 3/4", "Simple 3/2", "Tetris 4", "Pentis 5/1", "Pentis 5/4", "Sixtis 6", "Septis 7"};
+	"Tiny 3", "Basic 3/4", "Simple 3/2", "Tetris 4", "Pentis 5/1", "Pentis 5/4", "Sixtis 6", "Octis 8", "Huge 12"};
 	
 const static char* sOptPages[Games::O_All] = {
 	"Field", "Speed", "Block", "Draw", "Input"};
@@ -120,11 +120,11 @@ void Games::Draw(Adafruit_SSD1306& d)
 			line("Acceleration  ", o.accel, 8+4);
 			break;
 		case O_Block:  y-=6;
-			line("Length min  ", o.blen_min, 8);
-			line("Length max  ", o.blen_max, 8);
 			line("Size   ", o.bsize, 8+2);
+			line("Length min  ", o.blen_min, 8);
+			line("Length max  ", o.blen_max, 8+2);
+			line("Bias   ", o.bbias, 8+2);
 			line("Diagonal  ", o.bdiag-4, 8);
-			//line("Bias   ", o.bbias, 8);
 			break;
 		
 		case O_Draw:

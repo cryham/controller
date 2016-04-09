@@ -13,7 +13,7 @@ Games::Games()
 void Games::Init()
 {
 	//  keys
-	o.sp_drop = 5;  o.sp_fall = 16;
+	o.sp_drop = 5;  o.sp_fall = 20;
 	o.key_rpt = 27;  o.move_in_drop = 0;
 	
 	preset = 5;
@@ -29,7 +29,7 @@ void Games::Init()
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 void Games::NewSet()
 {
-	o.nx_cur = 3;  o.dots = 0;  o.frame = 2;  o.bbias = 2;
+	o.nx_cur = 3;  o.dots = 0;  o.frame = 2;  o.bbias = 0;
 	switch (preset)
 	//  H 64  sy dim  21 3 .. 16 4 .. 12 5 .. 10 6
 	{
@@ -64,14 +64,19 @@ void Games::NewSet()
 		o.speed = 8 * SpdDet;  o.accel = 10;  break;
 
 	case 6:  // sixtis
-		o.size_x = 13;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 3;  o.frame = 3;
-		o.blen_min = 1;  o.blen_max = 8;  o.bsize = 6;  o.bdiag = 4;
+		o.size_x = 14;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 3;  o.frame = 3;
+		o.blen_min = 1;  o.blen_max = 8;  o.bsize = 6;  o.bdiag = 4;  o.bbias = -2;
 		o.speed = 4 * SpdDet;  o.accel = 2;  break;
 
 	case 7:  // septis
-		o.size_x = 14;  o.size_y = 21;  o.btm_junk = 0;  o.dots = 3;  o.frame = 3;
-		o.blen_min = 1;  o.blen_max = 9;  o.bsize = 7;  o.bdiag = 4;
+		o.size_x = 18;  o.size_y = 21;  o.btm_junk = 0;  o.dots = 3;  o.frame = 3;
+		o.blen_min = 1;  o.blen_max = 9;  o.bsize = 8;  o.bdiag = 4;  o.bbias = -7;
 		o.speed = 1 * SpdDet;  o.accel = 0;  break;
+
+	case 8:  // huge
+		o.size_x = 20;  o.size_y = 21;  o.btm_junk = 0;  o.dots = 3;  o.frame = 3;
+		o.blen_min = 1;  o.blen_max = 12;  o.bsize = 8;  o.bdiag = 4;  o.bbias = -11;
+		o.speed = 0 * SpdDet;  o.accel = 0;  break;
 	}
 	NewGrid();
 }
@@ -175,7 +180,6 @@ void Games::Clear(Block& b)
 }
 
 
-
 //  Find block range  min [a, max b], from not empty rows x-, cols y|
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 void Games::GetRange(const Block& b)
@@ -198,15 +202,16 @@ void Games::Rotate(Block& to, const Block& from, int cw)
 {
 	Clear(to);
 	GetRange(from);
+	
 	int x,y,xx,yy,
 		sb = o.bsize-1,
 		sy = yb-ya, sx = xb-xa,
 		y0 = ya, x0 = xa;  // new start
 
-	// move up/left if rotate would cut off down/right
-	// 0  ---  xa 0  xb 2   sx 2  sb 2
-	// 1  +++  ya 1  yb 1   sy 0
-	// 2  ---  y0 1  1+2 >= 2  --  y0 0
+	//  move up/left if rotate would cut off down/right
+	//0  ---  xa 0  xb 2   sx 2  sb 2
+	//1  +++  ya 1  yb 1   sy 0
+	//2  ---  y0 1  1+2 >= 2  --  y0 0
 	while (y0 > 0 && y0+sx >= sb)  --y0;
 	while (x0 > 0 && x0+sy >= sb)  --x0;
 
@@ -305,10 +310,8 @@ void Games::Update()
 						ended = 1;
 						//NewGame();  // game over
 					}
-				}
-			}
-		}
-	}
+			}	}
+	}	}
 }
 
 
@@ -330,15 +333,10 @@ void Games::GenBlock(Block& b)
 		int cx = ss / 2, cy = cx;  // start in center
 		//int cx = s2, cy = cx;
 		
-		#if 1
 		int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;  //~
-		#else  // biased-
-		int len = o.blen_min;   y = o.blen_max - o.blen_min;
-		for (x=0; x < y; ++x)
-			if (random(100) < o.bbias*2 + 12)
-				++len;
-		len = min(len, o.blen_max);
-		#endif
+		if (o.bbias < 0)  len -= random(-o.bbias-1);
+		if (o.bbias > 0)  len += random( o.bbias+1);
+		len = min(o.blen_max, max(len, o.blen_min));
 		
 		int l = 0, err = 0;
 		while (l < len && err < 100)
