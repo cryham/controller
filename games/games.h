@@ -76,7 +76,8 @@ struct Games
 
 	
 	//  block generator
-	void GenBlock(Block& b), NewBlock(), NewSet(), NewGrid();
+	void GenBlock(Block& b), NewBlock(), NewGrid();
+	void Checks(), NewSet();
 
 	//  utility
 	void Draw(    Adafruit_SSD1306& d, const Block& b,  int pos_x, int pos_y, int o_y=0, int dim=0);

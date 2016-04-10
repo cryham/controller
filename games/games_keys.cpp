@@ -4,6 +4,20 @@ extern "C" {
 	#include <usb_hid.h>  // key_defs
 }
 
+//  options check  . . .
+void Games::Checks()
+{
+	if (o.blen_max < o.blen_min)  o.blen_max = o.blen_min;  // min <= max
+	if (o.blen_min > o.blen_max)  o.blen_min = o.blen_max;
+	if (o.bsize > o.size_x)  o.bsize = o.size_x;  // block <= field
+	if (o.bsize > o.size_y)  o.bsize = o.size_y;
+	int bb = o.bsize*o.bsize;
+	if (o.blen_min > bb)  o.blen_min = bb;  // block_min < bsize^2
+	if (o.blen_max > bb)  o.blen_max = bb;
+
+	if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  opg = (opg - 1 + O_All) % O_All;
+	if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  opg = (opg + 1) % O_All;
+}
 
 //  Keys
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -74,13 +88,13 @@ int Games::KeyPress(int8_t& mlevel)
 			case 2:  o.btm_junk += k;  o.btm_junk = max(0, min(32, o.btm_junk));  break;
 			}	break;
 		case O_Speed:  switch (oyg)  {
-			case 0:  o.speed += k*SpdDet*4;  o.speed = max(0, min(400*SpdDet, o.speed));  break;
+			case 0:  o.speed += k*SpdDet*4;  o.speed = max(0, min(200*SpdDet, o.speed));  break;
 			case 1:  o.accel += k;  o.accel = max(0, min( 80, o.accel));  break;
 			}	break;
 		case O_Block:  switch (oyg)  {
 			case 0:  o.bsize += k;  o.bsize = max(2, min(bmax, o.bsize));  break;
 
-			case 1:  o.blen_min += k;  o.blen_min = max(1, min(32, o.blen_min));  break;
+			case 1:  o.blen_min += k;  o.blen_min = max(-16, min(32, o.blen_min));  break;
 			case 2:  o.blen_max += k;  o.blen_max = max(1, min(32, o.blen_max));  break;
 
 			case 3:  o.bbias += k;  o.bbias = max(-16, min(16, o.bbias));  break;
@@ -100,17 +114,7 @@ int Games::KeyPress(int8_t& mlevel)
 			case 3:  o.sp_drop += k;  o.sp_drop = max(1, min(10, o.sp_drop));  break;
 			}	break;
 		}
-		//  checks  . . .
-		if (o.blen_max < o.blen_min)  o.blen_max = o.blen_min;  // min <= max
-		if (o.blen_min > o.blen_max)  o.blen_min = o.blen_max;
-		if (o.bsize > o.size_x)  o.bsize = o.size_x;  // block <= field
-		if (o.bsize > o.size_y)  o.bsize = o.size_y;
-		int bb = o.bsize*o.bsize-1;
-		if (o.blen_min > bb)  o.blen_min = bb;  // block_min < bsize^2
-		if (o.blen_max > bb)  o.blen_max = bb;
-
-		if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  opg = (opg - 1 + O_All) % O_All;
-		if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  opg = (opg + 1) % O_All;
+		Checks();
 		return 0;
 	}
 

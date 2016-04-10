@@ -141,17 +141,16 @@ int main()
 		}
 		
 		#ifdef KII
-		if (!play)
-		{	if (gui.menu && !gui.edit)
-			{
-				#ifdef DEMOS
-				demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
-				#endif
-				demos.KeyGlob(display);
-			}
-			gui.KeyPress();
-			gui.ExecSeqs();
+		if (gui.menu && !play && !gui.edit)
+		{
+			#ifdef DEMOS
+			demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
+			#endif
+			demos.KeyGlob(display);
 		}
+		gui.KeyPress();
+		gui.ExecSeqs();
+
 		//  old key states  ----
 		for (int i=0; i < 0xFF; ++i)
 			kko[i] = kk[i];

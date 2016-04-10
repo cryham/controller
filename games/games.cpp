@@ -35,7 +35,7 @@ void Games::NewSet()
 	{
 	case 0:  // tiny
 		o.size_x = 3;  o.size_y = 10;  o.btm_junk = 2;  o.dots = 0;  o.frame = 0;
-		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 2;  o.bdiag = 4;
+		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 2;  o.bdiag = 4;  o.bbias = -1;
 		o.speed = 40 * SpdDet;  o.accel = 20;  break;
 
 	case 1:  // basic
@@ -43,10 +43,10 @@ void Games::NewSet()
 		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;	o.bdiag = 6;
 		o.speed = 30 * SpdDet;  o.accel = 30;  break;
 
-	case 2:  // simple
+	case 2:  // small diag
 		o.size_x = 5;  o.size_y = 12;  o.btm_junk = 2;  o.dots = 0;  o.frame = 0;
-		o.blen_min = 1;  o.blen_max = 4;  o.bsize = 3;  o.bdiag = 8;
-		o.speed = 40 * SpdDet;  o.accel = 40;  break;
+		o.blen_min = 1;  o.blen_max = 5;  o.bsize = 3;  o.bdiag = 8;  o.bbias = -2;
+		o.speed = 30 * SpdDet;  o.accel = 30;  break;
 
 	case 3:  // tetris meh
 		o.size_x = 9;  o.size_y = 12;  o.btm_junk = 3;  o.dots = 0;  o.frame = 3;
@@ -58,26 +58,27 @@ void Games::NewSet()
 		o.blen_min = 2;  o.blen_max = 5;  o.bsize = 5;  o.bdiag = 5;
 		o.speed = 10 * SpdDet;  o.accel = 20;  break;
 
-	case 5:  // pentis diag
+	case 5:  // sixtis
 		o.size_x = 12;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 2;  o.frame = 2;
-		o.blen_min = 1;  o.blen_max = 6;  o.bsize = 5;  o.bdiag = 7;
-		o.speed = 8 * SpdDet;  o.accel = 10;  break;
+		o.blen_min = 1;  o.blen_max = 6;  o.bsize = 5;  o.bdiag = 4;
+		o.speed = 10 * SpdDet;  o.accel = 10;  break;
 
-	case 6:  // sixtis
+	case 6:  // septis diag
 		o.size_x = 14;  o.size_y = 16;  o.btm_junk = 1;  o.dots = 3;  o.frame = 3;
-		o.blen_min = 1;  o.blen_max = 8;  o.bsize = 6;  o.bdiag = 4;  o.bbias = -2;
+		o.blen_min = 1;  o.blen_max = 8;  o.bsize = 6;  o.bdiag = 5;  o.bbias = -4;
 		o.speed = 4 * SpdDet;  o.accel = 2;  break;
 
-	case 7:  // septis
-		o.size_x = 18;  o.size_y = 21;  o.btm_junk = 0;  o.dots = 3;  o.frame = 3;
-		o.blen_min = 1;  o.blen_max = 9;  o.bsize = 8;  o.bdiag = 4;  o.bbias = -7;
-		o.speed = 1 * SpdDet;  o.accel = 0;  break;
+	case 7:  // octis
+		o.size_x = 18;  o.size_y = 21;  o.btm_junk = 1;  o.dots = 3;  o.frame = 3;
+		o.blen_min = 0;  o.blen_max = 9;  o.bsize = 8;  o.bdiag = 4;  o.bbias = -6;
+		o.speed = SpdDet / 8;  o.accel = 0;  break;
 
 	case 8:  // huge
-		o.size_x = 20;  o.size_y = 21;  o.btm_junk = 0;  o.dots = 3;  o.frame = 3;
-		o.blen_min = 1;  o.blen_max = 12;  o.bsize = 8;  o.bdiag = 4;  o.bbias = -11;
-		o.speed = 0 * SpdDet;  o.accel = 0;  break;
+		o.size_x = 20;  o.size_y = 21;  o.btm_junk = 1;  o.dots = 3;  o.frame = 3;
+		o.blen_min = 0;  o.blen_max = 12;  o.bsize = 8;  o.bdiag = 4;  o.bbias = -10;
+		o.speed = 0;  o.accel = 0;  break;
 	}
+	Checks();
 	NewGrid();
 }
 
@@ -98,7 +99,7 @@ void Games::NewGame()
 	score = 0;  errors = 0;
 	lines = 0;
 		
-	speed_y = o.speed;  UpdSpeed();
+	speed_y = max(1, o.speed);  UpdSpeed();
 
 	//  clear
 	int i,x,y;
@@ -333,10 +334,10 @@ void Games::GenBlock(Block& b)
 		int cx = ss / 2, cy = cx;  // start in center
 		//int cx = s2, cy = cx;
 		
-		int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;  //~
-		if (o.bbias < 0)  len -= random(-o.bbias-1);
+		int len = random(o.blen_max+1 - o.blen_min) + o.blen_min;  // 
+		if (o.bbias < 0)  len -= random(-o.bbias-1);  // bias -+
 		if (o.bbias > 0)  len += random( o.bbias+1);
-		len = min(o.blen_max, max(len, o.blen_min));
+		len = min(o.blen_max, max(1, len));  // len = 1..blen_max
 		
 		int l = 0, err = 0;
 		while (l < len && err < 100)
