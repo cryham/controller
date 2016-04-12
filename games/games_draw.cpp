@@ -56,7 +56,7 @@ void Games::DrawNext(Adafruit_SSD1306& d, const Block& b,
 //  Draw
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 const static char* sPresets[Games::Presets] = {
-	" Tiny 3+", " Basic 4/2", " Small 4+/4", " Tetris 4", "Pentis 5/1", " Sixtis 6", "Septis 7+/1", "Octis 8+/1", " Huge 12"};
+	" Tiny 3+", " Basic 4/2", " Small 4+/4", " Tetris 4", " Pentis 5/1", " Sixtis 6", "Septis 7+/1", "Octis 8+/1", " Huge 12"};
 	
 const static char* sOptPages[Games::O_All] = {
 	"Field", "Speed", "Block", "Draw", "Input"};
@@ -72,7 +72,7 @@ void Games::Draw(Adafruit_SSD1306& d)
 		d.setFont(&FreeSans9pt7b);
 		d.print("Sixtis");  d.setFont(0);
 
-		d.setCursor(W/2, 4);
+		d.setCursor(W/2-6, 4);
 		d.println(sPresets[preset]);  // title
 		
 		d.setCursor(0, 16);

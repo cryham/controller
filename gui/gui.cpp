@@ -152,8 +152,6 @@ void Gui::KeyPress()
 
 	if (!menu)
 		return;
-	if (ym == MGames && mlevel > 0)
-		return;
 
 	#define KEY_EDIT  KEYPAD_ENTER
 	if (!help && !status && ym == MSeq && mlevel > 0)
@@ -248,7 +246,7 @@ void Gui::KeyPress()
 		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
 			mlevel = 1;  // enter>
 	}else
-	if (!edit)  // other
+	if (!edit && !status && ym < MGames)  // other
 	{
 		if (kk[KEY_LEFT] && !kko[KEY_LEFT])
 			mlevel = 0;  // <back
