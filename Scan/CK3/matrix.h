@@ -35,7 +35,7 @@
    1  Mcmp Bstp Esc  \    F4   Up   Del  Ins  Spc  G   H   F6   ==   Vol- AltL xx   F11  '   
    2  Calc ExA4 ExC2 ExE2 ExE1 <-   Sub  ->   Dn   B   N   ExC1 Apps Mnxt AltR xx   F12  /   
    3  Mstp Bbck Z    X    C    Mpau Mul  Div  NumL V   M   ,    .    Vol+ xx   CtrR Ent  \   
-   4  GuiR Bfwd A    S    D    Ent  PgDn Dn   End  F   J   K    L    ShiR xx   ==   \    ;   
+   4  GuiR Bfwd A    S    D    Ent  PgDn Dn   End  F   J   K    L    ShiR Fn   ==   \    ;   
    5  xx   Mail Q    W    E    Add  PgUp Up   Home R   U   I    O    xx   ScrL Paus ExE3 P   
    6  ExB1 GuiL Tab  Caps F3   RB~  ->   Del  <-   T   Y   ]    F7   ShiL ==   Pwr  Back [   
    7  xx   Bsch 1    2    3    End  PgDn xx   Pwr  4   7   8    9    Msel Ptr  F5   F10  0   

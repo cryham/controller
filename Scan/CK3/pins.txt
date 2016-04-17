@@ -1,0 +1,47 @@
+Matrix:
+ 18 columns |  pins 0..8, 15..23
+ 8 rows --  pins 24,25, 27..30, 32,33
+ 4 display:  pins 9-11, 13  (led scraped off)
+ 2 LEDs:  pin 26 orng L3,  pin 14 blue L2
+
+All with info:
+
+ 0  |1  B16-
+ 1  |2  B17-
+ 2  |3  D0 +
+ 3  |4  A12~
+ 4  |5  A13~
+ 5  |6  D7 +
+ 6  |7  D4 +
+ 7  |8  D2 +
+ 8  |9  D3 +
+ 9      C3 * spi
+10      C4 * spi
+11      C6 * spi
+12      C7 *  no?-
+13 led- C5 * spi
+14      D1 +  led
+15 |18  C0 *
+16 |17  B0 -
+17 |16  B1 -
+18 |15  B3 -
+19 |14  B2 -
+20 |13  D5 +
+21 |12  D6 +
+22 |11  C1 *
+23 |10  C2 *
+24  -5  A5 ~
+25  -6  B19-
+26      E1 =  led
+27  -7  C9 *
+28  -8  C8 *
+29  -1  C10*
+30  -2  C11*
+31      E0 =  free
+32  -3  B18-
+33  -4  A4 ~
+40      A14~  dac
+
+A10,11,12,13,AGND,AREF
+
+free: 31 40

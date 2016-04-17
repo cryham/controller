@@ -1,90 +1,65 @@
-The Kiibohd Controller
+Crystal Keyboard 3 fork
 ======================
 
-This is the main Kiibohd Firmware.
-In general, this should be the **only** git repo you need to clone.
-The [KLL](https://github.com/kiibohd/kll) git repo is automatically cloned during the build process.
+This is [my fork](https://github.com/cryham/controller/) for the keyboard CK3.
 
-Please refer to the [KLL](https://github.com/kiibohd/kll) repo or [kiibohd.com](http://kiibohd.com) for details on the KLL (Keyboard Layout Language) Spec.
+Hardware
+--------
 
+The keyboard is made of:
+* Teensy 3.1 (or 3.2)
+* OLED display: SSD 1306, 128x64 mono
+* A4 Tech KX-100 keyboard
+* 2 LEDs for layer info
 
+Media
+-----
 
-Official Keyboards
-------------------
+For more info about CK3 read this [forum post](https://geekhack.org/index.php?topic=81312.0), see
+[Picture galleries](https://picasaweb.google.com/106514390902066155561), and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
 
-* MD1      (Infinity Keyboard/IC60 2014/10/15)
-* MDErgo1  (Infinity Ergodox /ICED 2015/03/31)
-* WhiteFox (Soon to be released?)
+Features
+--------
 
+The fork of Kiibohd Controller adds these features to it:
+* Included teensy3 directory from [Paul's cores repo](https://github.com/PaulStoffregen/cores), reduced
+* Support for display with Adafruit GFX and [1306][https://github.com/adafruit/Adafruit_SSD1306] libraries
+* Gui Menu on display
+* Sequences/Macros viewer and editor
+* Quite few demos:
+  * Space, Balls, Rain, Fountain
+  * Polygons 2D, Polyhedrons 3D
+  * Waving 2D CK logo
+  * Plasma (old school effect)
+* Falling blocks game Sixtis with 9 game presets
+  * And Gui with options for all parameters for custom games
 
-The Kiibohd firmware supports a lot of other keyboards, but these are more obscure/custom/lesser known.
+Details
+-------
 
+The keyboard matrix has 18 columns and 8 rows (uses 26 pins) display uses 4 pins (HW SPI) and LEDs use 2.
+For info on pins connections see the files in Scan/CK3, [pins.txt](https://github.com/cryham/controller/blob/master/Scan/CK3/pins.txt) and [matrix.h](https://github.com/cryham/controller/blob/master/Scan/CK3/matrix.h).
 
+Currently (full featured) code uses:
+* RAM: 68% (of 64kB)
+* Flash: 70% (of 256kB)
 
-Compilation
------------
+See main.cpp for customization defines: KII, DEMOS, GAME. Those allow disabling/enabling features.
 
-Compilation is possible and tested on Windows/Linux/Mac.
-Linux is the easiest using this [VM](https://s3.amazonaws.com/configurator-assets/ArchLinux_kiibohd_2015-02-13.tar.gz).
-
-For most people refer [here](https://github.com/kiibohd/controller/tree/master/Keyboards).
-
-For the full compilation details, please refer to the [wiki](https://github.com/kiibohd/controller/wiki).
-
-
-
-Supported Microcontrollers
---------------------------
-
-* Teensy 2.0 (Partial)
-* Teensy 2.0++
-* Teensy 3.0
-* Teensy 3.1/3.2
-* mk20dx128vlf5
-* mk20dx256vlh7
-
-
-Adding support for more microcontrollers is possible.
-Some considerations for minimum specs:
-
-* ~8  kB of SRAM
-* ~25 kB of Flash
-
-It's possible to port chips with lower specs, but will be more effort and have fewer features.
+A basic Kiibohd build (`set(DebugModule "none"` in CMakeFiles.txt) with OLED and Gui uses:
+* RAM: 24%
+* Flash: 50%
 
 
 
-Contributions
--------------
+Kiibohd Controller
+==================
 
-Contributions welcome!
-
-* Bug reports
-* Documentation and Wiki editing
-* Patches (including new features)
-
+For reference, refer to Wiki from the [original repo](https://github.com/kiibohd/controller) of this fork.
 
 
 Licensing
 ---------
 
-Licensing is done on a per-file basis.
-Some of the source code is from [PJRC/Teensy](http://pjrc.com), other source code is from the [McHck Project](https://mchck.org).
-Code written specifically for the Kiibohd Controller use the following licenses:
-
-* MIT
-* GPLv3
-* Public Domain
-
-
-
-Contact
--------
-
-If you really need to get a hold of HaaTa, email is best: `haata@kiibohd.com`
-
-IRC is likely faster though.
-`#input.club@irc.freenode.net`
-`#geekhack@irc.freenode.net`
-`#deskthority@irc.freenode.net`
-
+Licensing is done on a per-file basis. See original repo for more info.
+My sources are licensed GPLv3, those are in subdirs: demos, gui, games, Scan/CK3.
