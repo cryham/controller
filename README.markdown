@@ -1,7 +1,10 @@
-Crystal Keyboard 3 fork
-======================
+Crystal Keyboard 3
+==================
 
 This is [my fork](https://github.com/cryham/controller/) for the keyboard CK3.
+
+For more info about CK3 read this [Forum post](https://geekhack.org/index.php?topic=81312.0), see
+[Picture galleries](https://picasaweb.google.com/106514390902066155561), and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
 
 Hardware
 --------
@@ -12,26 +15,24 @@ The keyboard is made of:
 * A4 Tech KX-100 keyboard
 * 2 LEDs for layer info
 
-Media
------
-
-For more info about CK3 read this [forum post](https://geekhack.org/index.php?topic=81312.0), see
-[Picture galleries](https://picasaweb.google.com/106514390902066155561), and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
-
 Features
 --------
 
 The fork of Kiibohd Controller adds these features to it:
 * Included teensy3 directory from [Paul's cores repo](https://github.com/PaulStoffregen/cores), reduced
-* Support for display with Adafruit GFX and [1306][https://github.com/adafruit/Adafruit_SSD1306] libraries
-* Gui Menu on display
+* Support for display with [Adafruit GFX](https://github.com/adafruit/Adafruit-GFX-Library) and [1306](https://github.com/adafruit/Adafruit_SSD1306) libraries
+* Gui Menu
 * Sequences/Macros viewer and editor
-* Quite few demos:
+  * Useful for e.g. passwords, frequently typed words (no need to type anymore)
+  * And often used key combinations (macros)
+  * Loaded and saved in eeprom
+* Mouse move with acceleration
+* Quite few [demos](https://www.youtube.com/watch?v=66CksiS55fg):
   * Space, Balls, Rain, Fountain
   * Polygons 2D, Polyhedrons 3D
   * Waving 2D CK logo
   * Plasma (old school effect)
-* Falling blocks game Sixtis with 9 game presets
+* Falling blocks [game](https://www.youtube.com/watch?v=0s5GEGBwL94) Sixtis with 9 game presets
   * And Gui with options for all parameters for custom games
 
 Details
