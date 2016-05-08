@@ -10,7 +10,7 @@
 void Demos::SinInit()
 {
 	t = 1210;
-	tadd[0]=2; tadd[1]=1;  tadd[2]=2; tadd[3]=5; tadd[4]=5;
+	tadd[0]=2; tadd[1]=5; tadd[2]=3; tadd[3]=5; tadd[4]=5;
 
 	for (int i=0; i < SX; ++i)
 		sint[i] = sin(2.f*PI * i/SX) * (SY-1);
@@ -30,72 +30,6 @@ const static int dither[8][8] = {
 
 
 void Demos::Plasma0(uint8_t* buf)
-{
-	uint y0 = 0;
-	uint yy=0,y8=0;
-
-	for (uint y=0; y<SSD1306_LCDHEIGHT; ++y)
-	{
-		y0 = 1-y0;  uint a = (y/8)*SSD1306_LCDWIDTH;
-		uint8_t b1 = (1 << (y&7));  uint8_t b0 = ~(1 << (y&7));
-		uint x0 = 0;
-		uint xx=0,x8=0;
-
-		for (uint x=0; x<SSD1306_LCDWIDTH; ++x, ++a)
-		{
-			x0 = 1-x0;  int c;
-			c = SY*SY - Sin( yy) * Cos( xx +t);
-			c *= 6;
-			c = abs(c);
-			xx+=60;
-		
-			c /= SY*(SY/12);
-			if (dith(x8,y8,c))
-				buf[a] |= b1;
-			else
-				buf[a] &= b0;
-			++x8;  if (x8==8) x8=0;
-		}
-		yy+=60;
-		++y8;  if (y8==8) y8=0;
-	}	t+=tadd[0];
-}
-
-void Demos::Plasma1(uint8_t* buf)
-{
-	uint y0 = 0, y8=0;
-	uint tt[2]={t*14,t*11}, t2[2]={t*7,t*5};
-	uint yy[2]={0,0};
-
-	for (uint y=0; y<SSD1306_LCDHEIGHT; ++y)
-	{
-		y0 = 1-y0;  uint a = (y/8)*SSD1306_LCDWIDTH;
-		uint8_t b1 = (1 << (y&7));  uint8_t b0 = ~(1 << (y&7));
-		uint x0 = 0, x8=0;
-		uint xx[2]={0,0};
-
-		for (uint x=0; x<SSD1306_LCDWIDTH; ++x, ++a)
-		{
-			x0 = 1-x0;  int c;
-			c = Sin(xx[0]+tt[0]) + Sin(xx[1]+tt[1]) +
-				Sin(yy[0]+t2[0]) + Sin(yy[1]+t2[1]);
-			c *= SY*5/2;
-			c = abs(c);
-			xx[0]+=172;  xx[1]+=112;
-		
-			c /= SY*(SY/12);
-			if (dith(x8,y8,c))
-				buf[a] |= b1;
-			else
-				buf[a] &= b0;
-			++x8;  if (x8==8) x8=0;
-		}
-		yy[0]+=155;  yy[1]+=131;
-		++y8;  if (y8==8) y8=0;
-	}	t+=tadd[1];
-}
-
-void Demos::Plasma2(uint8_t* buf)
 {
 	uint y0 = 0, y8=0;
 	uint tt[4]={t*7,t*17,t*8,t*3};
@@ -127,10 +61,10 @@ void Demos::Plasma2(uint8_t* buf)
 		}
 		yy[0]+=66; yy[1]+=51; yy[2]+=166; yy[3]+=6; yy[4]+=151; yy[5]+=4;
 		++y8;  if (y8==8) y8=0;
-	}	t+=tadd[2];
+	}	t+=tadd[0];
 }
 
-void Demos::Plasma3(uint8_t* buf)
+void Demos::Plasma1(uint8_t* buf)
 {
 	uint y0 = 0, y8=0;
 	uint tt[16]={t*9,t*12,t*5,t*4, t*14,t*3,t*7,t*12, t*5,t*13,t*4,t*8, t*2,t*6,t*10,t*11};
@@ -168,10 +102,52 @@ void Demos::Plasma3(uint8_t* buf)
 		yy[0]+=71; yy[1]+=93; yy[2]+=128; yy[3]+=151; yy[4]+=78; yy[5]+=149;
 		yy[6]+=136; yy[7]+=56; yy[8]+=213; yy[9]+=109; yy[10]+=82; yy[11]+=132;
 		++y8;  if (y8==8) y8=0;
-	}	t+=tadd[3];
+	}	t+=tadd[1];
 }
 
-void Demos::Plasma4(uint8_t* buf)
+void Demos::Plasma2(uint8_t* buf)
+{
+	uint y0 = 0, y8=0;
+	uint tt[16]={t*9,t*12,t*5,t*4, t*14,t*3,t*7,t*12, t*5,t*13,t*4,t*8, t*2,t*6,t*10,t*11};
+	uint yy[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+
+	for (uint y=0; y<SSD1306_LCDHEIGHT; ++y)
+	{
+		y0 = 1-y0;  uint a = (y/8)*SSD1306_LCDWIDTH;
+		uint8_t b1 = (1 << (y&7));  uint8_t b0 = ~(1 << (y&7));
+		uint x0 = 0;//, x8=0;
+		uint xx[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+
+		for (uint x=0; x<SSD1306_LCDWIDTH; ++x, ++a)
+		{
+			x0 = 1-x0;  int c;
+			c = 4*Sin( yy[0] +xx[0]+tt[0]) * Cos( xx[1]        +tt[1]);
+			c-= 4*Sin( yy[1]       +tt[2]) * Cos( xx[2] +yy[2] +tt[3]);
+			c+= 5*Cos( yy[3] +xx[4]+tt[4]) * Sin( xx[3]        +tt[5]);
+			c-= 5*Cos( yy[4]       +tt[6]) * Sin( xx[5] +yy[5] +tt[7]);
+			c+= 4*Sin( yy[6]       +tt[8]) * Cos( xx[6]        +tt[9]);
+			c-= 4*Sin( yy[8] +xx[7]+tt[10])* Cos( xx[8]        +tt[11]);
+			c+= 5*Cos( yy[9] +xx[9]+tt[12])* Sin( xx[10]+yy[7]+tt[13]);
+			c-= 5*Cos( yy[11]      +tt[14])* Sin( xx[11]+yy[10]+tt[15]);
+			c = abs(c);
+			xx[0]+=111; xx[1]+=75; xx[2]+=100; xx[3]+=97; xx[4]+=114; xx[5]+=43;
+			xx[6]+=91; xx[7]+=103; xx[8]+=124; xx[9]+=88; xx[10]+=132; xx[11]+=17;
+		
+			//c /= SY*(SY/14);  c = 64-max(0, 64-abs(c*2-64));  //^
+			c /= SY*(SY/20);  c = abs(64-max(0, c*2-64));  //^
+			if (dith(x%8,y8,c))
+				buf[a] |= b1;
+			else
+				buf[a] &= b0;
+			//++x8;  if (x8==8) x8=0;
+		}
+		yy[0]+=71; yy[1]+=136; yy[2]+=128; yy[3]+=82; yy[4]+=78; yy[5]+=149;
+		yy[6]+=93; yy[7]+=56; yy[8]+=113; yy[9]+=109; yy[10]+=121; yy[11]+=132;
+		++y8;  if (y8==8) y8=0;
+	}	t+=tadd[2];
+}
+
+void Demos::Plasma3(uint8_t* buf)
 {
 	uint y0 = 0;//, y8=0;
 	uint tt[32]={t*8,t*7,t*13,t*12, t*17,t*8,t*7,t*13, t*5,t*11,t*9,t*7, t*10,t*10,t*4,t*5,
@@ -223,6 +199,47 @@ void Demos::Plasma4(uint8_t* buf)
 		yy[12]+=266; yy[13]+=283; yy[14]+=48; yy[15]+=351; yy[16]+=377; yy[17]+=39;
 		yy[18]+=16; yy[19]+=86; yy[20]+=13; yy[21]+=11; yy[22]+=74; yy[23]+=17;
 		//++y8;  if (y8==8) y8=0;
+	}	t+=tadd[3];
+}
+
+void Demos::Plasma4(uint8_t* buf)
+{
+	uint y0 = 0, y8=0;
+	uint tt[16]={t*9,t*12,t*5,t*4, t*14,t*3,t*7,t*12, t*5,t*13,t*4,t*8, t*2,t*6,t*10,t*11};
+	uint yy[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+
+	for (uint y=0; y<SSD1306_LCDHEIGHT; ++y)
+	{
+		y0 = 1-y0;  uint a = (y/8)*SSD1306_LCDWIDTH;
+		uint8_t b1 = (1 << (y&7));  uint8_t b0 = ~(1 << (y&7));
+		uint x0 = 0;//, x8=0;
+		uint xx[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+
+		for (uint x=0; x<SSD1306_LCDWIDTH; ++x, ++a)
+		{
+			x0 = 1-x0;  int c;
+			c = 5*Sin( yy[0] +xx[0]+tt[0]) * Cos( xx[1]        +tt[1]);
+			c-= 5*Sin( yy[1]       +tt[2]) * Cos( xx[2] +yy[2] +tt[3]);
+			c+= 5*Cos( yy[3] +xx[4]+tt[4]) * Sin( xx[3]        +tt[5]);
+			c-= 5*Cos( yy[4]       +tt[6]) * Sin( xx[5] +yy[5] +tt[7]);
+			c+= 5*Sin( yy[6]       +tt[8]) * Cos( xx[6]        +tt[9]);
+			c-= 5*Sin( yy[8] +xx[7]+tt[10])* Cos( xx[8]        +tt[11]);
+			c+= 5*Cos( yy[9] +xx[9]+tt[12])* Sin( xx[10]+yy[7]+tt[13]);
+			c-= 5*Cos( yy[11]      +tt[14])* Sin( xx[11]+yy[10]+tt[15]);
+			c = abs(c);
+			xx[0]+=511; xx[1]+=275; xx[2]+=300; xx[3]+=397; xx[4]+=514; xx[5]+=443;
+			xx[6]+=591; xx[7]+=303; xx[8]+=324; xx[9]+=388; xx[10]+=532; xx[11]+=437;
+		
+			c /= SY*(SY/10);  c = 64-max(0, (c-32)*2);  //_
+			if (dith(x%8,y8,c))
+				buf[a] |= b1;
+			else
+				buf[a] &= b0;
+			//++x8;  if (x8==8) x8=0;
+		}
+		yy[0]+=371; yy[1]+=236; yy[2]+=428; yy[3]+=282; yy[4]+=508; yy[5]+=319;
+		yy[6]+=393; yy[7]+=256; yy[8]+=413; yy[9]+=249; yy[10]+=521; yy[11]+=352;
+		++y8;  if (y8==8) y8=0;
 	}	t+=tadd[4];
 }
 

@@ -40,8 +40,8 @@ struct Demos
 	
 	//  Plasma
 	int8_t tadd[5];  // speed
-	void Plasma0(uint8_t* buf), Plasma1(uint8_t* buf);
-	void Plasma2(uint8_t* buf), Plasma3(uint8_t* buf), Plasma4(uint8_t* buf);
+	void Plasma0(uint8_t* buf), Plasma1(uint8_t* buf),
+		Plasma2(uint8_t* buf), Plasma3(uint8_t* buf), Plasma4(uint8_t* buf);
 
 
 	//  Balls  --------

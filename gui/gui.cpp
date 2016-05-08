@@ -11,7 +11,7 @@ extern "C" {
 
 
 ///-----------------  //par  demo counts
-const uint8_t Gui::YM2[MAll] = { iPage, 6, 4, 4 };
+const uint8_t Gui::YM2[MAll] = { iPage, 6, 4, 5 };
 
 
 //  Main  ----
