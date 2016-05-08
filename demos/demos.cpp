@@ -89,10 +89,10 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 		else if (y == MPlasma)
 		switch (y2)
 		{
-			case 3: Plasma4(d.getBuffer());  break;
-			case 2: Plasma3(d.getBuffer());  break;
-			case 1: Plasma2(d.getBuffer());  break;
-			case 0: Plasma1(d.getBuffer());  break;
+			case 2: Plasma4(d.getBuffer());  break;
+			case 1: Plasma3(d.getBuffer());  break;
+			case 0: Plasma2(d.getBuffer());  break;
+			case 3: Plasma1(d.getBuffer());  break;
 		}
 		d.setTextColor(WHITE);  // transp
 	}
