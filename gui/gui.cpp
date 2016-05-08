@@ -175,31 +175,30 @@ void Gui::KeyPress()
 				edpos++;  seql[q]++;
 			}
 		}else
-		{	if (kk[KEY_S] && !kko[KEY_S] ||  // save
-				kk[KEY_INSERT] && !kko[KEY_INSERT])
+		{	if (key(S) || key(INSERT))  // save
 			{	Save();  tInfo = -1;
 			}
-			if (kk[KEY_BACKSPACE] && !kko[KEY_BACKSPACE])  // load
+			if (key(BACKSPACE))  // load
 			{	Load();  tInfo = -1;
 			}
 			
-			if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // move
+			if (key(DOWN))  // move
 			{	++slot;  if (slot >= iPage) {  slot = 0;
 				++page;  if (page >= iSlots/iPage)  page = 0;
 			}	}
-			if (kk[KEY_UP] && !kko[KEY_UP])
+			if (key(UP))
 			{	--slot;  if (slot < 0) {  slot = iPage-1;
 				--page;  if (page < 0)  page = iSlots/iPage-1;
 			}	}
-			if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  // page
+			if (key(PAGE_DOWN))  // page
 			{	++page;  if (page >= iSlots/iPage)  page = 0;
 			}
-			if (kk[KEY_PAGE_UP] && !kko[KEY_PAGE_UP])
+			if (key(PAGE_UP))
 			{	--page;  if (page < 0)  page = iSlots/iPage-1;
 			}
 		}
 
-		if (kk[KEY_EDIT] && !kko[KEY_EDIT])  //  toggle edit
+		if (key(EDIT))  //  toggle edit
 		{
 			edit = 1-edit;
 			if (edit)  // enter edit
@@ -216,54 +215,51 @@ void Gui::KeyPress()
 
 	if (!edit)  //  global
 	{
-		if (kk[KEY_F1] && !kko[KEY_F1] ||
-			kk[KEY_SCROLL_LOCK] && !kko[KEY_SCROLL_LOCK])
+		if (key(F1) || key(SCROLL_LOCK))
 		{	help = 1-help;  if (help)  status = 0;  }  // H
 
-		if (kk[KEY_F2] && !kko[KEY_F2] ||
-			kk[KEY_PAUSE] && !kko[KEY_PAUSE])
+		if (key(F2) || key(PAUSE))
 		{	status = 1-status;  if (status)  help = 0;  }  // L
 
 		if (help || status)  // <back
-		if (kk[KEY_LEFT] && !kko[KEY_LEFT] ||
-			kk[KEY_ESC] && !kko[KEY_ESC])
+		if (key(LEFT) || key(ESC))
 		{	help = 0;  status = 0;  }
 		
 		if (status)  // status page
 		{
-			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+			if (key(DOWN))
 			{	++stpage;  if (stpage >= StAll)  stpage = 0;  }
-			if (kk[KEY_UP] && !kko[KEY_UP])
+			if (key(UP))
 			{	--stpage;  if (stpage < 0)  stpage = StAll-1;  }
 		}
 	}
 
 	if (help)  // help page
 	{
-		if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+		if (key(DOWN))
 		{	++hpage;  if (hpage >= HAll)  hpage = 0;  }
-		if (kk[KEY_UP] && !kko[KEY_UP])
+		if (key(UP))
 		{	--hpage;  if (hpage < 0)  hpage = HAll-1;  }
 	}
 	else
 	if (mlevel==0)  //  main
 	{
-		if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+		if (key(DOWN))
 		{	++ym;  if (ym >= MAll)  ym = 0;  }
-		if (kk[KEY_UP] && !kko[KEY_UP])
+		if (key(UP))
 		{	--ym;  if (ym < 0)  ym = MAll-1;  }
 		
-		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
+		if (key(RIGHT))
 			mlevel = 1;  // enter>
 	}else
 	if (!edit && !status && ym < MGames)  // other
 	{
-		if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+		if (key(LEFT))
 			mlevel = 0;  // <back
 
-		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // navigate
+		if (key(DOWN))  // navigate
 		{	ym2[ym]++;  if (ym2[ym] >= YM2[ym])  ym2[ym] = 0;  }
-		if (kk[KEY_UP] && !kko[KEY_UP])
+		if (key(UP))
 		{	ym2[ym]--;  if (ym2[ym] < 0)  ym2[ym] = YM2[ym]-1;  }
 	}
 }

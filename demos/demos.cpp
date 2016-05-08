@@ -119,20 +119,19 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 	int sp = sh ? 2 : 10;
 
 	//  change
-	if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  k = -1;
-	if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  k =  1;
-	if (kk[KEY_HOME] && !kko[KEY_HOME])  e = -1;
-	if (kk[KEY_END ] && !kko[KEY_END ])  e =  1;
+	if (key(PAGE_UP  ))  k = -1;
+	if (key(PAGE_DOWN))  k =  1;
+	if (key(HOME))  e = -1;
+	if (key(END ))  e =  1;
 
 	//  global
-	if (kk[KEY_R] && !kko[KEY_R])
+	if (key(R))
 	{
 		Init(0);  return;  //  reset all
 	}
 
 	//  info txt
-	if (kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS] ||
-		kk[KEY_ESC] && !kko[KEY_ESC])
+	if (keyp(MINUS) || key(ESC))
 	if (ct)
 		iInfoOff = (iInfoOff + 1) % (iOff+1);  // mode,off
 	else
@@ -207,7 +206,7 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 			break;
 		}
 		else if (y == MPlasma)
-			tadd[y2+1] += k;  // speed
+			tadd[y2] += k;  // speed
 	}
 }
 #endif
@@ -215,12 +214,10 @@ void Demos::KeyPress(int8_t demo, int8_t y, int8_t y2)
 //  display
 void Demos::KeyGlob(Adafruit_SSD1306& d)
 {
-	if (kk[KEY_F] && !kko[KEY_F] ||
-		kk[KEYPAD_PLUS] && !kko[KEYPAD_PLUS])
+	if (key(F) || keyp(PLUS))
 		fps = 1-fps;
 
-	if (kk[KEY_SPACE] && !kko[KEY_SPACE] ||
-		kk[KEY_D] && !kko[KEY_D])
+	if (key(SPACE) || key(D))
 	{
 		dim = 1-dim;
 		d.dim(dim);

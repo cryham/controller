@@ -43,9 +43,13 @@ void Scan_currentChange( unsigned int current ); // Called by Output Module
 
 // ----- Capabilities -----
 
-extern uint8_t kk[0xFF], kko[0xFF];  // keys state, old state, 0,1
+#define key(k)   (kk[KEY_##k] && !kko[KEY_##k])   //  key pressed macro
+#define keyp(k)  (kk[KEYPAD_##k] && !kko[KEYPAD_##k])
+
+extern uint8_t kk[0xFF], kko[0xFF];  //  all keys state, old state, 0,1
+
 extern int8_t id_seq;  // sequence id, to execute
-extern int8_t shift;  // mouse slow
+extern int8_t shift;  // mouse slow modifier
 
 //  custom for CK3
 void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t *args );

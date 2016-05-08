@@ -15,8 +15,8 @@ void Games::Checks()
 	if (o.blen_min > bb)  o.blen_min = bb;  // block_min < bsize^2
 	if (o.blen_max > bb)  o.blen_max = bb;
 
-	if (kk[KEY_PAGE_UP  ] && !kko[KEY_PAGE_UP  ])  opg = (opg - 1 + O_All) % O_All;
-	if (kk[KEY_PAGE_DOWN] && !kko[KEY_PAGE_DOWN])  opg = (opg + 1) % O_All;
+	if (key(PAGE_UP  ))  opg = (opg - 1 + O_All) % O_All;
+	if (key(PAGE_DOWN))  opg = (opg + 1) % O_All;
 }
 
 //  Keys
@@ -25,8 +25,7 @@ int kl = 0, kr = 0;
 int Games::KeyPress(int8_t& mlevel)
 {
 	//  global
-	if (kk[KEY_BACKSPACE] && !kko[KEY_BACKSPACE] ||
-		kk[KEY_ESC] && !kko[KEY_ESC])
+	if (key(BACKSPACE) || key(ESC))
 	{
 		if (gui==2)  gui=0;  // off options
 		else
@@ -34,8 +33,7 @@ int Games::KeyPress(int8_t& mlevel)
 		else  gui = 1;  // gui on
 	}
 
-	if (kk[KEYPAD_ASTERISK] && !kko[KEYPAD_ASTERISK] ||
-		kk[KEYPAD_MINUS] && !kko[KEYPAD_MINUS])
+	if (keyp(ASTERISK) || keyp(MINUS))
 	{
 		if (gui==2)  gui = 0;  // toggle options
 		else  gui = 2;
@@ -44,18 +42,18 @@ int Games::KeyPress(int8_t& mlevel)
 	
 	if (gui==1)  // - menu -
 	{
-		if (kk[KEY_UP] && !kko[KEY_UP])      yg = (yg - 1 + G_All) % G_All;
-		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  yg = (yg + 1) % G_All;
+		if (key(UP))    yg = (yg - 1 + G_All) % G_All;
+		if (key(DOWN))  yg = (yg + 1) % G_All;
 		
 		if (yg == G_Preset)
 		{
-			if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+			if (key(LEFT))
 			{	preset = (preset - 1 + Presets) % Presets;	NewSet();  }
-			if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])
+			if (key(RIGHT))
 			{	preset = (preset + 1 + Presets) % Presets;  NewSet();  }
 			return 0;
 		}
-		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])  // enter>
+		if (key(RIGHT))  // enter>
 		{
 			switch (yg)
 			{
@@ -65,19 +63,19 @@ int Games::KeyPress(int8_t& mlevel)
 			case G_Help:  return 1;
 			}
 		}
-		if (kk[KEY_LEFT] && !kko[KEY_LEFT])
+		if (key(LEFT))
 			mlevel = 0;  // <back to menu
 		return 0;
 	}
 
 	if (gui==2)  // - options -
 	{
-		if (kk[KEY_UP  ] && !kko[KEY_UP  ])  --oyg;  //oyg = (oyg - 1 + 6) % 6;
-		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  ++oyg;  //oyg = (oyg + 1) % 6;
+		if (key(UP  ))  --oyg;  //oyg = (oyg - 1 + 6) % 6;
+		if (key(DOWN))  ++oyg;  //oyg = (oyg + 1) % 6;
 		
 		int k = 0, s = kk[KEY_RCTRL] ? 4 : 1;
-		if (kk[KEY_LEFT ] && !kko[KEY_LEFT ])  k =-s;
-		if (kk[KEY_RIGHT] && !kko[KEY_RIGHT])  k = s;
+		if (key(LEFT ))  k =-s;
+		if (key(RIGHT))  k = s;
 		
 		if (k)  // change params  ----
 		switch (opg)
@@ -121,13 +119,12 @@ int Games::KeyPress(int8_t& mlevel)
 
 	//  ---  game  ---
 	
-	if (kk[KEY_ENTER] && !kko[KEY_ENTER])  // new
+	if (key(ENTER))  // new
 		NewGame();
 
 	if (ended)  return 0;
 
-	if (kk[KEYPAD_PLUS] && !kko[KEYPAD_PLUS] ||
-		kk[KEY_SPACE] && !kko[KEY_SPACE])  // pause
+	if (keyp(PLUS) || key(SPACE))  // pause
 		paused = 1 - paused;
 
 	if (paused)  return 0;
@@ -138,14 +135,13 @@ int Games::KeyPress(int8_t& mlevel)
 	{
 		//  rotate  control
 		if (demo && random(500)==0 ||
-			kk[KEY_UP] && !kko[KEY_UP])  // rot cw
+			key(UP))  // rot cw
 		{
 			Rotate(cpy, blk, 1);  //  check possible
 			if (!Overlaps(cpy, pos_x, pos_y))
 				Copy(blk, cpy);
 		}
-		if (kk[KEYPAD_5] && !kko[KEYPAD_5] ||
-			kk[KEYPAD_SLASH] && !kko[KEYPAD_SLASH])  // rot ccw
+		if (keyp(5) || keyp(SLASH))  // rot ccw
 		{
 			Rotate(cpy, blk, 0);  //  check possible
 			if (!Overlaps(cpy, pos_x, pos_y))
@@ -181,19 +177,19 @@ int Games::KeyPress(int8_t& mlevel)
 
 	fall = kk[KEY_DOWN];  // fall faster hold
 
-	if (kk[KEY_INSERT] && !kko[KEY_INSERT])  // drop
+	if (key(INSERT))  // drop
 		drop = 1;
 
 
 	#if 0
 	//  - other -
-	if (kk[KEY_M] && !kko[KEY_M])  // demo-
+	if (key(M))  // demo-
 		demo = 1 - demo;
 
-	if (kk[KEY_1] && !kko[KEY_1])
+	if (key(1))
 	{	if (speed_y > 5*SpdDet)  speed_y -= 5*SpdDet;
 		else  speed_y = 0;  UpdSpeed();  }
-	if (kk[KEY_2] && !kko[KEY_2])
+	if (key(2))
 	{	speed_y += 5*SpdDet;  UpdSpeed();  }
 	#endif
 
