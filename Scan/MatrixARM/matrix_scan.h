@@ -152,6 +152,7 @@ inline uint8_t keyOn(/*KeyPosition*/uint8_t st)
 	return (st == KeyState_Press || st == KeyState_Hold) ? 1 : 0;
 }
 
+extern int ghost_cols, ghost_rows;  // for status info
 
 // ----- Functions -----
 

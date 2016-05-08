@@ -8,8 +8,8 @@ extern "C" {
 	#include <Output/pjrcUSB/arm/usb_mouse.h>
 	#include <scan_loop.h>  // keys kk
 	#include <usb_hid.h>  // key_defs
+	#include "matrix_scan.h"  // defines
 }
-//#include "matrix_scan.h"  // defines
 //#include "matrix.h"
 //#endif
 
@@ -168,7 +168,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			break;
 
 		case 1:
-			//  locks
+		{	//  locks
 			d.print("Lock: ");
 			if (USBKeys_LEDs > 0)
 			{
@@ -188,15 +188,28 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			}
 			d.println();  d.moveCursor(0,2);
 			
+			//  keys
 			d.print("Key:  ");
-			for (int i=KEY_A; i < strALL; ++i)
+			int c = 0;
+			for (int i = KEY_A; i < strALL; ++i)
 				if (kk[i])
-				{	d.print(STR(i));  d.print(" ");
-				}
-			break;
+				{	d.print(STR(i));  d.print(" ");  ++c;  }
+			//  count
+			d.setCursor(W-1 -(c > 9 ? 2*6 : 6), H-1-8);
+			d.print(c);
+			
+			//  ghosting
+			if (ghost_cols /*|| ghost_rows*/)
+			{
+				d.setCursor(12, H-1-8);
+				d.print("Gh |");  d.print(ghost_cols);
+				d.print(" -");  d.print(ghost_rows);
+			}
+		}	break;
 			
 		case 2:
-			//d.print("Debounce ms: ");  d.println(MinDebounceTime_define);
+			//  build vars
+			d.print("Debounce ms: ");  d.println(MinDebounceTime_define);
 			//d.print("Strobe delay us: ");  d.println(STROBE_DELAY);
 			// rest in capabilities.kll *_define
 			//DebounceThrottleDiv_define, StateWordSize_define;

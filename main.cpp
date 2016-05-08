@@ -146,7 +146,8 @@ int main()
 			#ifdef DEMOS
 			demos.KeyPress(demo && gui.ym >= MDemos,  gui.ym, gui.ym2[gui.ym]);
 			#endif
-			demos.KeyGlob(display);
+			if (!gui.status)
+				demos.KeyGlob(display);
 		}
 		gui.KeyPress();
 		gui.ExecSeqs();

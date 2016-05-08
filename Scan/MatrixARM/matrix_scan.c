@@ -95,6 +95,7 @@ uint16_t matrixDebugStateCounter = 0;
 uint16_t matrixMaxScans  = 0;
 uint16_t matrixCurScans  = 0;
 uint16_t matrixPrevScans = 0;
+int ghost_cols = 0, ghost_rows = 0;
 
 // System Timer used for delaying debounce decisions
 extern volatile uint32_t systick_millis_count;
@@ -244,6 +245,8 @@ void Matrix_setup()
 	// Clear scan stats counters
 	matrixMaxScans  = 0;
 	matrixPrevScans = 0;
+	ghost_cols = 0;
+	ghost_rows = 0;
 }
 
 void Matrix_keyPositionDebug( KeyPosition pos )
@@ -502,6 +505,14 @@ void Matrix_scan( uint16_t scanNum )
 			}
 		}
 	}
+
+	int gh_cols = 0, gh_rows = 0;
+	for ( uint8_t col = 0; col < Matrix_colsNum; col++ )
+		if (col_ghost[col])  ++gh_cols;
+	for ( uint8_t row = 0; row < Matrix_rowsNum; row++ )
+		if (row_ghost[row])  ++gh_rows;
+	ghost_cols = gh_cols;
+	ghost_rows = gh_rows;
 
 	// Send keys
 	for ( uint8_t col = 0; col < Matrix_colsNum; col++ )
