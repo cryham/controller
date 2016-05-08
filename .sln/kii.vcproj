@@ -581,35 +581,15 @@
 			Name="kll"
 			>
 			<File
-				RelativePath="..\kll\layouts\ck3layer2.kll"
-				>
-			</File>
-			<File
-				RelativePath="..\kll\layouts\ck3layer3.kll"
-				>
-			</File>
-			<File
-				RelativePath="..\kll\layouts\ck3layer4.kll"
-				>
-			</File>
-			<File
-				RelativePath="..\kll\layouts\ck3layerUC.kll"
-				>
-			</File>
-			<File
-				RelativePath="..\kll\layouts\ck3overlay.kll"
-				>
-			</File>
-			<File
-				RelativePath="..\Scan\CK3\defaultMap.kll"
-				>
-			</File>
-			<File
 				RelativePath="..\l\generatedKeymap.h"
 				>
 			</File>
 			<File
 				RelativePath="..\kll\kll_lib\hid_dict.py"
+				>
+			</File>
+			<File
+				RelativePath="..\kll\backends\kiibohd.py"
 				>
 			</File>
 			<File
@@ -792,6 +772,70 @@
 				RelativePath="..\games\games_keys.cpp"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="layers"
+			>
+			<Filter
+				Name="ck3"
+				>
+				<File
+					RelativePath="..\kll\layouts\ck3layer2.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\kll\layouts\ck3layer3.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\kll\layouts\ck3layer4.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\kll\layouts\ck3layerUC.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\kll\layouts\ck3overlay.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\Scan\CK3\defaultMapCK3.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\ll\generatedKeymap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ll\kll_defs.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="ck4"
+				>
+				<File
+					RelativePath="..\kll\layouts\ck4layer2.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\kll\layouts\ck4layer3.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\kll\layouts\ck4layer4.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\kll\layouts\ck4overlay.kll"
+					>
+				</File>
+				<File
+					RelativePath="..\Scan\CK3\defaultMapCK4.kll"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="..\main.cpp"

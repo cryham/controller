@@ -20,5 +20,5 @@ layerRotate => Macro_layerRotate_capability( previous : 1 );
 
 # Defines available to the PartialMap module
 stateWordSize => StateWordSize_define;
-stateWordSize = 8; # Default for now, increase to 16 or 32 for higher limits
-
+stateWordSize = 16; # Default for now, increase to 16 or 32 for higher limits
+ 

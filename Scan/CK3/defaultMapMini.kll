@@ -1,0 +1,11 @@
+Name = CK3-scan;
+Version = 3.10;
+Author = "Crystal Hammer";
+KLL = 0.3d;
+Date = 2016-04-05;
+
+
+# . . . .   mini  . . . .
+S0x70: U"Up";  S0x81: U"Left";  S0x71: U"Right";  S0x72: U"Down";
+S0x6D: U"PageUp";  S0x6C: U"PageDown";
+S0x6E: U"Function1";  S0x85: U"Function2";
