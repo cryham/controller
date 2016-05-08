@@ -22,13 +22,15 @@ struct Gui
 		iSlots = 18,  // MSeq:  ver, changes eeprom
 		iSeqLen = 40, //   max bytes for 1 sequence (const in ram, var in eeprom)
 		iPage = 6,    //   page size, view at once
-		HAll = 8;     // Help: pages
+		HAll = 8,	  // Help pages
+		StAll = 3;    // Status pages
 	const static uint8_t YM2[MAll];  // demo counts
 
 	//  vars
 	int8_t leds;  // use kbd LEDs, for layers info
 	int8_t help, hpage;  // shows help, on top, page
-	int8_t status;  // L: show layers stack, status info page
+	int8_t status, stpage;  // status info pages
+	
 	inline int DrawDemo()
 	{	return menu && mlevel > 0 && !help && !status;  }
 	inline int IsGame()
@@ -38,6 +40,7 @@ struct Gui
 	int8_t mlevel;
 	int8_t ym;     // EMenu, main1 page y
 	int8_t ym2[MAll];  // level2 page,  cur demo for each menu
+	
 	//  MSeq
 	int8_t edit;   // seq 0 view / 1 edit
 	int8_t slot, page, edpos;  // edit vars

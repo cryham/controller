@@ -6,11 +6,16 @@
 extern "C" {
 	#include <macro.h>
 	#include <Output/pjrcUSB/arm/usb_mouse.h>
+	#include <scan_loop.h>  // keys kk
+	#include <usb_hid.h>  // key_defs
 }
+//#include "matrix_scan.h"  // defines
+//#include "matrix.h"
 //#endif
 
 ///  string from usb hid code
-const char str[0x73][6] = { ".",".",".",".", /*04*/"A","B","C","D",
+const int strALL = 0x73;
+const char str[strALL][6] = { ".",".",".",".", /*04*/"A","B","C","D",
 /*08*/"E","F","G","H","I","J","K","L", /*10*/"M","N","O","P","Q","R","S","T",
 /*18*/"U","V","W","X","Y","Z","1","2", /*20*/"3","4","5","6","7","8","9","0",
 /*28*/"Ent","Esc","Bck","Tab","Spc",
@@ -27,7 +32,7 @@ const char mod[0x08][6] = {
 /*E0*/"Ct","Sh","Al","Gui", //L
 /*E4*/"Ct","Sh","Al","Gui", //R
 };
-#define STR(k)  (k >= 0xE0 ? mod[k-0xE0] : k <= 0x73 ? str[k] : "()")
+#define STR(k)  (k >= 0xE0 ? mod[k-0xE0] : k <= strALL ? str[k] : "()")
 
 
 //  Draw, settings
@@ -66,6 +71,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		case 1:  // help
 			d.setCursor(0, 16+8);
 			d.println("Pause F2  Status");
+			d.println("  \x18\x19  Page");
 			d.moveCursor(0,8);
 			d.println("D Spc  Dim display");
 			break;
@@ -140,28 +146,76 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	{
 		d.print("Status");  d.setFont(0);
 
+		d.setCursor(W-1-3*6, 0);
+		d.print(stpage+1);  d.print("/");  d.print(StAll);
+
 		d.setCursor(0, 16+2);
-		d.print("Protocol: ");  d.print(USBKeys_Protocol);
-		d.println(USBKeys_Protocol == 1 ? " NKRO" : " Boot");
-		d.moveCursor(0,4);
-
-		//  layers stack  - -
-		d.print("Layers: ");
-		for (int l=1; l < layersCnt; ++l)  // 1st is 1 in menu
+		
+		switch (stpage)  //  ----
 		{
-			d.print(layersOn[l]);  d.moveCursor(6,0);
-		}
-		
-		///  dbg  mouse speed  --
-		d.setCursor(0, H-1-2*8);  d.print(mx_holdtime);
-		d.setCursor(0, H-1-1*8);  d.print(my_holdtime);
-		
-		d.setCursor(W/3, H-2*8);  d.print(mx_delay);
-		d.setCursor(W/3, H-1*8);  d.print(my_delay);
-		
-		d.setCursor(2*W/3, H-2*8);  d.print(mx_speed);
-		d.setCursor(2*W/3, H-1*8);  d.print(my_speed);
+		case 0:
+			d.print("Protocol: ");  d.print(USBKeys_Protocol);
+			d.println(USBKeys_Protocol == 1 ? " NKRO" : " Boot");
+			d.moveCursor(0,4);
 
+			//  layers stack  - -
+			d.print("Layers: ");
+			for (int l=1; l < layersCnt; ++l)  // 1st is 1 in menu
+			{
+				d.print(layersOn[l]);  d.moveCursor(6,0);
+			}
+			//d.println();  d.moveCursor(0,2);
+			break;
+
+		case 1:
+			//  locks
+			d.print("Lock: ");
+			if (USBKeys_LEDs > 0)
+			{
+				if (USBKeys_LEDs & 0x1)  d.print("Num ");
+				if (USBKeys_LEDs & 0x2)  d.print("Caps ");
+				if (USBKeys_LEDs & 0x4)  d.print("Scrl");
+				// 8=compose, 16=kana
+			}
+			d.println();  d.moveCursor(0,2);
+
+			//  modifiers
+			d.print("Mod:  ");
+			for (int i=KEY_LCTRL; i<=KEY_RGUI; ++i)
+			if (kk[i])
+			{	d.print(i >= KEY_RCTRL ? "R" : "L");
+				d.print(mod[i-KEY_LCTRL]);  d.print(" ");
+			}
+			d.println();  d.moveCursor(0,2);
+			
+			d.print("Key:  ");
+			for (int i=KEY_A; i < strALL; ++i)
+				if (kk[i])
+				{	d.print(STR(i));  d.print(" ");
+				}
+			break;
+			
+		case 2:
+			//d.print("Debounce ms: ");  d.println(MinDebounceTime_define);
+			//d.print("Strobe delay us: ");  d.println(STROBE_DELAY);
+			// rest in capabilities.kll *_define
+			//DebounceThrottleDiv_define, StateWordSize_define;
+
+			///  dbg  mouse speed  --
+			const int16_t y1 = H-1-2*8, y2 = H-1-1*8;
+			d.setCursor(0, y1-8-2);
+			d.print("Mouse hold delay spd");
+
+			d.setCursor(0, y1);  d.print(mx_holdtime);
+			d.setCursor(0, y2);  d.print(my_holdtime);
+			
+			d.setCursor(W/3, y1);  d.print(mx_delay);
+			d.setCursor(W/3, y2);  d.print(my_delay);
+			
+			d.setCursor(2*W/3, y1);  d.print(mx_speed);
+			d.setCursor(2*W/3, y2);  d.print(my_speed);
+			break;
+		}
 		return;
 	}
 	

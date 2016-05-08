@@ -26,7 +26,9 @@ void Gui::Init()
 		ym2[i]=0;
 	
 	leds = 0;
-	help = 0;  hpage = 0;  status = 0;
+	help = 0;  hpage = 0;
+	status = 0;  stpage = 0;
+	
 	menu = 0;  edit = 0;
 	slot = 0;  page = 0;  edpos = 0;
 
@@ -226,11 +228,19 @@ void Gui::KeyPress()
 		if (kk[KEY_LEFT] && !kko[KEY_LEFT] ||
 			kk[KEY_ESC] && !kko[KEY_ESC])
 		{	help = 0;  status = 0;  }
+		
+		if (status)  // status page
+		{
+			if (kk[KEY_DOWN] && !kko[KEY_DOWN])
+			{	++stpage;  if (stpage >= StAll)  stpage = 0;  }
+			if (kk[KEY_UP] && !kko[KEY_UP])
+			{	--stpage;  if (stpage < 0)  stpage = StAll-1;  }
+		}
 	}
 
-	if (help)
+	if (help)  // help page
 	{
-		if (kk[KEY_DOWN] && !kko[KEY_DOWN])  // pages
+		if (kk[KEY_DOWN] && !kko[KEY_DOWN])
 		{	++hpage;  if (hpage >= HAll)  hpage = 0;  }
 		if (kk[KEY_UP] && !kko[KEY_UP])
 		{	--hpage;  if (hpage < 0)  hpage = HAll-1;  }
