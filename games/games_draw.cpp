@@ -56,7 +56,8 @@ void Games::DrawNext(Adafruit_SSD1306& d, const Block& b,
 //  Draw
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 const static char* sPresets[Games::Presets] = {
-	" Tiny 3+", " Basic 4/2", " Small 4+/4", " Tetris 4", " Pentis 5/1", " Sixtis 6", "Septis 7+/1", "Octis 8+/1", " Huge 12"};
+	" Tiny 3+", " Basic 4/2", " Small 4+/4", "Medium 5+/4", " Tetris 4",
+	" Pentis 5/1", " Sixtis 6", "Septis 7+/1", "Octis 8+/1", " Huge 12"};
 	
 const static char* sOptPages[Games::O_All] = {
 	"Field", "Speed", "Block", "Draw", "Input"};
