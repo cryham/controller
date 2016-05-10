@@ -53,7 +53,7 @@ struct Games
 
 	
 	//  speed
-	#define SpdDet 16384
+	#define SpdDet (16384*3)
 	int16_t time_y;
 	int32_t speed_y, time_spd;
 

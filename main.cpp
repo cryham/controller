@@ -137,7 +137,8 @@ int main()
 			if (gui.menu && !play)
 			{
 				gui.Draw(display);  // gui
-				delay(6);  //
+				if (!demo)
+					delay(6);  //
 			}
 			#endif
 

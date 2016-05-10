@@ -14,7 +14,7 @@ void Games::Init()
 {
 	//  keys
 	o.sp_drop = 5;  o.sp_fall = 20;
-	o.key_rpt = 27;  o.move_in_drop = 0;
+	o.key_rpt = 15;  o.move_in_drop = 0;
 	
 	preset = 6;
 	xo= 0; yo= 0; xa= 0; ya= 0; xb= 0; yb= 0;
@@ -249,12 +249,11 @@ void Games::Rotate(Block& to, const Block& from, int cw)
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 void Games::Update()
 {
-	++time_y;
 	uint32_t ti = micros(), dt = ti - old_ti;  old_ti = ti;
 	if (dt < 100000)  // min 10 fps
 		dt_sum += dt;
 
-	const uint32_t iv = 16666;  // 60 fps const
+	const uint32_t iv = 16666/6;  // 6*60 fps const
 	while (dt_sum > iv)
 	{
 		dt_sum -= iv;

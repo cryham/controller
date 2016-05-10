@@ -201,8 +201,8 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			//  ghosting
 			if (ghost_cols /*|| ghost_rows*/)
 			{
-				d.setCursor(12, H-1-8);
-				d.print("Gh |");  d.print(ghost_cols);
+				d.setCursor(3*6, H-1-8);
+				d.print("Gho |");  d.print(ghost_cols);
 				d.print(" -");  d.print(ghost_rows);
 			}
 		}	break;
