@@ -141,7 +141,7 @@ int Games::KeyPress(int8_t& mlevel)
 			if (!Overlaps(cpy, pos_x, pos_y))
 				Copy(blk, cpy);
 		}
-		if (keyp(5) || keyp(SLASH))  // rot ccw
+		if (key(DELETE) || keyp(5) || keyp(SLASH))  // rot ccw
 		{
 			Rotate(cpy, blk, 0);  //  check possible
 			if (!Overlaps(cpy, pos_x, pos_y))

@@ -120,6 +120,7 @@ int main()
 				#ifdef GAME
 				if (play)
 				{	game.Draw(display);
+					delay(6);  //
 					if (game.KeyPress(gui.mlevel))
 					{	gui.help = 1;  gui.hpage = Gui::HAll-2;  }
 				}
@@ -134,7 +135,10 @@ int main()
 			
 			#ifdef KII
 			if (gui.menu && !play)
+			{
 				gui.Draw(display);  // gui
+				delay(6);  //
+			}
 			#endif
 
 			display.display();  // show

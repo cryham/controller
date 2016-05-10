@@ -318,7 +318,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		d.setFont(0);
 		d.setCursor(x, 0);
 		d.print(infType==2 ? "Saved:" :
-				infType==1 ? "Loaded:" : "Reset");
+				infType==1 ? "Loaded" : "Reset");
 		if (infType > 0)
 		{
 			d.setCursor(x+6, 8);
