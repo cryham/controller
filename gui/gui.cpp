@@ -123,6 +123,8 @@ void Gui::ExecSeqs()
 			{	//  key press and release
 				Output_usbCodeSend_capability(1, 0, &k);  Output_send();  k = 0;
 				Output_usbCodeSend_capability(1, 0, &k);  Output_send();
+				if (USBKeys_Protocol == 0)
+					USBKeys_Modifiers = 0;  //fix boot mode?
 			}
 			
 			//  last
