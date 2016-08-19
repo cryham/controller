@@ -4,7 +4,7 @@ Crystal Keyboard 3
 This is [my fork](https://github.com/cryham/controller/) for the keyboard CK3.
 
 For more info about CK3 read this [Forum post](https://geekhack.org/index.php?topic=81312.0), see
-[Picture galleries](https://picasaweb.google.com/106514390902066155561), and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
+[Picture galleries](https://plus.google.com/106514390902066155561/photos), and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
 
 Hardware
 --------
