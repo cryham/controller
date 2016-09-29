@@ -1,18 +1,18 @@
-Crystal Keyboard 3
-==================
+Crystal Keyboard 3 and 4
+========================
 
-This is [my fork](https://github.com/cryham/controller/) for the keyboard CK3.
+This is [my fork](https://github.com/cryham/controller/) for keyboards CK3 and CK4.
 
-For more info about CK3 read this [Forum post](https://geekhack.org/index.php?topic=81312.0), see
-[Picture galleries](https://plus.google.com/106514390902066155561/photos), and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
+More info about them on [my website](http://cryham.tuxfamily.org/archives/portfolio/crystal-keyboard-3-and-4), this [Forum post](https://geekhack.org/index.php?topic=81312.0), in
+[Picture galleries](https://plus.google.com/106514390902066155561/photos) with descriptions, and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
 
 Hardware
 --------
 
 The keyboard is made of:
-* Teensy 3.1 (or 3.2)
+* Teensy 3.1 or 3.2
 * OLED display: SSD 1306, 128x64 mono
-* A4 Tech KX-100 keyboard
+* A4 Tech KX-100 keyboard for CK3, but any other could be used
 * 2 LEDs for layer info
 
 Features
@@ -20,7 +20,7 @@ Features
 
 The fork of Kiibohd Controller adds these features to it:
 * Included teensy3 directory from [Paul's cores repo](https://github.com/PaulStoffregen/cores), reduced
-* Support for display with [Adafruit GFX](https://github.com/adafruit/Adafruit-GFX-Library) and [1306](https://github.com/adafruit/Adafruit_SSD1306) libraries
+* Support for display with [Adafruit GFX](https://github.com/adafruit/Adafruit-GFX-Library) and [SSD 1306](https://github.com/adafruit/Adafruit_SSD1306) libraries
 * Gui Menu
 * Sequences/Macros viewer and editor
   * Useful for e.g. passwords, frequently typed words (no need to type anymore)
