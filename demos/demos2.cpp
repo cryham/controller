@@ -319,13 +319,13 @@ const uint8_t e0[NE0][2] = {   // edges
 //  ALL  --------
 #define ALL  Demos::hdA
 #define A(a)  &a[0][0]
-const float*   ppA[ALL] = {A(p2),A(p1),A(p3),A(p3),A(p4),A(p4),A(p5),A(p5),A(p5) ,A(p5) ,A(p6)};
-const uint8_t* eeA[ALL] = {A(e2),A(e1),A(e3),A(e3),A(e4),A(e4),A(e5),A(e5),A(e5b),A(e5b),A(e6)};
-const uint8_t* ffA[ALL] = {    0,    0,    0,A(f3),    0,A(f4),    0,A(f5),    0 ,A(f5b),    0};
-const int      NPa[ALL] = {  NP2,  NP1,  NP3,  NP3,  NP4,  NP4,  NP5,  NP5,  NP5 ,  NP5 ,  NP6};
-const int      NEa[ALL] = {  NE2,  NE1,  NE3,  NE3,  NE4,  NE4,  NE5,  NE5,  NE5b,  NE5b,  NE6};
-const int      NFa[ALL] = {    0,    0,    0,  NF3,    0,  NF4,    0,  NF5,    0 ,  NF5b,    0};
-const float    SCa[ALL] = { 1.18, 1.18, 1.26, 1.26, 1.35, 1.35, 1.35, 1.35,  1.35,  1.35, 1.45};
+const float*   ppA[ALL] = {A(p2),A(p1),A(p3),A(p3),A(p4),A(p4),A(p5),A(p5),A(p5) ,A(p5) ,A(p6)};  // points visible
+const uint8_t* eeA[ALL] = {A(e2),A(e1),A(e3),A(e3),A(e4),A(e4),A(e5),A(e5),A(e5b),A(e5b),A(e6)};  // edges 
+const uint8_t* ffA[ALL] = {    0,    0,    0,A(f3),    0,A(f4),    0,A(f5),    0 ,A(f5b),    0};  // faces 
+const int      NPa[ALL] = {  NP2,  NP1,  NP3,  NP3,  NP4,  NP4,  NP5,  NP5,  NP5 ,  NP5 ,  NP6};  //  Points array
+const int      NEa[ALL] = {  NE2,  NE1,  NE3,  NE3,  NE4,  NE4,  NE5,  NE5,  NE5b,  NE5b,  NE6};  //  Edges
+const int      NFa[ALL] = {    0,    0,    0,  NF3,    0,  NF4,    0,  NF5,    0 ,  NF5b,    0};  //  Faces
+const float    SCa[ALL] = { 1.18, 1.18, 1.26, 1.26, 1.35, 1.35, 1.35, 1.35,  1.35,  1.35, 1.45};  // scale
 #undef ALL
 
 

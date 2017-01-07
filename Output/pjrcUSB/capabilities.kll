@@ -27,7 +27,7 @@ keyboardLocale = 0;
 # Set to 0 for Boot Mode (6KRO)
 # Set to 1 for NKRO Mode (default)
 usbProtocol => USBProtocol_define;
-usbProtocol = 1;
+usbProtocol = 1;  #1
 
 # Bootloader Mode capability
 # XXX

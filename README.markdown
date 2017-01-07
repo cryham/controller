@@ -3,7 +3,7 @@ Crystal Keyboard 3 and 4
 
 This is [my fork](https://github.com/cryham/controller/) for keyboards CK3 and CK4.
 
-More info about them on [my website](http://cryham.tuxfamily.org/archives/portfolio/crystal-keyboard-3-and-4), this [Forum post](https://geekhack.org/index.php?topic=81312.0), in
+More info about them on [My Website](http://cryham.tuxfamily.org/archives/portfolio/crystal-keyboard-3-and-4), this [Forum post](https://geekhack.org/index.php?topic=81312.0), in
 [Picture galleries](https://plus.google.com/106514390902066155561/photos) with descriptions, and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
 
 Hardware
@@ -27,6 +27,11 @@ The fork of Kiibohd Controller adds these features to it:
   * And often used key combinations (macros)
   * Loaded and saved in eeprom
 * Mouse move with acceleration
+* Help pages listing all key shortcuts used
+* Status pages showing
+  * Active layers, protocol
+  * Pressed keyes, modifiers, locks
+  * When ghosting: columns and rows count
 * Quite few [demos](https://www.youtube.com/watch?v=66CksiS55fg):
   * Space, Balls, Rain, Fountain
   * Polygons 2D, Polyhedrons 3D
@@ -56,7 +61,7 @@ A basic Kiibohd build (`set(DebugModule "none"` in CMakeFiles.txt) with OLED and
 Kiibohd Controller
 ==================
 
-For reference, refer to Wiki from the [original repo](https://github.com/kiibohd/controller) of this fork.
+For reference, read Wiki from the [original repo](https://github.com/kiibohd/controller) of this fork.
 
 
 Licensing

@@ -97,12 +97,16 @@ void Demos::Rain(Adafruit_SSD1306& d)
 void Demos::Font_ver(Adafruit_SSD1306& d)
 {
 	d.setCursor(0,10);  // logo
-	d.setFont(&FreeSans9pt7b/*FreeSans12pt7b*/);  d.print("CrystaL");
+	d.setFont(&FreeSans9pt7b/*FreeSans12pt7b*/);
+	d.print("CrystaL");
+
 	d.setCursor(36,32);
-	d.setFont(&FreeSans9pt7b);  d.print("Keyboard");
+	d.setFont(&FreeSans9pt7b);
+	d.print("Keyboard");
 	
-	d.setCursor(96,0);  // ver
-	d.setFont(0);  d.print("3.18");
+	d.setCursor(96,0);
+	d.setFont(0);
+	d.print("3.20");  // version text
 	
 	d.setCursor(0*24,H-8);
 	const char* a={__DATE__}, *m={__TIME__};

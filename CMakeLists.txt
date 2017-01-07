@@ -110,20 +110,20 @@ set(  DebugModule "none"
 
 ##| Set the base keyboard .kll map, defaults to "defaultMap" if not found
 ##| Looks in Scan/<Module Name> for the available BaseMaps
-set(     BaseMap "defaultMapCK3"
-#set(     BaseMap "defaultMapCK4"
+#set(     BaseMap "defaultMapCK3"
+set(     BaseMap "defaultMapCK4"
 	CACHE STRING "KLL BaseMap/Scancode Keymapping" )
 
 ##| Layer additonal .kll maps on the BaseMap, layers are in order from 1st to nth
 ##| Can be set to ""
-set(  DefaultMap "ck3overlay"
-#set(  DefaultMap "ck4overlay"
+#set(  DefaultMap "ck3overlay"
+set(  DefaultMap "ck4overlay"
 	CACHE STRING "KLL DefaultMap" )
 
 ##| ParitalMaps available on top of the BaseMap. See above for syntax on specifying multiple layers vs. layering
 ##| Can be set to ""
-set( PartialMaps "ck3layerUC" "ck3layer2" "ck3layer3"
-#set( PartialMaps "ck3layerUC" "ck4layer2" "ck4layer3" #"ck4layer4"
+#set( PartialMaps "ck3layerUC" "ck3layer2" "ck3layer3"
+set( PartialMaps "ck3layerUC" "ck4layer2" "ck4layer3" #"ck4layer4"
 	CACHE STRING "KLL PartialMaps/Layer Definitions" )
 
 

@@ -1,5 +1,6 @@
 
-// hw spi  13 clk  9. d/c  10 cs  11 mosi (dout)
+// HW SPI pins  for OLED display
+//  13 CLK  9. D/C  10 CS  11 MOSI (DOUT)
 #define OLED_CS    10
 #define OLED_DC     9
 
@@ -22,7 +23,7 @@ Demos demos;
 Gui gui;
 #endif
 
-#define GAME  // 2k ram, 18k flash
+#define GAME  // 2k RAM, 18k Flash
 #ifdef GAME
 #include "games.h"
 Games game;
