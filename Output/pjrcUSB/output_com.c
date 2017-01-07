@@ -322,11 +322,8 @@ void Output_usbCodeSend_capability( uint8_t state, uint8_t stateType, uint8_t *a
 		if ( state == 0x01 || state == 0x03 )
 			USBKeys_Changed = USBKeyChangeState_MainKeys;
 
-		if ( stateType == 0x00 && state == 0x01 ) // Press state
-			keyPress = 1;
-
 		// Only send keypresses if press or hold state
-		if ( stateType == 0x00 && state == 0x02 ) // Release state
+		if ( stateType == 0x00 && state == 0x03 ) // Release state
 			return;
 		break;
 	case 1: // NKRO Mode
@@ -358,18 +355,9 @@ void Output_usbCodeSend_capability( uint8_t state, uint8_t stateType, uint8_t *a
 		// Set the modifier bit if this key is a modifier
 		if ( (key & 0xE0) == 0xE0 ) // AND with 0xE0 (Left Ctrl, first modifier)
 		{
-			if ( keyPress )
-			{
 				USBKeys_Modifiers |= 1 << (key ^ 0xE0); // Left shift 1 by key XOR 0xE0
-			}
-			else // Release
-			{
-				USBKeys_Modifiers &= ~(1 << (key ^ 0xE0)); // Left shift 1 by key XOR 0xE0
-			}
-
-			USBKeys_Changed |= USBKeyChangeState_Modifiers;
-			break;
 		}
+		// Normal USB Code
 		else
 		{
 			// USB Key limit reached
@@ -653,7 +641,7 @@ inline void Output_send()
 	{
 	case 0: // Boot Mode
 		// Clear modifiers only in boot mode
-		//USBKeys_Modifiers = 0;
+		USBKeys_Modifiers = 0;
 		Scan_finishedWithOutput( USBKeys_Sent <= USB_BOOT_MAX_KEYS ? USBKeys_Sent : USB_BOOT_MAX_KEYS );
 		break;
 	case 1: // NKRO Mode
