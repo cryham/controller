@@ -14,6 +14,7 @@ sysCtrlOut  => Output_sysCtrlSend_capability( sysCode : 1 );
 usbKeyOut   => Output_usbCodeSend_capability( usbCode : 1 );
 mouseOut    => Output_usbMouse_capability( mouseCode : 2, relative_x : 2, relative_y : 2 );
 shift       => CustomAction_shift_capability();  # mouse slow
+toggleProtocol => CustomAction_toggleProtocol_capability();  # boot / nkro
 
 # Configuration capabilities
 kbdProtocolBoot => Output_kbdProtocolBoot_capability();

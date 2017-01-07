@@ -55,6 +55,7 @@ extern int8_t shift;  // mouse slow modifier
 void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 void CustomAction_Sequence_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 void CustomAction_shift_capability( uint8_t state, uint8_t stateType, uint8_t *args );
+void CustomAction_toggleProtocol_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 
 // Example capabilities
 void CustomAction_blockHold_capability( uint8_t state, uint8_t stateType, uint8_t *args );
