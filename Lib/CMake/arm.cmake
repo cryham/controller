@@ -12,20 +12,20 @@
 
 
 #| Set the Compilers (must be set first)
-include( CMakeForceCompiler )
-if ( "${COMPILER}" MATCHES "gcc" )
-	cmake_force_c_compiler  ( arm-none-eabi-gcc ARMCCompiler )
+	include( CMakeForceCompiler )
+	if ( "${COMPILER}" MATCHES "gcc" )
+		cmake_force_c_compiler( arm-none-eabi-gcc ARMCCompiler )
 	cmake_force_cxx_compiler( arm-none-eabi-g++ ARMCxxCompiler )
-	set( _CMAKE_TOOLCHAIN_PREFIX arm-none-eabi- )
+		set( _CMAKE_TOOLCHAIN_PREFIX arm-none-eabi- )
 	#message( STATUS "Compiler: gcc" )
-elseif ( "${COMPILER}" MATCHES "clang" )
-	cmake_force_c_compiler  ( clang   ARMCCompiler )
+	elseif ( "${COMPILER}" MATCHES "clang" )
+		cmake_force_c_compiler( clang ARMCCompiler )
 	cmake_force_cxx_compiler( clang++ ARMCxxCompiler )
-	set( _CMAKE_TOOLCHAIN_PREFIX llvm- )
+		set( _CMAKE_TOOLCHAIN_PREFIX llvm- )
 	#message( STATUS "Compiler: clang" )
-else ()
-	message( AUTHOR_WARNING "COMPILER: ${COMPILER} - Unknown compiler selection" )
-endif ()
+	else ()
+		message( AUTHOR_WARNING "COMPILER: ${COMPILER} - Unknown compiler selection" )
+	endif ()
 
 
 
@@ -168,6 +168,7 @@ set( WARN "-g" )
 #| Tuning Options
 #|  -f...:        tuning, see GCC manual
 #| NOTE: -fshort-wchar is specified to allow USB strings be passed conveniently
+#| Bootloader Compiler Flags
 if( BOOTLOADER )
 	set( TUNING "-D_bootloader_ -Wno-main -msoft-float -mthumb -fplan9-extensions -ffunction-sections -fdata-sections -fno-builtin -fstrict-volatile-bitfields -flto -fno-use-linker-plugin -nostdlib" )
 	#set( TUNING "-mthumb -fdata-sections -ffunction-sections -fno-builtin -msoft-float -fstrict-volatile-bitfields -flto -fno-use-linker-plugin -fwhole-program -Wno-main -nostartfiles -fplan9-extensions -D_bootloader_" )
@@ -177,7 +178,7 @@ else()
 	#set( TUNING "-mthumb -nostdlib -fdata-sections -ffunction-sections -fshort-wchar -fno-builtin -nostartfiles" )
 	set( TUNING "-mcpu=cortex-m4 -lc -fno-exceptions -mthumb -fshort-wchar -fno-builtin -nostartfiles -fdata-sections -ffunction-sections " )
 	#---------------------------
-endif()
+	endif ()
 
 #| Optimization level, can be [0, 1, 2, 3, s].
 #|     0 = turn off optimization. s = optimize for size.

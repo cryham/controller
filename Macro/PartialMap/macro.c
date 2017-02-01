@@ -125,7 +125,7 @@ extern index_uint_t macroTriggerMacroPendingList[];
 extern index_uint_t macroTriggerMacroPendingListSize;
 
 // Interconnect ScanCode Cache
-#if defined(ConnectEnabled_define)
+#if defined(ConnectEnabled_define) || defined(PressReleaseCache_define)
 // TODO This can be shrunk by the size of the max node 0 ScanCode
 TriggerGuide macroInterconnectCache[ MaxScanCode ];
 uint8_t macroInterconnectCacheSize = 0;
@@ -323,6 +323,14 @@ void Macro_layerShift_capability( uint8_t state, uint8_t stateType, uint8_t *arg
 	// Cast pointer to uint8_t to uint16_t then access that memory location
 	uint16_t layer = *(uint16_t*)(&args[0]);
 
+	// Only set the layer if it is disabled
+	if ( LayerState[ layer ] != 0x00 && state == 0x01 )
+		return;
+
+	// Only unset the layer if it is enabled
+	if ( LayerState[ layer ] == 0x00 && state == 0x03 )
+		return;
+
 	Macro_layerState( state, stateType, layer, 0x01 );
 }
 
@@ -482,8 +490,8 @@ nat_ptr_t *Macro_layerLookup( TriggerGuide *guide, uint8_t latch_expire )
 
 // Add an interconnect ScanCode
 // These are handled differently (less information is sent, hold/off states must be assumed)
-#if defined(ConnectEnabled_define)
-inline void Macro_interconnectAdd( void *trigger_ptr )
+#if defined(ConnectEnabled_define) || defined(PressReleaseCache_define)
+void Macro_pressReleaseAdd( void *trigger_ptr )
 {
 	TriggerGuide *trigger = (TriggerGuide*)trigger_ptr;
 
@@ -712,9 +720,11 @@ inline void Macro_process()
 	if ( USBKeys_Sent != 0 )
 		return;
 
+#if defined(ConnectEnabled_define) || defined(PressReleaseCache_define)
 #if defined(ConnectEnabled_define)
 	// Check if there are any ScanCodes in the interconnect cache to process
 	if ( Connect_master && macroInterconnectCacheSize > 0 )
+#endif
 	{
 		// Iterate over all the cache ScanCodes
 		uint8_t currentInterconnectCacheSize = macroInterconnectCacheSize;
@@ -1363,4 +1373,3 @@ void cliFunc_macroStep( char* args )
 	// Set the macro step counter, negative int's are cast to uint
 	macroStepCounter = count;
 }
-

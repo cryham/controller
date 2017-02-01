@@ -1,6 +1,6 @@
 ###| CMAKE Kiibohd Controller KLL Configurator |###
 #
-# Written by Jacob Alexander in 2014-2015 for the Kiibohd Controller
+# Written by Jacob Alexander in 2014-2016 for the Kiibohd Controller
 #
 # Released into the Public Domain
 #
@@ -13,6 +13,20 @@
 
 if ( "${MacroModule}" STREQUAL "PartialMap" )
 
+
+###
+# Python 3 is required for kll
+# Check disabled for Win32 as it can't detect version correctly (we don't use Python directly through CMake anyways)
+#
+
+if ( NOT CMAKE_HOST_WIN32 )
+	# Required on systems where python is 2, not 3
+	set ( PYTHON_EXECUTABLE
+		python3
+		CACHE STRING "Python 3 Executable Path"
+	)
+	find_package ( PythonInterp 3 REQUIRED )
+endif ()
 
 
 ###
@@ -57,10 +71,15 @@ set ( pathname "${PROJECT_SOURCE_DIR}/${ScanModulePath}" )
 
 string ( REPLACE " " ";" MAP_LIST ${BaseMap} ) # Change spaces to semicolons
 foreach ( MAP ${MAP_LIST} )
-	# Only check the Scan Module for BaseMap .kll files, default to defaultMap.kll
+	# Only check the Scan Module for BaseMap .kll files, default to scancode_map.kll or defaultMap.kll
 	if ( NOT EXISTS ${pathname}/${MAP}.kll )
-		set ( BaseMap_Args ${BaseMap_Args} ${pathname}/defaultMap.kll )
-		set ( KLL_DEPENDS ${KLL_DEPENDS} ${pathname}/defaultMap.kll )
+		if ( EXISTS ${pathname}/scancode_map.kll )
+			set ( BaseMap_Args ${BaseMap_Args} ${pathname}/scancode_map.kll )
+			set ( KLL_DEPENDS ${KLL_DEPENDS} ${pathname}/scancode_map.kll )
+		else ()
+			set ( BaseMap_Args ${BaseMap_Args} ${pathname}/defaultMap.kll )
+			set ( KLL_DEPENDS ${KLL_DEPENDS} ${pathname}/defaultMap.kll )
+		endif ()
 	elseif ( EXISTS "${pathname}/${MAP}.kll" )
 		set ( BaseMap_Args ${BaseMap_Args} ${pathname}/${MAP}.kll )
 		set ( KLL_DEPENDS ${KLL_DEPENDS} ${pathname}/${MAP}.kll )

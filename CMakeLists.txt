@@ -38,8 +38,8 @@ set( CHIP
 #| clang does work though
 #| Currently only arm is supported with clang
 set( COMPILER
-	"gcc"   # arm-none-eabi-gcc / avr-gcc - Default
-#	"clang" # arm-none-eabi
+	"gcc"   # arm-none-eabi-gcc / avr-gcc / host-gcc - Default
+#   "clang" # arm-none-eabi / host
 	CACHE STRING "Compiler Type"
 )
 
@@ -48,7 +48,7 @@ set( COMPILER
 ###
 # Compiler Intialization
 #
-set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/Lib/CMake )
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/Lib/CMake )
 include( initialize )
 
 
@@ -156,10 +156,15 @@ file(GLOB MAIN_SRCS
 #
 
 #| Project
-project( kiibohd_controller )
+project( kiibohd_controller C )
 
 #| Target Name (output name)
 set( TARGET kiibohd )
+
+#| Manufacturer name
+#| - This can be overridden by a Scan Module setup.cmake -
+#| USB Descriptor iManufacturer string
+set( MANUFACTURER "Kiibohd" )
 
 #| General Settings
 cmake_minimum_required( VERSION 2.8 )

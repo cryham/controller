@@ -62,6 +62,7 @@ typedef enum USBMouseChangeState {
 	USBMouseChangeState_None     = 0x00,
 	USBMouseChangeState_Buttons  = 0x01,
 	USBMouseChangeState_Relative = 0x02,
+	USBMouseChangeState_All      = 0x03,
 } USBMouseChangeState;
 
 
@@ -84,9 +85,10 @@ extern volatile uint16_t USBMouse_Buttons; // Bitmask for mouse buttons
 extern volatile int16_t  USBMouse_Relative_x;
 extern volatile int16_t  USBMouse_Relative_y;
 
-// Misc variables (XXX Some are only properly utilized using AVR)
+// Keeps track of the idle timeout refresh (used on Mac OSX)
 extern          uint8_t  USBKeys_Idle_Config;
-extern          uint8_t  USBKeys_Idle_Count;
+extern          uint32_t USBKeys_Idle_Expiry;
+extern          uint8_t  USBKeys_Idle_Count; // AVR only
 
 extern USBKeyChangeState   USBKeys_Changed;
 extern USBMouseChangeState USBMouse_Changed;
@@ -96,6 +98,10 @@ extern volatile uint8_t  Output_Available; // 0 - Output module not fully functi
 extern          uint8_t  Output_DebugMode; // 0 - Debug disabled, 1 - Debug enabled
 
 extern          uint16_t Output_ExtCurrent_Available; // mA - Set by outside module if not using USB (i.e. Interconnect)
+
+extern volatile uint32_t USBInit_TimeStart; // Timetamp when usb_init was triggered
+extern volatile uint32_t USBInit_TimeEnd;   // Timetamp since last call to the Configuration endpoint
+extern volatile uint16_t USBInit_Ticks;     // Number of times the end time has been updated
 
 
 
