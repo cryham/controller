@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2016 by Jacob Alexander
+/* Copyright (C) 2014-2017 by Jacob Alexander
  *
  * This file is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,8 +119,7 @@ index_uint_t macroLayerIndexStack[ LayerNum + 1 ] = { 0 };
 index_uint_t macroLayerIndexStackSize = 0;
 
 // TODO REMOVE when dependency no longer exists
-extern index_uint_t macroResultMacroPendingList[];
-extern index_uint_t macroResultMacroPendingListSize;
+extern ResultsPending macroResultMacroPendingList;
 extern index_uint_t macroTriggerMacroPendingList[];
 extern index_uint_t macroTriggerMacroPendingListSize;
 
@@ -228,7 +227,7 @@ void Macro_layerState( uint8_t state, uint8_t stateType, uint16_t layer, uint8_t
 // Modifies the specified Layer control byte
 // Argument #1: Layer Index -> uint16_t
 // Argument #2: Layer State -> uint8_t
-void Macro_layerState_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void Macro_layerState_capability( TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
 	if ( stateType == 0xFF && state == 0xFF )
@@ -256,7 +255,7 @@ void Macro_layerState_capability( uint8_t state, uint8_t stateType, uint8_t *arg
 
 // Latches given layer
 // Argument #1: Layer Index -> uint16_t
-void Macro_layerLatch_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void Macro_layerLatch_capability( TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
 	if ( stateType == 0xFF && state == 0xFF )
@@ -280,7 +279,7 @@ void Macro_layerLatch_capability( uint8_t state, uint8_t stateType, uint8_t *arg
 
 // Locks given layer
 // Argument #1: Layer Index -> uint16_t
-void Macro_layerLock_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void Macro_layerLock_capability( TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
 	if ( stateType == 0xFF && state == 0xFF )
@@ -305,7 +304,7 @@ void Macro_layerLock_capability( uint8_t state, uint8_t stateType, uint8_t *args
 
 // Shifts given layer
 // Argument #1: Layer Index -> uint16_t
-void Macro_layerShift_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void Macro_layerShift_capability( TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
 	if ( stateType == 0xFF && state == 0xFF )
@@ -339,7 +338,7 @@ void Macro_layerShift_capability( uint8_t state, uint8_t stateType, uint8_t *arg
 // Uses state variable to keep track of the current layer position
 // Layers are still evaluated using the layer stack
 uint16_t Macro_rotationLayer;
-void Macro_layerRotate_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void Macro_layerRotate_capability( TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
 	if ( stateType == 0xFF && state == 0xFF )
@@ -417,8 +416,13 @@ nat_ptr_t *Macro_layerLookup( TriggerGuide *guide, uint8_t latch_expire )
 			Macro_layerState( 0, 0, cachedLayer, 0x02 );
 #if defined(ConnectEnabled_define) && defined(LCDEnabled_define)
 			// Evaluate the layerStack capability if available (LCD + Interconnect)
-			extern void LCD_layerStack_capability( uint8_t state, uint8_t stateType, uint8_t *args );
-			LCD_layerStack_capability( 0, 0, 0 );
+			extern void LCD_layerStack_capability(
+				TriggerMacro *trigger,
+				uint8_t state,
+				uint8_t stateType,
+				uint8_t *args
+			);
+			LCD_layerStack_capability( 0, 0, 0, 0 );
 #endif
 		}
 
@@ -663,15 +667,16 @@ void Macro_appendResultMacroToPendingList( const TriggerMacro *triggerMacro )
 	var_uint_t resultMacroIndex = triggerMacro->result;
 
 	// Iterate through result macro pending list, making sure this macro hasn't been added yet
-	for ( var_uint_t macro = 0; macro < macroResultMacroPendingListSize; macro++ )
+	for ( var_uint_t macro = 0; macro < macroResultMacroPendingList.size; macro++ )
 	{
 		// If duplicate found, do nothing
-		if ( macroResultMacroPendingList[ macro ] == resultMacroIndex )
+		if ( macroResultMacroPendingList.data[ macro ].index == resultMacroIndex )
 			return;
 	}
 
 	// No duplicates found, add to pending list
-	macroResultMacroPendingList[ macroResultMacroPendingListSize++ ] = resultMacroIndex;
+	macroResultMacroPendingList.data[ macroResultMacroPendingList.size ].trigger = (TriggerMacro*)triggerMacro;
+	macroResultMacroPendingList.data[ macroResultMacroPendingList.size++ ].index = resultMacroIndex;
 
 	// Lookup scanCode of the last key in the last combo
 	var_uint_t pos = 0;
@@ -834,8 +839,9 @@ void cliFunc_capList( char* args )
 		print(" - ");
 
 		// Display/Lookup Capability Name (utilize debug mode of capability)
-		void (*capability)(uint8_t, uint8_t, uint8_t*) = (void(*)(uint8_t, uint8_t, uint8_t*))(CapabilitiesList[ cap ].func);
-		capability( 0xFF, 0xFF, 0 );
+		void (*capability)(TriggerMacro*, uint8_t, uint8_t, uint8_t*) = \
+			(void(*)(TriggerMacro*, uint8_t, uint8_t, uint8_t*))(CapabilitiesList[ cap ].func);
+		capability( 0, 0xFF, 0xFF, 0 );
 	}
 }
 
@@ -910,8 +916,9 @@ void cliFunc_capSelect( char* args )
 				}
 			}
 
-			void (*capability)(uint8_t, uint8_t, uint8_t*) = (void(*)(uint8_t, uint8_t, uint8_t*))(CapabilitiesList[ cap ].func);
-			capability( argSet[0], argSet[1], &argSet[2] );
+			void (*capability)(TriggerMacro*, uint8_t, uint8_t, uint8_t*) = \
+				(void(*)(TriggerMacro*, uint8_t, uint8_t, uint8_t*))(CapabilitiesList[ cap ].func);
+			capability( 0, argSet[0], argSet[1], &argSet[2] );
 		}
 	}
 }
@@ -1125,11 +1132,11 @@ void cliFunc_macroList( char* args )
 	// Show pending result macros
 	print( NL );
 	info_msg("Pending Result Macros: ");
-	printInt16( (uint16_t)macroResultMacroPendingListSize );
+	printInt16( (uint16_t)macroResultMacroPendingList.size );
 	print(" : ");
-	for ( var_uint_t macro = 0; macro < macroResultMacroPendingListSize; macro++ )
+	for ( var_uint_t macro = 0; macro < macroResultMacroPendingList.size; macro++ )
 	{
-		printHex( macroResultMacroPendingList[ macro ] );
+		printHex( macroResultMacroPendingList.data[ macro ].index );
 		print(" ");
 	}
 
@@ -1278,8 +1285,9 @@ void macroDebugShowResult( var_uint_t index )
 			print("|");
 
 			// Display/Lookup Capability Name (utilize debug mode of capability)
-			void (*capability)(uint8_t, uint8_t, uint8_t*) = (void(*)(uint8_t, uint8_t, uint8_t*))(CapabilitiesList[ guide->index ].func);
-			capability( 0xFF, 0xFF, 0 );
+			void (*capability)(TriggerMacro*, uint8_t, uint8_t, uint8_t*) = \
+				(void(*)(TriggerMacro*, uint8_t, uint8_t, uint8_t*))(CapabilitiesList[ guide->index ].func);
+			capability( 0, 0xFF, 0xFF, 0 );
 
 			// Display Argument(s)
 			print("(");
