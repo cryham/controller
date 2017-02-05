@@ -156,7 +156,7 @@ file(GLOB MAIN_SRCS
 #
 
 #| Project
-project( kiibohd_controller C )
+project( kiibohd_controller )
 
 #| Target Name (output name)
 set( TARGET kiibohd )
