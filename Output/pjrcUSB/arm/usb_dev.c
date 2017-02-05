@@ -46,6 +46,41 @@ extern volatile uint32_t systick_millis_count;
 #endif
 
 
+void *memcpy( void *dst, const void *src, unsigned int len )
+{
+	char *dstbuf = dst;
+	const char *srcbuf = src;
+
+	for (; len > 0; --len, ++dstbuf, ++srcbuf)
+		*dstbuf = *srcbuf;
+	return (dst);
+}
+
+
+// Useful for fields in the USB Descriptor
+// Converts a number to UTF-16LE
+void hex32ToStr16( uint32_t in, uint16_t* out, uint8_t op )
+{
+	// Convert number to ASCII
+	char tmpStr[11];
+	hex32ToStr_op( in, tmpStr, op );
+
+	// Convert number to UTF-16LE
+	// Just add an extra NULL after every character
+	for ( uint8_t byte = 0; byte < sizeof( tmpStr ); byte++ )
+	{
+		// Don't copy the character if NULL and the current is not NULL
+		// Just stop
+		if ( tmpStr[byte] == '\0' && out[byte] != 0x0000 )
+		{
+			break;
+		}
+
+		out[byte] = tmpStr[byte] | 0x0000;
+	}
+}
+
+
 
 // ----- Defines -----
 
