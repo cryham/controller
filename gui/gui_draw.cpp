@@ -35,6 +35,14 @@ const char mod[0x08][6] = {
 #define STR(k)  (k >= 0xE0 ? mod[k-0xE0] : k <= strALL ? str[k] : "()")
 
 
+///  Key for sequence  - update after ck4layer2.kll change
+const char csSeqKey[Gui::iSlots][5] = {
+"1","2","3", "Q","W",
+"E",";","'", "/","\\",
+"Home","Left", "End","Ins","A",
+"S","D","Z","X","C"  };
+
+
 //  Draw, settings
 //....................................................................................
 void Gui::Draw(Adafruit_SSD1306& d)
@@ -252,6 +260,9 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		}
 		d.setCursor(W-1-7*6, H-8);
 		d.print("F1 Help");
+		//.
+		d.setCursor(W-1-1*6, H-16);
+		d.println(USBKeys_Protocol == 1 ? "N" : "B");
 		return;
 	}
 	
@@ -265,8 +276,9 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		int s = page * iPage, i,n,x, xm;
 		for (i=0; i < iPage && s < iSlots; ++i,++s)
 		{
-			d.setCursor(0, 16 + i*8);
+			d.setCursor(0, 18 + i*9);  //16 + i*8
 			//d.print(i==slot ? "\x10":" ");   d.print(s);  d.print(": ");
+			if (s<10)  d.print(" ");  //align
 			d.print(s);  d.print(i==slot ? "\x10":" ");
 			
 			//  write sequence  ---
@@ -285,8 +297,14 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			}	}
 		}
 		//  page, center   / 
-		d.setCursor(58, 4);
+		d.setCursor(54, 4);
 		d.print(page+1);  d.print("/");  d.print(iSlots/iPage);
+		
+		///  seq key
+		int q = slot + page*iPage;
+		int l = strlen(csSeqKey[q]);
+		d.setCursor(W-1-l*8, 4);
+		d.print(csSeqKey[q]);
 	}
 	else
 	{

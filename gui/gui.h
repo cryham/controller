@@ -19,9 +19,9 @@ struct Gui
 
 	//  const
 	const static uint8_t 
-		iSlots = 18,  // MSeq:  ver, changes eeprom
+		iSlots = 20,  // MSeq:  ver, changes eeprom
 		iSeqLen = 40, //   max bytes for 1 sequence (const in ram, var in eeprom)
-		iPage = 6,    //   page size, view at once
+		iPage = 5,    //   page size, view at once
 		HAll = 8,	  // Help pages
 		StAll = 3;    // Status pages
 	const static uint8_t YM2[MAll];  // demo counts
