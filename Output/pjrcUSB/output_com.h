@@ -123,7 +123,6 @@ unsigned int Output_current_available();
 
 void Output_update_external_current( unsigned int current );
 void Output_update_usb_current( unsigned int current );
-void Output_usbCodeSend_capability( uint8_t state, uint8_t stateType, uint8_t *args );
 
 int Output_getchar();
 int Output_putchar( char c );

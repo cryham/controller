@@ -31,6 +31,9 @@
 #include <matrix_scan.h>
 #include <macro.h>
 
+// KLL Include
+#include <kll.h>
+
 // Local Includes
 #include "scan_loop.h"
 
@@ -106,7 +109,7 @@ int8_t id_seq = -1, shift = 0;
 
 /// -----  Capabilities  -----
 
-void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void CustomAction_usbCode_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Retrieve 8-bit argument, usb hid code
 	uint8_t key = args[0];
@@ -120,7 +123,7 @@ void CustomAction_usbCode_capability( uint8_t state, uint8_t stateType, uint8_t 
 		kk[key] = 0;
 }
 
-void CustomAction_Sequence_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void CustomAction_Sequence_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Retrieve 8-bit argument, sequence index
 	uint8_t id = args[0];
@@ -130,7 +133,7 @@ void CustomAction_Sequence_capability( uint8_t state, uint8_t stateType, uint8_t
 }
 
 //  shift state for mouse slow
-void CustomAction_shift_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void CustomAction_shift_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	shift = state == 0x01 || state == 0x02;
 }
@@ -140,7 +143,7 @@ void CustomAction_shift_capability( uint8_t state, uint8_t stateType, uint8_t *a
 // Refer to kll.h in Macros/PartialMap for state and stateType information
 
 uint8_t CustomAction_blockHold_storage = 0;
-void CustomAction_blockHold_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void CustomAction_blockHold_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
 	if ( stateType == 0xFF && state == 0xFF )
@@ -176,7 +179,7 @@ void CustomAction_blockHold_capability( uint8_t state, uint8_t stateType, uint8_
 	}
 }
 
-void CustomAction_blockKey_capability( uint8_t state, uint8_t stateType, uint8_t *args )
+void CustomAction_blockKey_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	// Display capability name
 	if ( stateType == 0xFF && state == 0xFF )
@@ -191,8 +194,8 @@ void CustomAction_blockKey_capability( uint8_t state, uint8_t stateType, uint8_t
 	// If key is not blocked, process
 	if ( key != CustomAction_blockHold_storage )
 	{
-		extern void Output_usbCodeSend_capability( uint8_t state, uint8_t stateType, uint8_t *args );
-		Output_usbCodeSend_capability( state, stateType, &key );
+		extern void Output_usbCodeSend_capability( TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args );
+		Output_usbCodeSend_capability( trigger, state, stateType, &key );
 	}
 }
 
