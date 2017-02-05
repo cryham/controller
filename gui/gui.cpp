@@ -6,6 +6,9 @@ extern "C" {
 	#include <macro.h>
 	#include <output_com.h>
 	#include <usb_hid.h>
+
+	#include <kll.h>
+	extern void Output_usbCodeSend_capability( TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args );
 }
 //#endif
 
@@ -101,7 +104,7 @@ void Gui::Save()  //  Save
 	memSize = a;  infType = 2;
 }
 
-	
+
 //  seqence execute
 //.............................................
 void Gui::ExecSeqs()
@@ -118,11 +121,11 @@ void Gui::ExecSeqs()
 			uint8_t k = seq[q][n];  int m = k - KEY_LCTRL;
 			if (m >= 0 && m <= 8)
 			{	//  modifier press only
-				Output_usbCodeSend_capability(1, 0, &k);  Output_send();
+				Output_usbCodeSend_capability(0, 1, 0, &k);  Output_send();
 			}else
 			{	//  key press and release
-				Output_usbCodeSend_capability(1, 0, &k);  Output_send();  k = 0;
-				Output_usbCodeSend_capability(1, 0, &k);  Output_send();
+				Output_usbCodeSend_capability(0, 1, 0, &k);  Output_send();  k = 0;
+				Output_usbCodeSend_capability(0, 1, 0, &k);  Output_send();
 				if (USBKeys_Protocol == 0)
 					USBKeys_Modifiers = 0;  //fix boot mode?
 			}
