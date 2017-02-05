@@ -1,5 +1,5 @@
-Name = CK3-scan;
-Version = 4.01;
+Name = CK4-scan;
+Version = 4.05;
 Author = "Crystal Hammer";
 KLL = 0.3d;
 Date = 2016-04-19;
@@ -31,15 +31,15 @@ S0x77: U"RShift";  S0x77:+ shift();
 # --------  bottom  --------
 S0x37: U"LCtrl";  S0x5A: U"LGui";
 S0x8A: U"LAlt";   S0x8D: U"Space";  S0x0C: U"RAlt";
-S0x05: U"App";  S0x13: U"RCtrl";
+S0x05: U"Function2";  S0x13: U"RCtrl";
 
 # ========  extras  ========
 S0x2F: U"PrintScreen";  #- U"F20";  #* A4
+#S0x5B: U"F18";  S0x6D: U"F19";
 S0x5B: U"Alt"+U"Shift"+U"Esc";
 S0x6D: U"Alt"+U"Esc";
-#S0x5B: U"F18";  S0x6D: U"F19";
 S0x7F: U"Function3";  #* Caps A1 A2 A3
-S0x5C: U"Function1";  S0x60: U"Function2";  #* RGui B1 B2
+S0x5C: U"App";  S0x60: U"Function1";  #* RGui B1 B2
 
 # --------  player
 S0x12: U"F14";  S0x6C: U"F15";  S0x1E: CONS"SCANPREVIOUSTRACK";  S0x42: CONS"SCANNEXTTRACK";  #*  << >> |< >|

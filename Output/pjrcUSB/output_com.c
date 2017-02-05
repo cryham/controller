@@ -233,13 +233,15 @@ void Output_kbdProtocolNKRO_capability( TriggerMacro *trigger, uint8_t state, ui
 }
 
 //  toggle protocol  ---
-void CustomAction_toggleProtocol_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
+void CustomAction_BootProtocol_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
 {
 	if (state == 0x01)  // press
-	if (USBKeys_Protocol == 0)
-		Output_kbdProtocolNKRO_capability(0, 0, 0x01, 0);
-	else
 		Output_kbdProtocolBoot_capability(0, 0, 0x01, 0);
+}
+void CustomAction_NKROProtocol_capability(  TriggerMacro *trigger, uint8_t state, uint8_t stateType, uint8_t *args )
+{
+	if (state == 0x01)
+		Output_kbdProtocolNKRO_capability(0, 0, 0x01, 0);
 }
 
 
