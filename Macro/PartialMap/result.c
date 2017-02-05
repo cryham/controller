@@ -55,6 +55,16 @@ extern ResultMacroRecord ResultMacroRecordList[];
 ResultsPending macroResultMacroPendingList;
 
 
+static void *memcpy( void *dst, const void *src, unsigned int len )
+{
+	char *dstbuf = dst;
+	const char *srcbuf = src;
+
+	for (; len > 0; --len, ++dstbuf, ++srcbuf)
+		*dstbuf = *srcbuf;
+	return (dst);
+}
+
 
 // ----- Functions -----
 

@@ -46,7 +46,7 @@ extern volatile uint32_t systick_millis_count;
 #endif
 
 
-void *memcpy( void *dst, const void *src, unsigned int len )
+static void *memcpy( void *dst, const void *src, unsigned int len )
 {
 	char *dstbuf = dst;
 	const char *srcbuf = src;
@@ -59,7 +59,7 @@ void *memcpy( void *dst, const void *src, unsigned int len )
 
 // Useful for fields in the USB Descriptor
 // Converts a number to UTF-16LE
-void hex32ToStr16( uint32_t in, uint16_t* out, uint8_t op )
+static void hex32ToStr16( uint32_t in, uint16_t* out, uint8_t op )
 {
 	// Convert number to ASCII
 	char tmpStr[11];
