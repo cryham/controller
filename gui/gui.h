@@ -20,11 +20,12 @@ struct Gui
 	//  const
 	const static uint8_t 
 		iSlots = 20,  // MSeq:  ver, changes eeprom
-		iSeqLen = 40, //   max bytes for 1 sequence (const in ram, var in eeprom)
+		iSeqLen = 60, //   max bytes+1 for 1 sequence (const in ram, var in eeprom)
 		iPage = 5,    //   page size, view at once
 		HAll = 8,	  // Help pages
-		StAll = 3;    // Status pages
-	const static uint8_t YM2[MAll];  // demo counts
+		StAll = 4,    // Status pages
+		cBlnk = 250,  // cursor blink rate
+		YM2[MAll];  // demo counts
 
 	//  vars
 	int8_t leds;  // use kbd LEDs, for layers info
@@ -41,13 +42,16 @@ struct Gui
 	int8_t ym;     // EMenu, main1 page y
 	int8_t ym2[MAll];  // level2 page,  cur demo for each menu
 	
-	//  MSeq
+	//  MSeq  ----  seq edit vars
 	int8_t edit;   // seq 0 view / 1 edit
 	int8_t slot, page, edpos;  // edit vars
+	int8_t edins;  // 1 ins 0 overwrite
+	void SeqClear(int8_t q);
+	uint8_t tBlnk;  // cur blink anim
 	
 	int16_t tInfo, infType, memSize;  // info text vars
 
-	//  seq
+	//  seq  ----
 	uint8_t seql[iSlots];  // lengths of each seq, 0 empty
 	uint8_t seq[iSlots][iSeqLen];  // sequence data
 

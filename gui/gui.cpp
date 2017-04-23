@@ -33,9 +33,10 @@ void Gui::Init()
 	status = 0;  stpage = 0;
 	
 	menu = 0;  edit = 0;
-	slot = 0;  page = 0;  edpos = 0;
+	slot = 0;  page = 0;
+	edpos = 0;  edins = 0;
 
-	Clear();  tInfo = 0;
+	Clear();  tInfo = 0;  tBlnk = 0;
 }
 
 void Gui::LedsInit()
@@ -58,6 +59,7 @@ void Gui::Clear()
 
 //  load, save seq in eeprom
 //.............................................
+//  offset and max size to use
 #define EOfs 0
 #define ESize 2048
 
@@ -105,7 +107,7 @@ void Gui::Save()  //  Save
 }
 
 
-//  seqence execute
+///  seqence execute
 //.............................................
 void Gui::ExecSeqs()
 {	
@@ -120,7 +122,8 @@ void Gui::ExecSeqs()
 		{
 			uint8_t k = seq[q][n];  int m = k - KEY_LCTRL;
 			if (m >= 0 && m <= 8)
-			{	//  modifier press only
+			{
+				//  modifier press only
 				Output_usbCodeSend_capability(0, 1, 0, &k);  Output_send();
 			}else
 			{	//  key press and release
@@ -130,14 +133,20 @@ void Gui::ExecSeqs()
 					USBKeys_Modifiers = 0;  //fix boot mode?
 			}
 			
-			//  last
-			if (n == seql[q]-1)
-			{	// check if modifiers are left, send clear k=0..
-			}
+			//if (n == seql[q]-1)  // last
+			// check if modifiers are left, send clear k=0..
 		}
 	}
 	id_seq = -1;  // done
 	//todo: shift etc ed, display uppercase..
+}
+
+void Gui::SeqClear(int8_t q)
+{
+	edpos = 0;
+	seql[q] = 0;
+	for (int n=0; n < iSeqLen; ++n)
+		seq[q][n] = 0;
 }
 
 
@@ -163,21 +172,55 @@ void Gui::KeyPress()
 	#define KEY_EDIT  KEYPAD_ENTER
 	if (!help && !status && ym == MSeq && mlevel > 0)
 	{
-		if (edit)
-		{
-			//  find key
-			uint8_t k = 3, edkey = 0;
-			while (edkey==0 && k < 0xF0)
-			{
-				if (kk[k] && !kko[k] && k != KEY_EDIT)
-					edkey = k;
-				else  ++k;
-			}
-			//  add to seq
-			if (edkey > 0 && edpos < iSeqLen)
-			{	int q = slot + page*iPage;
-				seq[q][edpos] = edkey;
-				edpos++;  seql[q]++;
+		if (edit)	// edit sequence  ----
+		{	int q = slot + page*iPage;
+			if (lay2)
+			{	//  move cursor  //todo: auto repeat
+				if (key(HOME) || key(PAGE_UP))  edpos = 0;
+				if (key(END) || key(PAGE_DOWN))   edpos = seql[q];
+				
+				if (key(UP) || keyp(4) || key(LEFT))    if (edpos > 0)  --edpos;
+				if (key(DOWN))  if (edpos < seql[q])  ++edpos;
+				
+				if (key(DELETE) || keyp(5))
+				if (seql[q] > 0)
+				{	// del>
+					for (int i=edpos; i < seql[q]; ++i)
+						seq[q][i] = seq[q][i+1];
+					--seql[q];
+					if (edpos > seql[q])
+						edpos = seql[q];
+				}
+				if (key(INSERT))  edins = 1 - edins;  // ins/ovr
+				if (key(ENTER) ||
+					key(BACKSPACE))  SeqClear(q);  // erase
+			}else
+			{	//  find key
+				uint8_t k = 3, edkey = 0;
+				while (edkey==0 && k < 0xF0)
+				{
+					if (kk[k] && !kko[k] && k != KEY_EDIT)
+						edkey = k;
+					else  ++k;
+				}
+				//  add key to sequence
+				if (edkey > 0 && edpos < iSeqLen-1)
+				if (edpos == seql[q])  // at end
+				{
+					seq[q][edpos] = edkey;
+					edpos++;  seql[q]++;
+				}else
+				if (edins)  // insert
+				{
+					for (int i=seql[q]; i > edpos; --i)
+						seq[q][i] = seq[q][i-1];
+					seq[q][edpos] = edkey;
+					edpos++;  seql[q]++;
+				}
+				else  // overwrite
+				{	seq[q][edpos] = edkey;
+					if (edpos < seql[q])  ++edpos;
+				}
 			}
 		}else
 		{	if (key(S) || key(INSERT))  // save
@@ -209,11 +252,8 @@ void Gui::KeyPress()
 			if (edit)  // enter edit
 			{
 				int q = slot + page*iPage;
-				//  clear
-				edpos = 0;  //todo append
-				seql[q] = 0;
-				for (int n=0; n < iSeqLen; ++n)
-					seq[q][n] = 0;
+				//if (edpos > seql[q])  // if
+					edpos = seql[q];
 			}
 		}
 	}

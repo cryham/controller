@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "demos.h"  // ver
 #define PROGMEM
 #include "FreeSans9pt7b.h"
 
@@ -173,6 +174,8 @@ void Gui::Draw(Adafruit_SSD1306& d)
 				d.print(layersOn[l]);  d.moveCursor(6,0);
 			}
 			//d.println();  d.moveCursor(0,2);
+
+			Demos::Font_ver(d, true);  //*
 			break;
 
 		case 1:
@@ -216,16 +219,22 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		}	break;
 			
 		case 2:
-			//  build vars
+			//  config setup, build vars
 			d.print("Debounce ms: ");  d.println(MinDebounceTime_define);
 			//d.print("Strobe delay us: ");  d.println(STROBE_DELAY);
 			// rest in capabilities.kll *_define
 			//DebounceThrottleDiv_define, StateWordSize_define;
 
+			d.print("Sequences: ");  d.println(iSlots);
+			d.print("Seq. max len: ");  d.println(iSeqLen);
+			break;
+
+		case 3:
+			//  build vars
 			///  dbg  mouse speed  --
 			const int16_t y1 = H-1-2*8, y2 = H-1-1*8;
-			d.setCursor(0, y1-8-2);
-			d.print("Mouse hold delay spd");
+			d.println("Mouse");
+			d.println("hold delay spd");
 
 			d.setCursor(0, y1);  d.print(mx_holdtime);
 			d.setCursor(0, y2);  d.print(my_holdtime);
@@ -297,31 +306,48 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			}	}
 		}
 		//  page, center   / 
-		d.setCursor(54, 4);
+		d.setCursor(60, 4);
 		d.print(page+1);  d.print("/");  d.print(iSlots/iPage);
 		
 		///  seq key
-		int q = slot + page*iPage;
-		int l = strlen(csSeqKey[q]);
-		d.setCursor(W-1-l*8, 4);
-		d.print(csSeqKey[q]);
+		if (tInfo == 0)
+		{	int q = slot + page*iPage;
+			int l = strlen(csSeqKey[q]);
+			d.setCursor(W-1-l*8, 4);
+			d.print(csSeqKey[q]);
+		}
 	}
 	else
 	{
 		d.print("Edit");  d.setFont(0);
 		int q = slot + page*iPage;
-		d.setCursor(104, 4);  d.print(q);
+		d.setCursor(W-2*6, 4);  d.print(q);
+		d.setCursor(W/2-6, 4);  d.print(edins ? "ins" : "ovr");
+		//d.setCursor(W-3*6, H-8);  d.print(edpos);
 
 		//  write sequence  ---
-		d.setCursor(0, 24);
-		int n;
-		for (n=0; n < seql[q]; ++n)
+		d.setCursor(0, 22);
+		int n, l = seql[q];
+		for (n=0; n <= l; ++n)  // +1 for cursor
 		{
-			uint8_t z = seq[q][n];
-			d.print(STR(z));
-			d.print(" ");
-			//d.print("(");  d.print(seq[q][n],16);  d.print(") ");
+			int16_t x = d.getCursorX(), y = d.getCursorY();
+			if (n < l)
+			{
+				uint8_t z = seq[q][n];
+				d.print(STR(z));  d.print(" ");
+			}
+			if (n == edpos)  // show cursor
+			{
+				int16_t b = 8 - 8 * tBlnk / cBlnk;
+				if (edins)  // ins |
+					d.drawFastVLine(x, y-1-b+8, b+1, WHITE);
+				else  // ovr _
+					d.drawFastHLine(x, y+8, b+1, WHITE);
+				//d.drawPixel(x, y+8, WHITE);
+			}
 		}
+		++tBlnk;  // blink cur
+		if (tBlnk > cBlnk)  tBlnk = 0;
 	}
 	d.setFont(0);
 	

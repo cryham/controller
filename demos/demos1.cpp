@@ -107,9 +107,9 @@ void Demos::Font_ver(Adafruit_SSD1306& d, bool st)
 		d.setFont(0);
 	}
 	if (st)
-	{	d.setCursor(0, H-2-2*8);
+	{	d.setCursor(0, H-4-2*8);
 		d.print("Ver:");
-		d.setCursor(6*5, H-2-2*8);
+		d.setCursor(6*5, H-4-2*8);
 	}else
 		d.setCursor(96, 0);
 	
