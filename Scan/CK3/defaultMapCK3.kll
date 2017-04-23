@@ -47,7 +47,7 @@ S0x1C: U"RCtrl";  #*  (End)  (Right)
 
 S0x0E: U"Function3";  #* L3 [Player,mouse,etc]  (left|\)
 S0x1E: U"Function3";  #* L3  (Left)
-#S0x0C: U"Function4";  #* L4	 (Up)
+#S0x0C: U"Function4";  #* L4  (Up)
 S0x1B: U"Function2";  #* L2 [Sequences]  (Down)
 
 # --------  numpad  --------
@@ -57,6 +57,7 @@ S0x51: U"Home";  S0x52: U"Up";  S0x53: U"PageUp";
 S0x63: U"Left";  S0x64: U"P5";  S0x65: U"Right";
 S0x3F: U"End";  S0x40: U"Down";  S0x41: U"PageDown";
 S0x0A: U"Insert";  S0x0B: U"Delete";  S0x42: U"PEnter";
+
 
 # . . . .   mini  . . . .
 #S0x70: U"Up";  S0x81: U"Left";  S0x71: U"Right";  S0x72: U"Down";
