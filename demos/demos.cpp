@@ -82,7 +82,7 @@ void Demos::Draw(Adafruit_SSD1306& d, int8_t menu, int8_t y, int8_t y2)
 		switch (y2)
 		{
 			case 0: clD  CK_logo(d);  break;
-			case 1: clD  Font_ver(d);  break;
+			case 1: clD  Font_ver(d, false);  break;
 			case 2: clD  Chars(d,0);  break;
 			case 3: clD  Chars(d,1);  break;
 		}

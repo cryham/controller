@@ -19,6 +19,8 @@ struct Demos
 	int8_t fps;  // show frames per second, 1 on, 0 off
 	uint32_t ti, oti;  // fps: time us, old
 
+	static void Font_ver(D, bool st);  // ver, date, st - in status or demo
+
 #ifdef DEMOS
 	int8_t iPrev;   // prev demo, for init
 	int16_t iInfo;
@@ -72,7 +74,6 @@ struct Demos
 	
 	//  text
 	void Chars(D, uint8_t set=0);
-	void Font_ver(D);  // ver, date
 	
 	//  CK logo, 2D lines
 	const static int8_t ckMax = 2;

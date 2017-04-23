@@ -90,25 +90,32 @@ void Demos::Rain(Adafruit_SSD1306& d)
 	}
 	delay(8);
 }
-
+#endif
 
 //  text fonts
 //....................................................................................
-void Demos::Font_ver(Adafruit_SSD1306& d)
+void Demos::Font_ver(Adafruit_SSD1306& d, bool st)
 {
-	d.setCursor(0,10);  // logo
-	d.setFont(&FreeSans9pt7b/*FreeSans12pt7b*/);
-	d.print("CrystaL");
+	if (!st)  // demo
+	{	d.setCursor(0,10);  // logo
+		d.setFont(&FreeSans9pt7b/*FreeSans12pt7b*/);
+		d.print("CrystaL");
 
-	d.setCursor(36,32);
-	d.setFont(&FreeSans9pt7b);
-	d.print("Keyboard");
+		d.setCursor(36,32);
+		d.setFont(&FreeSans9pt7b);
+		d.print("Keyboard");
+		d.setFont(0);
+	}
+	if (st)
+	{	d.setCursor(0, H-2-2*8);
+		d.print("Ver:");
+		d.setCursor(6*5, H-2-2*8);
+	}else
+		d.setCursor(96, 0);
 	
-	d.setCursor(96,0);
-	d.setFont(0);
-	d.print("3.21");  // version text
+	d.print("3.25");  /// version text
 	
-	d.setCursor(0*24,H-8);
+	d.setCursor(0, H-8);
 	const char* a={__DATE__}, *m={__TIME__};
 	const char dt[] = {
 		//  build date, time  format yyyy-mmm-dd hh:mm
@@ -116,6 +123,7 @@ void Demos::Font_ver(Adafruit_SSD1306& d)
 	d.print(dt);
 }
 
+#ifdef DEMOS
 //  text all chars   128x64 = 20x8
 void Demos::Chars(Adafruit_SSD1306& d, uint8_t set)
 {
