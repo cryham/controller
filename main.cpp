@@ -101,7 +101,8 @@ int main()
 		}
 		if (ii > iwait)
 			any_old = any;
-			
+		
+		
 		#ifdef KII
 		int demo = gui.DrawDemo(),
 			play =
