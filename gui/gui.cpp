@@ -34,13 +34,16 @@ void Gui::Init()
 	
 	menu = 0;  edit = 0;
 	slot = 0;  page = 0;
-	edpos = 0;  edins = 0;
+	edpos = 0;  edins = 1;
 
 	Clear();  tInfo = 0;  tBlnk = 0;
+	sql = 0;
+	memset(sq,0,sizeof(sq));
 }
 
 void Gui::LedsInit()
 {
+	edins = 1;
 	leds = 1;  // LEDs init
 	pinMode(14, OUTPUT);  //L blue led
 	pinMode(26, OUTPUT);  //R orange
@@ -141,6 +144,11 @@ void Gui::ExecSeqs()
 	//todo: shift etc ed, display uppercase..
 }
 
+int Gui::seqId()
+{
+	return slot + page*iPage;
+}
+
 void Gui::SeqClear(int8_t q)
 {
 	edpos = 0;
@@ -172,20 +180,23 @@ void Gui::KeyPress()
 	#define KEY_EDIT  KEYPAD_ENTER
 	if (!help && !status && ym == MSeq && mlevel > 0)
 	{
-		if (edit)	// edit sequence  ----
-		{	int q = slot + page*iPage;
+		int q = seqId();
+		if (edit)
+		{			//  edit sequence  ----
+			uint8_t edkey = 0;
 			if (lay2)
 			{	//  move cursor  //todo: auto repeat
-				if (key(HOME) || key(PAGE_UP))  edpos = 0;
-				if (key(END) || key(PAGE_DOWN))   edpos = seql[q];
+				if (key(HOME) || key(PAGE_UP))    edpos = 0;
+				if (key(END)  || key(PAGE_DOWN))  edpos = seql[q];
 				
-				if (key(UP) || keyp(4) || key(LEFT))    if (edpos > 0)  --edpos;
-				if (key(DOWN))  if (edpos < seql[q])  ++edpos;
+				if (key(UP)   || key(LEFT))   if (edpos > 0)  --edpos;
+				if (key(DOWN) || key(RIGHT))  if (edpos < seql[q])  ++edpos;
 				
-				if (key(DELETE) || keyp(5))
-				if (seql[q] > 0)
-				{	// del>
-					for (int i=edpos; i < seql[q]; ++i)
+				if (key(DELETE) && seql[q] > 0)
+				{
+					int i = edpos;  // del>
+					//int i = max(0, edpos-1);  // <del
+					for (; i < seql[q]; ++i)
 						seq[q][i] = seq[q][i+1];
 					--seql[q];
 					if (edpos > seql[q])
@@ -194,9 +205,14 @@ void Gui::KeyPress()
 				if (key(INSERT))  edins = 1 - edins;  // ins/ovr
 				if (key(ENTER) ||
 					key(BACKSPACE))  SeqClear(q);  // erase
-			}else
-			{	//  find key
-				uint8_t k = 3, edkey = 0;
+				
+				if (key(1))  // delay cmd
+					edkey = 1;
+			}
+			if (!lay2 || edkey > 0)
+			{
+				//  find key
+				uint8_t k = 3;
 				while (edkey==0 && k < 0xF0)
 				{
 					if (kk[k] && !kko[k] && k != KEY_EDIT)
@@ -244,21 +260,34 @@ void Gui::KeyPress()
 			if (key(PAGE_UP))
 			{	--page;  if (page < 0)  page = iSlots/iPage-1;
 			}
+			
+			if (key(C))  // copy
+			{	sql = seql[q];
+				for (int i=0; i < sql; ++i)  sq[i] = seq[q][i];
+				infType = 3;  tInfo = -1;
+			}
+			//  paste, set
+			if (key(Z) || key(V))
+			if (sql < iSeqLen)
+			{	seql[q] = sql;
+				for (int i=0; i < sql; ++i)  seq[q][i] = sq[i];
+				infType = 4;  tInfo = -1;
+			}
 		}
 
-		if (key(EDIT))  //  toggle edit
+		if (key(EDIT))  //  toggle edit  ----
 		{
 			edit = 1-edit;
 			if (edit)  // enter edit
 			{
-				int q = slot + page*iPage;
+				int q = seqId();
 				//if (edpos > seql[q])  // if
 					edpos = seql[q];
 			}
 		}
 	}
 
-	if (!edit)  //  global
+	if (!edit)  //  global  --------
 	{
 		if (key(F1) || key(SCROLL_LOCK))
 		{	help = 1-help;  if (help)  status = 0;  }  // H

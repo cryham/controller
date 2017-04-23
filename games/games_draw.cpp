@@ -98,7 +98,7 @@ void Games::Draw(Adafruit_SSD1306& d)
 		d.setFont(&FreeSans9pt7b);
 		d.print("Sixtis");  d.setFont(0);
 		
-		d.setCursor(W-1-3*6, 0);
+		d.setCursor(W-1 -3*6, 0);
 		d.print(opg+1);  d.print("/");  d.print(O_All);
 		
 		d.setCursor(W/2-6, 4);
@@ -148,7 +148,7 @@ void Games::Draw(Adafruit_SSD1306& d)
 	d.setFont(0);
 
 	#if 0  //  debug --
-	//x = W-1 - 5*6;  y = H-1 - 4*8;
+	//x = W-1 -5*6;  y = H-1 - 4*8;
 	d.setCursor(x,y);  d.print(xo);  d.print(",");  d.print(yo);  y+=8+1;
 	d.setCursor(x,y);  d.print(xa);  d.print("-");  d.print(xb);  y+=8;
 	d.setCursor(x,y);  d.print(ya);  d.print("|");  d.print(yb);  y+=8;

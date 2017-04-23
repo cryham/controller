@@ -38,10 +38,17 @@ const char mod[0x08][6] = {
 
 ///  Key for sequence  - update after ck4layer2.kll change
 const char csSeqKey[Gui::iSlots][5] = {
+#if 0  // ck4
 "1","2","3", "Q","W",
 "E",";","'", "/","\\",
 "Home","Left", "End","Ins","A",
 "S","D","Z","X","C"  };
+#else  // ck3
+"1","2","3", "Q","W",
+"E","\\","Back", "Home","Ent",
+"Left", ";", "'","E","A",
+"S","D","Z","X","C"  };
+#endif
 
 
 //  Draw, settings
@@ -58,12 +65,13 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	if (help)
 	{
 		d.print("Help");  d.setFont(0);
-		d.setCursor(W-1-3*6, 0);
+		d.setCursor(W-1 -5*6, 0);
 		d.print(hpage+1);  d.print("/");  d.print(HAll);
 
-		d.setCursor(W-1-13*6, 8);  // page titles
+		d.setCursor(40, 8);  // page titles
 		const static char* title[HAll] = {" ", " Toggle", " Menu",
-			"Sequences", " Demos", " Demos cd", " Sixtis", " Sixtis cd"};
+			"Sequences", "Sequences cd", "Edit Sequence", "Edit Sequence cd",
+			" Demos", " Demos cd", " Sixtis", " Sixtis cd"};
 		d.print(title[hpage]);
 
 		switch (hpage)
@@ -77,7 +85,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.println("\x1B Esc  Back");
 			break;
 
-		case 1:  // help
+		case 1:  // toggle
 			d.setCursor(0, 16+8);
 			d.println("Pause F2  Status");
 			d.println("  \x18\x19  Page");
@@ -95,18 +103,42 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.moveCursor(0,8);
 			break;
 
-		case 3:  // sequence
+		case 3:  // sequences
 			d.setCursor(0, 16+2);
 			d.println("\x18\x19  Cursor");
 			d.println("PgUp,PgDn  Page");
-			d.moveCursor(0,2);
-			d.println("Num Enter - Edit");
 			d.moveCursor(0,4);
-			d.println("S Ins   Save");
-			d.println("BckSpc  Load");
+			d.println("Num Enter - Edit");
 			break;
 
-		case 4:  // demos
+		case 4:  // sequences cd
+			d.setCursor(0, 16+2);
+			d.println("S Ins   Save");
+			d.println("BckSpc  Load");
+			d.moveCursor(0,4);
+			d.println("C    Copy");
+			d.println("V Z  Paste");
+			break;
+
+		case 5:  // edit sequence
+			d.setCursor(0, 16+2);
+			d.println("  On Layer2:");
+			d.println("\x18\x19  Cursor");
+			d.println("PgUp,PgDn  Start/End");
+			d.moveCursor(0,2);
+			d.println("Ins  insert/overwr");
+			d.println("Del  delete");
+			d.println("Enter  clear");
+			break;
+
+		case 6:  // edit sequence cd
+			d.setCursor(0, 16+2);
+			d.println("  On Layer2:");
+			d.println("1  Delay command");
+			d.println("Ins  insert/overwr");
+			break;
+
+		case 7:  // demos
 			d.setCursor(0, 16+2);
 			d.println("\x18\x19  Prev/Next");
 			d.moveCursor(0,2);
@@ -117,7 +149,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.println("  Ctrl  Mode,Off");
 			break;
 
-		case 5:  // demos cd
+		case 8:  // demos cd
 			d.setCursor(0, 16+8);
 			d.println("PgUp,PgDn  Change");
 			d.println("Home,End   Params");
@@ -125,7 +157,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.println("  Shift  Fine");
 			break;
 
-		case 6:  // sixtis
+		case 9:  // sixtis
 			d.setCursor(0, 16+4);
 			d.println("\x1B\x1A   Move");
 			d.moveCursor(0,2);
@@ -136,7 +168,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.println("Ins  Drop");
 			break;
 
-		case 7:  // sixtis cd
+		case 10:  // sixtis cd
 			d.setCursor(0, 16+4);
 			d.println("BckSpc Esc  Exit");
 			d.println("+ Spc  Pause");
@@ -155,7 +187,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 	{
 		d.print("Status");  d.setFont(0);
 
-		d.setCursor(W-1-3*6, 0);
+		d.setCursor(W-1 -3*6, 0);
 		d.print(stpage+1);  d.print("/");  d.print(StAll);
 
 		d.setCursor(0, 16+2);
@@ -221,11 +253,13 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		case 2:
 			//  config setup, build vars
 			d.print("Debounce ms: ");  d.println(MinDebounceTime_define);
+			d.moveCursor(0,2);
 			//d.print("Strobe delay us: ");  d.println(STROBE_DELAY);
 			// rest in capabilities.kll *_define
 			//DebounceThrottleDiv_define, StateWordSize_define;
 
 			d.print("Sequences: ");  d.println(iSlots);
+			d.moveCursor(0,2);
 			d.print("Seq. max len: ");  d.println(iSeqLen);
 			break;
 
@@ -234,6 +268,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			///  dbg  mouse speed  --
 			const int16_t y1 = H-1-2*8, y2 = H-1-1*8;
 			d.println("Mouse");
+			d.moveCursor(0,4);
 			d.println("hold delay spd");
 
 			d.setCursor(0, y1);  d.print(mx_holdtime);
@@ -267,10 +302,10 @@ void Gui::Draw(Adafruit_SSD1306& d)
 				case MGames:  d.println("Sixtis");  break;
 			}
 		}
-		d.setCursor(W-1-7*6, H-8);
+		d.setCursor(W-1 -7*6, H-8);
 		d.print("F1 Help");
 		//.
-		d.setCursor(W-1-1*6, H-16);
+		d.setCursor(W-1 -1*6, H-16);
 		d.println(USBKeys_Protocol == 1 ? "N" : "B");
 		return;
 	}
@@ -311,19 +346,19 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		
 		///  seq key
 		if (tInfo == 0)
-		{	int q = slot + page*iPage;
+		{	int q = seqId();
 			int l = strlen(csSeqKey[q]);
-			d.setCursor(W-1-l*8, 4);
+			d.setCursor(W-1 -l*8, 4);
 			d.print(csSeqKey[q]);
 		}
 	}
 	else
 	{
 		d.print("Edit");  d.setFont(0);
-		int q = slot + page*iPage;
-		d.setCursor(W-2*6, 4);  d.print(q);
+		int q = seqId();
+		d.setCursor(W-1 -2*6, 4);  d.print(q);
 		d.setCursor(W/2-6, 4);  d.print(edins ? "ins" : "ovr");
-		//d.setCursor(W-3*6, H-8);  d.print(edpos);
+		//d.setCursor(W-1 -2*6, H-8);  d.print(edpos);
 
 		//  write sequence  ---
 		d.setCursor(0, 22);
@@ -361,9 +396,10 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		d.setFont(0);
 		d.setCursor(x, 0);
-		d.print(infType==2 ? "Saved:" :
-				infType==1 ? "Loaded" : "Reset");
-		if (infType > 0)
+		const static char* strInf[5] = {
+			"Reset", "Loaded", "Saved:", "Copied", "Pasted" };
+		d.print(strInf[infType]);
+		if (infType == 1 || infType == 2)
 		{
 			d.setCursor(x+6, 8);
 			d.print(memSize);  d.print(" B");

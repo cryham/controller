@@ -22,10 +22,10 @@ struct Gui
 		iSlots = 20,  // MSeq:  ver, changes eeprom
 		iSeqLen = 60, //   max bytes+1 for 1 sequence (const in ram, var in eeprom)
 		iPage = 5,    //   page size, view at once
-		HAll = 8,	  // Help pages
+		HAll = 11,    // Help pages
 		StAll = 4,    // Status pages
-		cBlnk = 250,  // cursor blink rate
-		YM2[MAll];  // demo counts
+		cBlnk = 250,  //   cursor blink rate
+		YM2[MAll];    // demo counts
 
 	//  vars
 	int8_t leds;  // use kbd LEDs, for layers info
@@ -44,8 +44,9 @@ struct Gui
 	
 	//  MSeq  ----  seq edit vars
 	int8_t edit;   // seq 0 view / 1 edit
-	int8_t slot, page, edpos;  // edit vars
 	int8_t edins;  // 1 ins 0 overwrite
+	int8_t slot, page, edpos;  // edit vars
+	int seqId();
 	void SeqClear(int8_t q);
 	uint8_t tBlnk;  // cur blink anim
 	
@@ -54,6 +55,10 @@ struct Gui
 	//  seq  ----
 	uint8_t seql[iSlots];  // lengths of each seq, 0 empty
 	uint8_t seq[iSlots][iSeqLen];  // sequence data
+	
+	//  for copy
+	uint8_t sql;
+	uint8_t sq[iSeqLen];
 
 	void Clear();  // ram
 	void Load(), Save();  // eeprom
