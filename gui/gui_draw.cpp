@@ -34,8 +34,8 @@ const char mod[0x08][6] = {
 /*E4*/"Ct","Sh","Al","Gui", //R
 };
 
-//  key to string  // delay symbol, modifiers, key
-#define STR(k)  (k==1 ? "^" : \
+//  key to string  // wait, delay symbols,  modifiers, key
+#define STR(k)  (k==2 ? "\xB1" : k==1 ? "\xB0" : \
 				 k >= 0xE0 ? mod[k-0xE0] : \
 				 k <= strALL ? str[k] : "()")
 
@@ -43,15 +43,15 @@ const char mod[0x08][6] = {
 ///  Key for sequence  - update after ck4layer2.kll change
 const char csSeqKey[Gui::iSlots][5] = {
 #if 0  // ck4
-"1","2","3", "Q","W",
-"E",";","'", "/","\\",
-"Home","Left", "End","Ins","A",
-"S","D","Z","X","C"  };
+	"1","2","3", "Q","W",
+	"E",";","'", "/","\\",
+	"Home","Left", "End","Ins","A",
+	"S","D","Z","X","C"  };
 #else  // ck3
-"1","2","3", "Q","W",
-"E","\\","Back", "Home","Ent",
-"Left", ";", "'","/","A",
-"S","D","Z","X","C"  };
+	"1","2","3", "Q","W",
+	"E","\\","Back", "Home","Ent",
+	"Left", ";", "'","/","A",
+	"S","D","Z","X","C"  };
 #endif
 
 
@@ -128,20 +128,23 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		case 5:  // edit seq
 			d.setCursor(0, 16+2);
 			d.println("  All on Layer2");
-			d.moveCursor(0,3);
+			d.moveCursor(0,2);
 			d.println("\x18\x19  Cursor");
 			d.println("PgUp,PgDn  Start/End");
-			d.moveCursor(0,3);
+			d.moveCursor(0,2);
 			d.println("Ins  Insert/overwr");
 			d.println("Del  Delete");
+			d.println("Enter  Clear");
 			break;
 
 		case 6:  // edit seq cd
 			d.setCursor(0, 16+2);
-			d.println("Enter  Clear");
-			d.moveCursor(0,4);
-			d.println("F1  Delay command ^");
-			d.println("  next digit 1..0");
+			//\xFA\xF9\x07\xFE\xF8
+			//\xB0\xB1\xB2\xF0
+			d.println("F2  \xB1 Wait cmd ");
+			d.println("F1  \xB0 Set Delay ");
+			d.moveCursor(0,2);
+			d.println("  Next Digit 1..0");
 			d.println("  1 none  4 20ms");
 			d.println("  6 100  9 1s");
 			break;
@@ -160,7 +163,9 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		case 8:  // demos cd
 			d.setCursor(0, 16+8);
 			d.println("PgUp,PgDn  Change");
+			d.moveCursor(0,2);
 			d.println("Home,End   Params");
+			d.moveCursor(0,2);
 			d.println("  Ctrl  Others");
 			d.println("  Shift  Fine");
 			break;
@@ -344,7 +349,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 					d.print(".");  xm = 0;  // more sign
 				}else
 				{	d.print(st);  //d.print(" ");
-					d.moveCursor(z==1 ? 0 : 2, 0);
+					d.moveCursor(z<=1 ? 0 : 2, 0);
 					++n;
 			}	}
 		}
@@ -378,7 +383,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			{
 				uint8_t z = seq[q][n];
 				d.print(STR(z));  //d.print(" ");
-				d.moveCursor(z==1 ? 0 : 2, 0);
+				d.moveCursor(z<=1 ? 0 : 2, 0);
 			}
 			if (n == edpos)  // show cursor
 			{

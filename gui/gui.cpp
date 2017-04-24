@@ -129,21 +129,29 @@ void Gui::ExecSeqs()
 		{
 			uint8_t k = seq[q][n];  int m = k - KEY_LCTRL;
 			
-			//  command next
-			if (k == 1)  // not a key
+			//  command, not a key
+			//  next byte is digit for value
+			if (k == 1 || k == 2)
 			{	cmd = true;  continue;
 			}
 			if (cmd)
 			{	cmd = false;
-				// delays ms
+
+				//  delay ms
 				const static uint16_t delTim[10] =
-				//1 2   3	4	5	6	 7	  8	   9     0
+				//1 2  .3	4	5  .6	 7	  8	  .9     0
 				{0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000};
 				
 				int i = k-KEY_1;
 				if (i<0) i=0;  if(i>9) i=9;
-				del = delTim[i];
-				//if (del > 0)  delay(del);  //wait only
+				
+				if (k==1)  //  set delay
+				{	del = delTim[i];
+					if (del > 0)  delay(del);  //wait
+				}
+				else  //  wait only
+					delay(delTim[i]);
+
 				continue;
 			}
 
@@ -210,7 +218,7 @@ void Gui::KeyPress()
 		int q = seqId();
 		if (edit)
 		{			//  edit sequence  ----
-			uint8_t edkey = 0;
+			uint8_t edkey = 0;  // none
 			if (lay2)
 			{	//  move cursor  //todo: auto repeat
 				if (key(HOME) || key(PAGE_UP))    edpos = 0;
@@ -222,8 +230,12 @@ void Gui::KeyPress()
 				if (key(DELETE) || keyp(5))
 				if (seql[q] > 0)
 				{
+				#if 1
 					int i = edpos;  // del>
-					//int i = max(0, edpos-1);  // <del
+				#else
+					int i = max(0, edpos-1);  // <del
+					edpos = i;  //
+				#endif
 					for (; i < seql[q]; ++i)
 						seq[q][i] = seq[q][i+1];
 					--seql[q];
@@ -234,12 +246,12 @@ void Gui::KeyPress()
 				if (key(ENTER) ||
 					key(BACKSPACE))  SeqClear(q);  // erase
 				
-				if (key(F1))  // set delay cmd
-					edkey = 1;
+				if (key(F1))  edkey = 1;  // set delay cmd
+				if (key(F2))  edkey = 2;  // wait cmd
 			}
 			if (!lay2 || edkey > 0)
 			{
-				//  find key
+				//  find key, if none
 				uint8_t k = 3;
 				while (edkey==0 && k < 0xF0)
 				{
