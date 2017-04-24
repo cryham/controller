@@ -119,21 +119,48 @@ void Gui::ExecSeqs()
 
 	//  output sequence to usb  ----
 	int q = id_seq, n;
+	
+	bool cmd = false;
+	uint32_t del = 0;  // send delay ms
+	
 	if (q >= 0 && q < iSlots && seql[q])
 	{
 		for (n=0; n < seql[q]; ++n)
 		{
 			uint8_t k = seq[q][n];  int m = k - KEY_LCTRL;
+			
+			//  command next
+			if (k == 1)  // not a key
+			{	cmd = true;  continue;
+			}
+			if (cmd)
+			{	cmd = false;
+				// delays ms
+				const static uint16_t delTim[10] =
+				//1 2   3	4	5	6	 7	  8	   9     0
+				{0, 5, 10, 20, 50, 100, 200, 500, 1000, 2000};
+				
+				int i = k-KEY_1;
+				if (i<0) i=0;  if(i>9) i=9;
+				del = delTim[i];
+				//if (del > 0)  delay(del);  //wait only
+				continue;
+			}
+
 			if (m >= 0 && m <= 8)
 			{
 				//  modifier press only
 				Output_usbCodeSend_capability(0, 1, 0, &k);  Output_send();
+				if (del > 0)  delay(del);
 			}else
 			{	//  key press and release
 				Output_usbCodeSend_capability(0, 1, 0, &k);  Output_send();  k = 0;
+				if (del > 0)  delay(del);
+				
 				Output_usbCodeSend_capability(0, 1, 0, &k);  Output_send();
 				if (USBKeys_Protocol == 0)
 					USBKeys_Modifiers = 0;  //fix boot mode?
+				if (del > 0)  delay(del);
 			}
 			
 			//if (n == seql[q]-1)  // last
@@ -192,7 +219,8 @@ void Gui::KeyPress()
 				if (key(UP)   || key(LEFT))   if (edpos > 0)  --edpos;
 				if (key(DOWN) || key(RIGHT))  if (edpos < seql[q])  ++edpos;
 				
-				if (key(DELETE) && seql[q] > 0)
+				if (key(DELETE) || keyp(5))
+				if (seql[q] > 0)
 				{
 					int i = edpos;  // del>
 					//int i = max(0, edpos-1);  // <del
@@ -206,7 +234,7 @@ void Gui::KeyPress()
 				if (key(ENTER) ||
 					key(BACKSPACE))  SeqClear(q);  // erase
 				
-				if (key(1))  // delay cmd
+				if (key(F1))  // set delay cmd
 					edkey = 1;
 			}
 			if (!lay2 || edkey > 0)

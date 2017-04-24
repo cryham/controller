@@ -33,7 +33,11 @@ const char mod[0x08][6] = {
 /*E0*/"Ct","Sh","Al","Gui", //L
 /*E4*/"Ct","Sh","Al","Gui", //R
 };
-#define STR(k)  (k >= 0xE0 ? mod[k-0xE0] : k <= strALL ? str[k] : "()")
+
+//  key to string  // delay symbol, modifiers, key
+#define STR(k)  (k==1 ? "^" : \
+				 k >= 0xE0 ? mod[k-0xE0] : \
+				 k <= strALL ? str[k] : "()")
 
 
 ///  Key for sequence  - update after ck4layer2.kll change
@@ -46,7 +50,7 @@ const char csSeqKey[Gui::iSlots][5] = {
 #else  // ck3
 "1","2","3", "Q","W",
 "E","\\","Back", "Home","Ent",
-"Left", ";", "'","E","A",
+"Left", ";", "'","/","A",
 "S","D","Z","X","C"  };
 #endif
 
@@ -68,15 +72,15 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		d.setCursor(W-1 -5*6, 0);
 		d.print(hpage+1);  d.print("/");  d.print(HAll);
 
-		d.setCursor(40, 8);  // page titles
-		const static char* title[HAll] = {" ", " Toggle", " Menu",
-			"Sequences", "Sequences cd", "Edit Sequence", "Edit Sequence cd",
-			" Demos", " Demos cd", " Sixtis", " Sixtis cd"};
+		d.setCursor(52, 8);  // page titles
+		const static char* title[HAll] = {"", "Toggle", "Menu",
+			"Sequences", "Seq. cd", "Edit Seq", "Edit Seq cd",
+			"Demos", "Demos cd", "Sixtis", "Sixtis cd"};
 		d.print(title[hpage]);
 
 		switch (hpage)
 		{
-		case 0:  // help
+		case 0:  // help  ------------------------
 			d.setCursor(0, 16+8);
 			d.println("ScrLck F1  Help");  // < x1B  > x1A  ^ x18  v x19
 			d.moveCursor(0,4);
@@ -88,31 +92,32 @@ void Gui::Draw(Adafruit_SSD1306& d)
 		case 1:  // toggle
 			d.setCursor(0, 16+8);
 			d.println("Pause F2  Status");
+			d.moveCursor(0,2);
 			d.println("  \x18\x19  Page");
-			d.moveCursor(0,8);
+			d.moveCursor(0,6);
 			d.println("D Spc  Dim display");
 			break;
 
 		case 2:  // menu
 			d.setCursor(0, 16+8);
 			d.println("\x18\x19  Cursor \x10");
-			d.moveCursor(0,2);
+			d.moveCursor(0,4);
 			d.println("\x1A  Enter");
 			d.moveCursor(0,2);
 			d.println("\x1B  Back");
-			d.moveCursor(0,8);
 			break;
 
-		case 3:  // sequences
-			d.setCursor(0, 16+2);
+		case 3:  // sequences  ------------------------
+			d.setCursor(0, 16+8);
 			d.println("\x18\x19  Cursor");
+			d.moveCursor(0,2);
 			d.println("PgUp,PgDn  Page");
 			d.moveCursor(0,4);
 			d.println("Num Enter - Edit");
 			break;
 
-		case 4:  // sequences cd
-			d.setCursor(0, 16+2);
+		case 4:  // seq cd
+			d.setCursor(0, 16+8);
 			d.println("S Ins   Save");
 			d.println("BckSpc  Load");
 			d.moveCursor(0,4);
@@ -120,25 +125,28 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.println("V Z  Paste");
 			break;
 
-		case 5:  // edit sequence
+		case 5:  // edit seq
 			d.setCursor(0, 16+2);
-			d.println("  On Layer2:");
+			d.println("  All on Layer2");
+			d.moveCursor(0,3);
 			d.println("\x18\x19  Cursor");
 			d.println("PgUp,PgDn  Start/End");
-			d.moveCursor(0,2);
-			d.println("Ins  insert/overwr");
-			d.println("Del  delete");
-			d.println("Enter  clear");
+			d.moveCursor(0,3);
+			d.println("Ins  Insert/overwr");
+			d.println("Del  Delete");
 			break;
 
-		case 6:  // edit sequence cd
+		case 6:  // edit seq cd
 			d.setCursor(0, 16+2);
-			d.println("  On Layer2:");
-			d.println("1  Delay command");
-			d.println("Ins  insert/overwr");
+			d.println("Enter  Clear");
+			d.moveCursor(0,4);
+			d.println("F1  Delay command ^");
+			d.println("  next digit 1..0");
+			d.println("  1 none  4 20ms");
+			d.println("  6 100  9 1s");
 			break;
 
-		case 7:  // demos
+		case 7:  // demos  ------------------------
 			d.setCursor(0, 16+2);
 			d.println("\x18\x19  Prev/Next");
 			d.moveCursor(0,2);
@@ -157,7 +165,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.println("  Shift  Fine");
 			break;
 
-		case 9:  // sixtis
+		case 9:  // sixtis  ------------------------
 			d.setCursor(0, 16+4);
 			d.println("\x1B\x1A   Move");
 			d.moveCursor(0,2);
@@ -295,10 +303,10 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			d.print(i==ym ? "\x10":" ");
 			switch (i)
 			{
-				case MSeq:    d.println("Sequences");  break;
+				case MSeq:    d.println("Sequences");  d.moveCursor(0,2);  break;
 				case MDemos:  d.println("Demos");  break;
 				case MText:   d.println("Text");  break;
-				case MPlasma: d.println("Plasma");  break;
+				case MPlasma: d.println("Plasma");  d.moveCursor(0,2);  break;
 				case MGames:  d.println("Sixtis");  break;
 			}
 		}
@@ -336,7 +344,7 @@ void Gui::Draw(Adafruit_SSD1306& d)
 					d.print(".");  xm = 0;  // more sign
 				}else
 				{	d.print(st);  //d.print(" ");
-					d.moveCursor(2,0);
+					d.moveCursor(z==1 ? 0 : 2, 0);
 					++n;
 			}	}
 		}
@@ -369,7 +377,8 @@ void Gui::Draw(Adafruit_SSD1306& d)
 			if (n < l)
 			{
 				uint8_t z = seq[q][n];
-				d.print(STR(z));  d.print(" ");
+				d.print(STR(z));  //d.print(" ");
+				d.moveCursor(z==1 ? 0 : 2, 0);
 			}
 			if (n == edpos)  // show cursor
 			{
@@ -378,7 +387,6 @@ void Gui::Draw(Adafruit_SSD1306& d)
 					d.drawFastVLine(x, y-1-b+8, b+1, WHITE);
 				else  // ovr _
 					d.drawFastHLine(x, y+8, b+1, WHITE);
-				//d.drawPixel(x, y+8, WHITE);
 			}
 		}
 		++tBlnk;  // blink cur
