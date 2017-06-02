@@ -110,6 +110,9 @@ set(  DebugModule "none"
 
 ##| Set the base keyboard .kll map, defaults to "defaultMap" if not found
 ##| Looks in Scan/<Module Name> for the available BaseMaps
+
+##  CK3 / CK4  //*
+##  change also in #if  ///  Key for sequence  
 set(     BaseMap "defaultMapCK3"
 #set(     BaseMap "defaultMapCK4"
 	CACHE STRING "KLL BaseMap/Scancode Keymapping" )

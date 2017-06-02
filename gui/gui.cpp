@@ -230,7 +230,7 @@ void Gui::KeyPress()
 				if (key(DELETE) || keyp(5))
 				if (seql[q] > 0)
 				{
-				#if 1
+				#if 0
 					int i = edpos;  // del>
 				#else
 					int i = max(0, edpos-1);  // <del
@@ -242,7 +242,8 @@ void Gui::KeyPress()
 					if (edpos > seql[q])
 						edpos = seql[q];
 				}
-				if (key(INSERT))  edins = 1 - edins;  // ins/ovr
+				if (key(INSERT) || keyp(PLUS))
+					edins = 1 - edins;  // ins/ovr
 				if (key(ENTER) ||
 					key(BACKSPACE))  SeqClear(q);  // erase
 				

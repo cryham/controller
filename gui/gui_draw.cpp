@@ -127,22 +127,22 @@ void Gui::Draw(Adafruit_SSD1306& d)
 
 		case 5:  // edit seq
 			d.setCursor(0, 16+2);
-			d.println("  All on Layer2");
-			d.moveCursor(0,2);
-			d.println("\x18\x19  Cursor");
+			//d.println("  All on Layer2");
+			//d.moveCursor(0,2);
+			d.println("\x18\x19  Cursor  (Layer2)");
 			d.println("PgUp,PgDn  Start/End");
 			d.moveCursor(0,2);
-			d.println("Ins  Insert/overwr");
+			d.println("Ins +  Insert/overwr");
 			d.println("Del  Delete");
 			d.println("Enter  Clear");
 			break;
 
 		case 6:  // edit seq cd
 			d.setCursor(0, 16+2);
-			//\xFA\xF9\x07\xFE\xF8
+			//\xFA\xF9\x07\xFE\xF8 middle dots
 			//\xB0\xB1\xB2\xF0
-			d.println("F2  \xB1 Wait cmd ");
-			d.println("F1  \xB0 Set Delay ");
+			d.println("F2  \xB1 Wait command");
+			d.println("F1  \xB0 Set Delay");
 			d.moveCursor(0,2);
 			d.println("  Next Digit 1..0");
 			d.println("  1 none  4 20ms");
