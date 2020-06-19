@@ -3,8 +3,8 @@ Crystal Keyboard 3 and 4
 
 This is [my fork](https://github.com/cryham/controller/) for keyboards CK3 and CK4.
 
-More info about them on [My Website](http://cryham.tuxfamily.org/archives/portfolio/crystal-keyboard-3-and-4), this [Forum post](https://geekhack.org/index.php?topic=81312.0), in
-[Picture galleries](https://plus.google.com/106514390902066155561/photos) with descriptions, and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
+More info about them on [My Website](http://cryham.tuxfamily.org/portfolio/crystal-keyboard-3-and-4), this [Forum post](https://geekhack.org/index.php?topic=81312.0), in
+[Picture galleries](https://photos.google.com/share/AF1QipOSiTtXabEp8hJKx9ejlzOQst0iujq8XjUbXBfdKm8a0mzGJq3DEYh4QgFq9Et07Q?key=SThSS2dkUVVyMDBnem05TzVhN2lXcUxKZlRJVUdR) with descriptions, and [Videos](https://www.youtube.com/channel/UC9-gc9xgEeuSSKB8_dESLGw/videos).
 
 Hardware
 --------
